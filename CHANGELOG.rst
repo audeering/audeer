@@ -7,6 +7,12 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.6.1 (2020-10-20)
+--------------------------
+
+* Fixed: license specification in Python package
+
+
 Version 1.6.0 (2020-10-20)
 --------------------------
 
