@@ -3,7 +3,7 @@ from subprocess import check_output
 
 # Project -----------------------------------------------------------------
 project = 'audeer'
-author = 'Hagen Wierstorf'
+author = 'Hagen Wierstorf, Johannes Wagner'
 # The x.y.z version read from tags
 try:
     version = check_output(['git', 'describe', '--tags', '--always'])
