@@ -2,6 +2,8 @@
 audeer
 ======
 
+|tests| |docs| |python-versions| |license| 
+
 The Python package **audeer** collects small tools and functions
 that deal with common tasks.
 For example, it incorporates functions for handling file paths,
@@ -12,3 +14,17 @@ and has the small tqdm_ package
 as it's only external dependency.
 
 .. _tqdm: https://tqdm.github.io/
+
+.. badges images and links:
+.. |tests| image:: https://github.com/audeering/audeer/workflows/Test/badge.svg
+    :target: https://github.com/audeering/audeer/actions?query=workflow%3ATest
+    :alt: Test status
+.. |docs| image:: https://readthedocs.org/projects/audeer/badge/
+    :target: https://audeer.readthedocs.io/
+    :alt: audeer's documentation on Read the Docs
+.. |license| image:: https://img.shields.io/badge/license-MIT-green.svg
+    :target: https://github.com/audeering/audeer/blob/master/LICENSE
+    :alt: audeer's MIT license
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/audeer.svg
+    :target: https://pypi.org/project/audeer/
+    :alt: audeer's supported Python versions
