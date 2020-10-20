@@ -38,6 +38,7 @@ linkcheck_ignore = [
 html_theme = 'sphinx_audeering_theme'
 html_theme_options = {
     'display_version': True,
+    'footer_links': False,
     'logo_only': False,
 }
 html_title = title
