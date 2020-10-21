@@ -1,0 +1,589 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>audeer.core.utils &mdash; audeer Documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/audeering.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    
+  
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          <a href="../../../index.html">
+          
+            <img src="../../../_static/images/audeering.png" class="logo" alt="audEERING"/>
+          
+          
+            <span> audeer</span>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                90ed902
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api-audeer.html">audeer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">audeer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>audeer.core.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for audeer.core.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">audeer</span>
+
+
+<div class="viewcode-block" id="deprecated"><a class="viewcode-back" href="../../../api-audeer.html#audeer.deprecated">[docs]</a><span class="k">def</span> <span class="nf">deprecated</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">removal_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alternative</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Mark code as deprecated.</span>
+
+<span class="sd">    Provide a `decorator &lt;https://www.python.org/dev/peps/pep-0318/&gt;`_</span>
+<span class="sd">    to mark functions/classes as deprecated.</span>
+
+<span class="sd">    You have to specify the version,</span>
+<span class="sd">    for which the deprecated code will be removed.</span>
+<span class="sd">    If you change only small things</span>
+<span class="sd">    like renaming a function or an argument,</span>
+<span class="sd">    it will be fine to remove the code</span>
+<span class="sd">    with the next minor release (`X.(Y+1).Z`).</span>
+<span class="sd">    Otherwise, choose the next major release (`(X+1).Y.Z`).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        removal_version: version the code will be removed</span>
+<span class="sd">        alternative: alternative code to use</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; @deprecated(removal_version=&#39;2.0.0&#39;)</span>
+<span class="sd">        ... def deprecated_function():</span>
+<span class="sd">        ...     pass</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_deprecated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="c1"># functools.wraps preserves the name</span>
+        <span class="c1"># and docstring of the decorated code:</span>
+        <span class="c1"># https://docs.python.org/3/library/functools.html#functools.wraps</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">new_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> is deprecated and will be removed &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;with version </span><span class="si">{</span><span class="n">removal_version</span><span class="si">}</span><span class="s1">.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">alternative</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; Use </span><span class="si">{</span><span class="n">alternative</span><span class="si">}</span><span class="s1"> instead.&#39;</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_func</span>
+    <span class="k">return</span> <span class="n">_deprecated</span></div>
+
+
+<div class="viewcode-block" id="flatten_list"><a class="viewcode-back" href="../../../api-audeer.html#audeer.flatten_list">[docs]</a><span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span>
+        <span class="n">nested_list</span><span class="p">:</span> <span class="n">List</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Flatten an arbitrarily nested list.</span>
+
+<span class="sd">    Implemented without  recursion to avoid stack overflows.</span>
+<span class="sd">    Returns a new list, the original list is unchanged.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nested_list: nested list</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        flattened list</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; flatten_list([1, 2, 3, [4], [], [[[[[[[[[5]]]]]]]]]])</span>
+<span class="sd">        [1, 2, 3, 4, 5]</span>
+<span class="sd">        &gt;&gt;&gt; flatten_list([[1, 2], 3])</span>
+<span class="sd">        [1, 2, 3]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_flat_generator</span><span class="p">(</span><span class="n">nested_list</span><span class="p">):</span>
+        <span class="k">while</span> <span class="n">nested_list</span><span class="p">:</span>
+            <span class="n">sublist</span> <span class="o">=</span> <span class="n">nested_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sublist</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">nested_list</span> <span class="o">=</span> <span class="n">sublist</span> <span class="o">+</span> <span class="n">nested_list</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">sublist</span>
+    <span class="n">nested_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">nested_list</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_flat_generator</span><span class="p">(</span><span class="n">nested_list</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="freeze_requirements"><a class="viewcode-back" href="../../../api-audeer.html#audeer.freeze_requirements">[docs]</a><span class="k">def</span> <span class="nf">freeze_requirements</span><span class="p">(</span><span class="n">outfile</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Log Python packages of activate virtual environment.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        outfile: file to store the packages.</span>
+<span class="sd">            Usually a name like :file:`requirements.txt.lock` should be picked.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: if running ``pip freeze`` returns an error</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;pip freeze &gt; </span><span class="si">{</span><span class="n">outfile</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">with</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
+            <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
+            <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Freezing Python packages failed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="run_tasks"><a class="viewcode-back" href="../../../api-audeer.html#audeer.run_tasks">[docs]</a><span class="k">def</span> <span class="nf">run_tasks</span><span class="p">(</span>
+        <span class="n">task_func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span>
+            <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
+                <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+                <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+            <span class="p">]</span>
+        <span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">multiprocessing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">task_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run parallel tasks using multprocessing.</span>
+
+<span class="sd">    .. note:: Result values are returned in order of ``params``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        task_func: task function with one or more</span>
+<span class="sd">            parameters, e.g. ``x, y, z``, and optionally returning a value</span>
+<span class="sd">        params: sequence of tuples holding parameters for each task.</span>
+<span class="sd">            Each tuple contains a sequence of positional arguments and a</span>
+<span class="sd">            dictionary with keyword arguments, e.g.:</span>
+<span class="sd">            ``[((x1, y1), {&#39;z&#39;: z1}), ((x2, y2), {&#39;z&#39;: z2}), ...]``</span>
+<span class="sd">        num_workers: number of parallel jobs or 1 for sequential</span>
+<span class="sd">            processing. If ``None`` will be set to the number of</span>
+<span class="sd">            processors on the machine multiplied by 5 in case of</span>
+<span class="sd">            multithreading and number of processors in case of</span>
+<span class="sd">            multiprocessing</span>
+<span class="sd">        multiprocessing: use multiprocessing instead of multithreading</span>
+<span class="sd">        progress_bar: show a progress bar</span>
+<span class="sd">        task_description: task description</span>
+<span class="sd">            that will be displayed next to progress bar</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; power = lambda x, n: x ** n</span>
+<span class="sd">        &gt;&gt;&gt; params = [([2, n], {}) for n in range(10)]</span>
+<span class="sd">        &gt;&gt;&gt; run_tasks(power, params, num_workers=3)</span>
+<span class="sd">        [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_tasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_tasks</span>
+
+    <span class="k">if</span> <span class="n">num_workers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># sequential</span>
+
+        <span class="k">with</span> <span class="n">audeer</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
+            <span class="n">desc</span><span class="o">=</span><span class="n">task_description</span><span class="p">,</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pbar</span><span class="p">):</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_func</span><span class="p">(</span><span class="o">*</span><span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># parallel</span>
+
+        <span class="k">if</span> <span class="n">multiprocessing</span><span class="p">:</span>
+            <span class="n">executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span>
+        <span class="k">with</span> <span class="n">executor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">audeer</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
+                    <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
+                    <span class="n">desc</span><span class="o">=</span><span class="n">task_description</span><span class="p">,</span>
+                    <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+                    <span class="n">future</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">task_func</span><span class="p">,</span> <span class="o">*</span><span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="n">future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">())</span>
+                    <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">future</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">future</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="run_worker_threads"><a class="viewcode-back" href="../../../api-audeer.html#audeer.run_worker_threads">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="n">removal_version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;run_tasks&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">run_worker_threads</span><span class="p">(</span>
+        <span class="n">task_fun</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">task_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run parallel tasks using worker threads.</span>
+
+<span class="sd">    .. note:: Result values are returned in order of ``params``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        task_fun: task function with one or more</span>
+<span class="sd">            parameters, e.g. ``x, y, z``, and optionally returning a value</span>
+<span class="sd">        params: list of parameters (use tuples in case of multiple parameters)</span>
+<span class="sd">            for each task, e.g. ``[(x1, y1, z1), (x2, y2, z2), ...]``</span>
+<span class="sd">        num_workers: number of worker threads (defaults to number of available</span>
+<span class="sd">            CPUs multiplied by ``5``)</span>
+<span class="sd">        progress_bar: show a progress bar</span>
+<span class="sd">        task_description: task description</span>
+<span class="sd">            that will be displayed next to progress bar</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; power = lambda x, n: x ** n</span>
+<span class="sd">        &gt;&gt;&gt; params = [(2, n) for n in range(10)]</span>
+<span class="sd">        &gt;&gt;&gt; run_worker_threads(power, params, num_workers=3)</span>
+<span class="sd">        [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">num_tasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_tasks</span>
+    <span class="k">if</span> <span class="n">num_workers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">num_workers</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">*</span> <span class="mi">5</span>
+
+    <span class="c1"># Ensure num_workers is positive</span>
+    <span class="n">num_workers</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">)</span>
+    <span class="c1"># Do not use more workers as needed</span>
+    <span class="n">num_workers</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">num_workers</span><span class="p">,</span> <span class="n">num_tasks</span><span class="p">)</span>
+
+    <span class="c1"># num_workers == 1 -&gt; run sequentially</span>
+    <span class="k">if</span> <span class="n">num_workers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_fun</span><span class="p">(</span><span class="o">*</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_fun</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+    <span class="c1"># num_workers &gt; 1 -&gt; run parallel</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="c1"># Create queue, possibly with a progress bar</span>
+        <span class="k">if</span> <span class="n">progress_bar</span><span class="p">:</span>
+            <span class="k">class</span> <span class="nc">QueueWithProgbar</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">):</span>
+                <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_tasks</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+                    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">maxsize</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
+                        <span class="n">total</span><span class="o">=</span><span class="n">num_tasks</span><span class="p">,</span>
+                        <span class="n">desc</span><span class="o">=</span><span class="n">task_description</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                <span class="k">def</span> <span class="nf">task_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">QueueWithProgbar</span><span class="p">(</span><span class="n">num_tasks</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+
+        <span class="c1"># Fill queue</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+            <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="n">param</span><span class="p">))</span>
+
+        <span class="c1"># Define worker thread</span>
+        <span class="k">def</span> <span class="nf">_worker</span><span class="p">():</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">index</span><span class="p">,</span> <span class="n">param</span> <span class="o">=</span> <span class="n">item</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_fun</span><span class="p">(</span><span class="o">*</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_fun</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
+
+        <span class="c1"># Start workers</span>
+        <span class="n">threads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">_worker</span><span class="p">)</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="c1"># Block until all tasks are done</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="c1"># Stop workers</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_workers</span><span class="p">):</span>
+            <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threads</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="to_list"><a class="viewcode-back" href="../../../api-audeer.html#audeer.to_list">[docs]</a><span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert to list.</span>
+
+<span class="sd">    If an iterable is passed,</span>
+<span class="sd">    that is not a string it will be converted using :class:`list`.</span>
+<span class="sd">    Otherwise, ``x`` is converted by ``[x]``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x: input to be converted to a list</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        input as a list</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; to_list(&#39;abc&#39;)</span>
+<span class="sd">        [&#39;abc&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; to_list((1, 2, 3))</span>
+<span class="sd">        [1, 2, 3]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="uid"><a class="viewcode-back" href="../../../api-audeer.html#audeer.uid">[docs]</a><span class="k">def</span> <span class="nf">uid</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">from_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate unique identifier.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        from_string: create a unique identifier</span>
+<span class="sd">            by hashing the provided string.</span>
+<span class="sd">            This will return the same identifier</span>
+<span class="sd">            for identical strings.</span>
+<span class="sd">            If ``None`` :func:`uuid.uuid1` is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        unique identifier containing 36 characters</span>
+<span class="sd">        with ``-`` at position 9, 14, 19, 24</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; uid(from_string=&#39;example_string&#39;)</span>
+<span class="sd">        &#39;626f68e6-d336-70b9-e753-ed9fad855840&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">from_string</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+        <span class="n">uid</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">from_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="n">uid</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">20</span><span class="p">:]</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">return</span> <span class="n">uid</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div>
+    <p>
+        
+        
+        
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/10/21 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+        
+    </p>
+  </div>
+
+  <div role="contentinfo">
+    <p>
+        
+      &copy; audEERING GmbH
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/clipboard.min.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

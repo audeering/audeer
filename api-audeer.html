@@ -1,0 +1,825 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>audeer &mdash; audeer Documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/audeering.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Index" href="genindex.html" />
+    <link rel="prev" title="Usage" href="usage.html" />
+    
+  
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          <a href="index.html">
+          
+            <img src="_static/images/audeering.png" class="logo" alt="audEERING"/>
+          
+          
+            <span> audeer</span>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                90ed902
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">audeer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basename-wo-ext">basename_wo_ext</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-directory">common_directory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#config">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deprecated">deprecated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extract-archive">extract_archive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extract-archives">extract_archives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-extension">file_extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#flatten-list">flatten_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#format-display-message">format_display_message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#freeze-requirements">freeze_requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-file-names">list_file_names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mkdir">mkdir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#progress-bar">progress_bar</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-tasks">run_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-worker-threads">run_worker_threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#safe-path">safe_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#to-list">to_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uid">uid</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">audeer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>audeer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://gitlab.audeering.com///github.com/audeering/audeer/blob/(HEAD/docs/api-audeer.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-audeer">
+<span id="audeer"></span><h1>audeer<a class="headerlink" href="#module-audeer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basename-wo-ext">
+<h2>basename_wo_ext<a class="headerlink" href="#basename-wo-ext" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.basename_wo_ext">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">basename_wo_ext</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ext</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#basename_wo_ext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.basename_wo_ext" title="Permalink to this definition">¶</a></dt>
+<dd><p>File basename without file extension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – file or directory name</p></li>
+<li><p><strong>ext</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – explicit extension to be removed</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>basename of directory or file without extension</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/test/file.wav&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">basename_wo_ext</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="go">&#39;file&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="common-directory">
+<h2>common_directory<a class="headerlink" href="#common-directory" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.common_directory">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">common_directory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dirs</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">'/'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#common_directory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.common_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find common directory path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dirs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – list of directories</p></li>
+<li><p><strong>sep</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – path separator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>part of the directory tree that is common to all the directories</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="s1">&#39;/home/user1/tmp/coverage/test&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;/home/user1/tmp/covert/operator&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;/home/user1/tmp/coven/members&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">common_directory</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span>
+<span class="go">&#39;/home/user1/tmp&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="config">
+<h2>config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="audeer.config">
+<em class="property">class </em><code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">config</code><a class="reference internal" href="_modules/audeer/core/config.html#config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get/set defaults for <a class="reference internal" href="#module-audeer" title="audeer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">audeer</span></code></a>.</p>
+<p>For example, when you want to change the default number of columns
+for the progress bar:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">audeer</span>
+<span class="n">audeer</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">TQDM_COLUMNS</span> <span class="o">=</span> <span class="mi">50</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt id="audeer.config.TQDM_COLUMNS">
+<code class="sig-name descname">TQDM_COLUMNS</code><em class="property"> = 100</em><a class="headerlink" href="#audeer.config.TQDM_COLUMNS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of columns of progress bars.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="audeer.config.TQDM_DESCLEN">
+<code class="sig-name descname">TQDM_DESCLEN</code><em class="property"> = 60</em><a class="headerlink" href="#audeer.config.TQDM_DESCLEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length of progress bar description.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="audeer.config.TQDM_FORMAT">
+<code class="sig-name descname">TQDM_FORMAT</code><em class="property"> = '{percentage:3.0f}%|{bar} [{elapsed}&lt;{remaining}] {desc:60}'</em><a class="headerlink" href="#audeer.config.TQDM_FORMAT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format of progress bars.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="audeer.config.TQDM_LEAVE">
+<code class="sig-name descname">TQDM_LEAVE</code><em class="property"> = False</em><a class="headerlink" href="#audeer.config.TQDM_LEAVE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Leave progress bar on screen after finishing.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="deprecated">
+<h2>deprecated<a class="headerlink" href="#deprecated" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.deprecated">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">deprecated</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">removal_version</span></em>, <em class="sig-param"><span class="n">alternative</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#deprecated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.deprecated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark code as deprecated.</p>
+<p>Provide a <a class="reference external" href="https://www.python.org/dev/peps/pep-0318/">decorator</a>
+to mark functions/classes as deprecated.</p>
+<p>You have to specify the version,
+for which the deprecated code will be removed.
+If you change only small things
+like renaming a function or an argument,
+it will be fine to remove the code
+with the next minor release (<cite>X.(Y+1).Z</cite>).
+Otherwise, choose the next major release (<cite>(X+1).Y.Z</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>removal_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – version the code will be removed</p></li>
+<li><p><strong>alternative</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – alternative code to use</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@deprecated</span><span class="p">(</span><span class="n">removal_version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">deprecated_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="extract-archive">
+<h2>extract_archive<a class="headerlink" href="#extract-archive" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.extract_archive">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">extract_archive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">archive</span></em>, <em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">keep_archive</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#extract_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.extract_archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a ZIP or TAR.GZ file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>archive</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – path to ZIP or TAR.GZ file</p></li>
+<li><p><strong>destination</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – folder where the content should be stored.
+Will be created if it doesn’t exist</p></li>
+<li><p><strong>keep_archive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">False</span></code> delete archive file after extraction</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> a progress bar is shown</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if the provided archive is not a ZIP or TAR.GZ file</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if the archive file is malformed</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="extract-archives">
+<h2>extract_archives<a class="headerlink" href="#extract-archives" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.extract_archives">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">extract_archives</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">archives</span></em>, <em class="sig-param"><span class="n">destination</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">keep_archive</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#extract_archives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.extract_archives" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract ZIP or TAR.GZ archives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>archives</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – paths of ZIP or TAR.GZ files</p></li>
+<li><p><strong>destination</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – folder where the content should be stored.
+Will be created if it doesn’t exist</p></li>
+<li><p><strong>keep_archive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">False</span></code> delete archive files after extraction</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> a progress bar is shown</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="file-extension">
+<h2>file_extension<a class="headerlink" href="#file-extension" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.file_extension">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">file_extension</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#file_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.file_extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>File extension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>extension of file without “.”</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/test/file.wav&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_extension</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="go">&#39;wav&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="flatten-list">
+<h2>flatten_list<a class="headerlink" href="#flatten-list" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.flatten_list">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">flatten_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nested_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#flatten_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.flatten_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flatten an arbitrarily nested list.</p>
+<p>Implemented without  recursion to avoid stack overflows.
+Returns a new list, the original list is unchanged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nested_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>) – nested list</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>flattened list</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">flatten_list</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[[[[[[[[[</span><span class="mi">5</span><span class="p">]]]]]]]]]])</span>
+<span class="go">[1, 2, 3, 4, 5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flatten_list</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">3</span><span class="p">])</span>
+<span class="go">[1, 2, 3]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="format-display-message">
+<h2>format_display_message<a class="headerlink" href="#format-display-message" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.format_display_message">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">format_display_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">pbar</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/tqdm.html#format_display_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.format_display_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure a fixed length of text printed to screen.</p>
+<p>The length of the text message is the same as the overall
+progress bar length as given by <a class="reference internal" href="#audeer.config.TQDM_COLUMNS" title="audeer.config.TQDM_COLUMNS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">audeer.config.TQDM_COLUMNS</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – text to be displayed</p></li>
+<li><p><strong>pbar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if a progress bar is displayed as well.
+This will shorten the text to the given progress bar
+description length <a class="reference internal" href="#audeer.config.TQDM_DESCLEN" title="audeer.config.TQDM_DESCLEN"><code class="xref py py-attr docutils literal notranslate"><span class="pre">audeer.config.TQDM_DESCLEN</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>formatted text message</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span><span class="o">.</span><span class="n">TQDM_COLUMNS</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">format_display_message</span><span class="p">(</span><span class="s1">&#39;Long text that will be shorten to fit&#39;</span><span class="p">)</span>
+<span class="go">&#39;Long te...n to fit&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="freeze-requirements">
+<h2>freeze_requirements<a class="headerlink" href="#freeze-requirements" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.freeze_requirements">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">freeze_requirements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outfile</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#freeze_requirements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.freeze_requirements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log Python packages of activate virtual environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>outfile</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – file to store the packages.
+Usually a name like <code class="file docutils literal notranslate"><span class="pre">requirements.txt.lock</span></code> should be picked.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.9)"><strong>RuntimeError</strong></a> – if running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">freeze</span></code> returns an error</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="list-file-names">
+<h2>list_file_names<a class="headerlink" href="#list-file-names" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.list_file_names">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">list_file_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">filetype</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_file_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.list_file_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of file names inferred from provided path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file, directory or pattern</p></li>
+<li><p><strong>filetype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – optional consider only this filetype</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of path(s) to file(s)</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file1&#39;</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">)]</span>
+<span class="go">[&#39;file1&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="mkdir">
+<h2>mkdir<a class="headerlink" href="#mkdir" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.mkdir">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">mkdir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">511</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.mkdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create directory.</p>
+<p>Create a directory at the provided path
+and return the absolute path to the generated directory.
+If parent directories are missing,
+they are created as well.
+If the directory exists already,
+only its absolute path is returned.</p>
+<p>On some systems, mode is ignored.
+Where it is used, the current umask value is first masked out.
+If bits other than the last 9
+(i.e. the last 3 digits of the octal representation of the mode)
+are set,
+their meaning is platform-dependent.
+On some platforms, they are ignored
+and you should call <a class="reference external" href="https://docs.python.org/3/library/os.html#os.chmod" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.chmod()</span></code></a>
+explicitly to set them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – absolute or relative path of directory to create</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – set permissions of created folders</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>absolute path to the created directory</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1/path2/path3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="go">&#39;path3&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="progress-bar">
+<h2>progress_bar<a class="headerlink" href="#progress-bar" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.progress_bar">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">progress_bar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">total</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">desc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/tqdm.html#progress_bar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.progress_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Progress bar with optional text on the right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>iterable</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>]) – sequence to iterate through</p></li>
+<li><p><strong>total</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – total number of iterations</p></li>
+<li><p><strong>desc</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – text shown on the right of the progress bar</p></li>
+<li><p><strong>disable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – don’t show the display bar</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tqdm</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>progress bar object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="run-tasks">
+<h2>run_tasks<a class="headerlink" href="#run-tasks" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.run_tasks">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">run_tasks</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_func</span></em>, <em class="sig-param"><span class="n">params</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">num_workers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">multiprocessing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">progress_bar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">task_description</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#run_tasks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.run_tasks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run parallel tasks using multprocessing.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Result values are returned in order of <code class="docutils literal notranslate"><span class="pre">params</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_func</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>) – task function with one or more
+parameters, e.g. <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z</span></code>, and optionally returning a value</p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]]) – sequence of tuples holding parameters for each task.
+Each tuple contains a sequence of positional arguments and a
+dictionary with keyword arguments, e.g.:
+<code class="docutils literal notranslate"><span class="pre">[((x1,</span> <span class="pre">y1),</span> <span class="pre">{'z':</span> <span class="pre">z1}),</span> <span class="pre">((x2,</span> <span class="pre">y2),</span> <span class="pre">{'z':</span> <span class="pre">z2}),</span> <span class="pre">...]</span></code></p></li>
+<li><p><strong>num_workers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – number of parallel jobs or 1 for sequential
+processing. If <code class="docutils literal notranslate"><span class="pre">None</span></code> will be set to the number of
+processors on the machine multiplied by 5 in case of
+multithreading and number of processors in case of
+multiprocessing</p></li>
+<li><p><strong>multiprocessing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – use multiprocessing instead of multithreading</p></li>
+<li><p><strong>progress_bar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – show a progress bar</p></li>
+<li><p><strong>task_description</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – task description
+that will be displayed next to progress bar</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">power</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="p">[([</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">],</span> <span class="p">{})</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_tasks</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">[1, 2, 4, 8, 16, 32, 64, 128, 256, 512]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="run-worker-threads">
+<h2>run_worker_threads<a class="headerlink" href="#run-worker-threads" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.run_worker_threads">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">run_worker_threads</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_fun</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">num_workers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">progress_bar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">task_description</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#run_worker_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.run_worker_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run parallel tasks using worker threads.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Result values are returned in order of <code class="docutils literal notranslate"><span class="pre">params</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_fun</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>) – task function with one or more
+parameters, e.g. <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z</span></code>, and optionally returning a value</p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]) – list of parameters (use tuples in case of multiple parameters)
+for each task, e.g. <code class="docutils literal notranslate"><span class="pre">[(x1,</span> <span class="pre">y1,</span> <span class="pre">z1),</span> <span class="pre">(x2,</span> <span class="pre">y2,</span> <span class="pre">z2),</span> <span class="pre">...]</span></code></p></li>
+<li><p><strong>num_workers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – number of worker threads (defaults to number of available
+CPUs multiplied by <code class="docutils literal notranslate"><span class="pre">5</span></code>)</p></li>
+<li><p><strong>progress_bar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – show a progress bar</p></li>
+<li><p><strong>task_description</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – task description
+that will be displayed next to progress bar</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">power</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_worker_threads</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">[1, 2, 4, 8, 16, 32, 64, 128, 256, 512]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="safe-path">
+<h2>safe_path<a class="headerlink" href="#safe-path" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.safe_path">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">safe_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#safe_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.safe_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensure the path is absolute and doesn’t include <cite>..</cite> or <cite>~</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file, directory</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>expanded path</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">):]</span>
+<span class="go">&#39;/path&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="to-list">
+<h2>to_list<a class="headerlink" href="#to-list" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.to_list">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">to_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.to_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to list.</p>
+<p>If an iterable is passed,
+that is not a string it will be converted using <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">x</span></code> is converted by <code class="docutils literal notranslate"><span class="pre">[x]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – input to be converted to a list</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>input as a list</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">to_list</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span>
+<span class="go">[&#39;abc&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_list</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="go">[1, 2, 3]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="uid">
+<h2>uid<a class="headerlink" href="#uid" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.uid">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">uid</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">from_string</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#uid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.uid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate unique identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>from_string</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – create a unique identifier
+by hashing the provided string.
+This will return the same identifier
+for identical strings.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.uuid1" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">uuid.uuid1()</span></code></a> is used.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>unique identifier containing 36 characters
+with <code class="docutils literal notranslate"><span class="pre">-</span></code> at position 9, 14, 19, 24</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uid</span><span class="p">(</span><span class="n">from_string</span><span class="o">=</span><span class="s1">&#39;example_string&#39;</span><span class="p">)</span>
+<span class="go">&#39;626f68e6-d336-70b9-e753-ed9fad855840&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="genindex.html" class="btn btn-neutral float-right" title="Index" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div>
+    <p>
+        
+        
+        
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/10/21 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+        
+    </p>
+  </div>
+
+  <div role="contentinfo">
+    <p>
+        
+      &copy; audEERING GmbH
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
