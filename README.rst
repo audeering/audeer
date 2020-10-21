@@ -13,6 +13,16 @@ The package is lightweight,
 and has the small tqdm_ package
 as it's only external dependency.
 
+Code example,
+that lists all WAV files in the ``data`` folder:
+
+.. code-block:: python
+
+    import audeer
+
+    files = audeer.list_file_names('data', filetype='wav')
+
+
 .. _tqdm: https://tqdm.github.io/
 
 .. badges images and links:
