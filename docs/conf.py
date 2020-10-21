@@ -23,6 +23,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',  # support for Google-style docstrings
     'sphinx_autodoc_typehints',
+    'sphinx_copybutton',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
 ]
@@ -32,6 +33,8 @@ intersphinx_mapping = {
 linkcheck_ignore = [
     'https://gitlab.audeering.com',
 ]
+copybutton_prompt_text = r'>>> |\.\.\. |$ '
+copybutton_prompt_is_regexp = True
 
 
 # HTML --------------------------------------------------------------------
