@@ -2,7 +2,7 @@
 audeer
 ======
 
-|tests| |docs| |python-versions| |license| 
+|tests| |coverage| |docs| |python-versions| |license| 
 
 The Python package **audeer** collects small tools and functions
 that deal with common tasks.
@@ -29,6 +29,9 @@ that lists all WAV files in the ``data`` folder:
 .. |tests| image:: https://github.com/audeering/audeer/workflows/Test/badge.svg
     :target: https://github.com/audeering/audeer/actions?query=workflow%3ATest
     :alt: Test status
+.. |coverage| image:: https://codecov.io/gh/audeering/audeer/branch/master/graph/badge.svg?token=PUA9P2UJW1
+    :target: https://codecov.io/gh/audeering/audeer
+    :alt: code coverage
 .. |docs| image:: https://img.shields.io/pypi/v/audeer?label=docs
     :target: https://audeering.github.io/audeer/
     :alt: audeer's documentation
