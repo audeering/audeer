@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                90ed902
+                v1.6.2
               </div>
             
           
@@ -156,7 +156,7 @@
         
             
             
-              <a href="https://gitlab.audeering.com///github.com/audeering/audeer/blob/(HEAD/docs/index.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+              <a href="https://gitlab.audeering.com/audeering/audeer/blob/v1.6.2/docs/index.rst" class="fa fa-gitlab"> Edit on GitLab</a>
             
           
         
@@ -172,7 +172,7 @@
             
   <div class="section" id="audeer">
 <h1>audeer<a class="headerlink" href="#audeer" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://github.com/audeering/audeer/actions?query=workflow%3ATest"><img alt="Test status" src="https://github.com/audeering/audeer/workflows/Test/badge.svg" /></a> <a class="reference external" href="https://audeer.readthedocs.io/"><img alt="audeer's documentation on Read the Docs" src="https://readthedocs.org/projects/audeer/badge/" /></a> <a class="reference external" href="https://pypi.org/project/audeer/"><img alt="audeer's supported Python versions" src="https://img.shields.io/pypi/pyversions/audeer.svg" /></a> <a class="reference external" href="https://github.com/audeering/audeer/blob/master/LICENSE"><img alt="audeer's MIT license" src="https://img.shields.io/badge/license-MIT-green.svg" /></a></p>
+<p><a class="reference external" href="https://github.com/audeering/audeer/actions?query=workflow%3ATest"><img alt="Test status" src="https://github.com/audeering/audeer/workflows/Test/badge.svg" /></a> <a class="reference external" href="https://audeering.github.io/audeer/"><img alt="audeer's documentation" src="https://img.shields.io/pypi/v/audeer?label=docs" /></a> <a class="reference external" href="https://pypi.org/project/audeer/"><img alt="audeer's supported Python versions" src="https://img.shields.io/pypi/pyversions/audeer.svg" /></a> <a class="reference external" href="https://github.com/audeering/audeer/blob/master/LICENSE"><img alt="audeer's MIT license" src="https://img.shields.io/badge/license-MIT-green.svg" /></a></p>
 <p>The Python package <strong>audeer</strong> collects small tools and functions
 that deal with common tasks.
 For example, it incorporates functions for handling file paths,
@@ -180,6 +180,13 @@ using multi-threading, or showing progress bars.</p>
 <p>The package is lightweight,
 and has the small <a class="reference external" href="https://tqdm.github.io/">tqdm</a> package
 as it’s only external dependency.</p>
+<p>Code example,
+that lists all WAV files in the <code class="docutils literal notranslate"><span class="pre">data</span></code> folder:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">audeer</span>
+
+<span class="n">files</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s1">&#39;wav&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -209,7 +216,7 @@ as it’s only external dependency.</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/10/21 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/10/22 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
