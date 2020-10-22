@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.6.2
+                v1.6.3
               </div>
             
           
@@ -163,7 +163,7 @@
         
             
             
-              <a href="https://gitlab.audeering.com/audeering/audeer/blob/v1.6.2/docs/contributing.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+              <a href="https://gitlab.audeering.com/audeering/audeer/blob/v1.6.3/docs/contributing.rst" class="fa fa-gitlab"> Edit on GitLab</a>
             
           
         
@@ -235,18 +235,10 @@ It can be installed with:</p>
 <h2>Creating a New Release<a class="headerlink" href="#creating-a-new-release" title="Permalink to this headline">¶</a></h2>
 <p>New releases are made using the following steps:</p>
 <ol class="arabic simple">
-<li><p>Update <code class="file docutils literal notranslate"><span class="pre">CHANGELOG.rst</span></code></p></li>
-<li><p>Commit those changes as “Release x.y.z”</p></li>
-<li><p>Create an (annotated) tag with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-a</span> <span class="pre">x.y.z</span></code></p></li>
-<li><p>Clear the <code class="docutils literal notranslate"><span class="pre">dist/</span></code> directory</p></li>
-<li><p>Create a source distribution with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">sdist</span></code></p></li>
-<li><p>Create a wheel distribution with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">bdist_wheel</span></code></p></li>
-<li><p>Check that both files have the correct content</p></li>
-<li><p>Upload them to <a class="reference external" href="https://pypi.org/project/audeer/">PyPI</a> with <a class="reference external" href="https://twine.readthedocs.io/">twine</a>: <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">twine</span> <span class="pre">upload</span> <span class="pre">dist/*</span></code></p></li>
-<li><p>Push the commit and the tag to Github and <a class="reference external" href="https://github.com/audeering/audeer/releases/">add release notes</a>
-containing the bullet points from <code class="file docutils literal notranslate"><span class="pre">CHANGELOG.rst</span></code></p></li>
-<li><p>Check that the new release was built correctly on <a class="reference external" href="https://readthedocs.org/projects/audeer/builds/">Read The Docs</a>,
-and select the new release as default version</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">CHANGELOG.rst</span></code></p></li>
+<li><p>Commit those changes as “Release X.Y.Z”</p></li>
+<li><p>Create an (annotated) tag with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">-a</span> <span class="pre">X.Y.Z</span></code></p></li>
+<li><p>Push the commit and the tag to Github</p></li>
 </ol>
 </div>
 </div>
