@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: [ ubuntu-latest, windows-latest ]
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
@@ -34,6 +34,8 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
+      if: matrix.os == 'ubuntu-latest'
     - name: Test building documentation
       run: |
         python -m sphinx docs/ docs/_build/ -b html -W
+      if: matrix.os == 'ubuntu-latest'
