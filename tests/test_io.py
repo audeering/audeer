@@ -152,8 +152,8 @@ def test_common_directory(dirs, expected):
     # Change paths always to Linux syntax
     _, common = os.path.splitdrive(common)
     _, expected = os.path.splitdrive(expected)
-    common = common.replace(r'\\', '/')
-    expected = expected.replace(r'\\', '/')
+    common = common.replace('\\\\', '/')
+    expected = expected.replace('\\\\', '/')
     assert common == expected
 
 
@@ -299,5 +299,6 @@ def test_safe_path_symlinks(tmpdir):
     expected_path = os.path.realpath(os.path.expanduser(link))
     path = audeer.safe_path(link)
     _, path = os.path.splitdrive(path)
+    _, expected_path = os.path.splitdrive(expected_path)
     assert path == expected_path
     assert type(path) is str
