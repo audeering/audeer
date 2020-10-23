@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.6.3
+                v1.6.4
               </div>
             
           
@@ -113,7 +113,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#mkdir">mkdir</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#progress-bar">progress_bar</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-tasks">run_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run-worker-threads">run_worker_threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#safe-path">safe_path</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#to-list">to_list</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#uid">uid</a></li>
@@ -177,7 +176,7 @@
         
             
             
-              <a href="https://gitlab.audeering.com/audeering/audeer/blob/v1.6.3/docs/api-audeer.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+              <a href="https://github.com/audeering/audeer/blob/v1.6.4/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -628,46 +627,6 @@ that will be displayed next to progress bar</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="run-worker-threads">
-<h2>run_worker_threads<a class="headerlink" href="#run-worker-threads" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="audeer.run_worker_threads">
-<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">run_worker_threads</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">task_fun</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">num_workers</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">progress_bar</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">task_description</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#run_worker_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.run_worker_threads" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run parallel tasks using worker threads.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Result values are returned in order of <code class="docutils literal notranslate"><span class="pre">params</span></code>.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>task_fun</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>) – task function with one or more
-parameters, e.g. <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z</span></code>, and optionally returning a value</p></li>
-<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]]) – list of parameters (use tuples in case of multiple parameters)
-for each task, e.g. <code class="docutils literal notranslate"><span class="pre">[(x1,</span> <span class="pre">y1,</span> <span class="pre">z1),</span> <span class="pre">(x2,</span> <span class="pre">y2,</span> <span class="pre">z2),</span> <span class="pre">...]</span></code></p></li>
-<li><p><strong>num_workers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – number of worker threads (defaults to number of available
-CPUs multiplied by <code class="docutils literal notranslate"><span class="pre">5</span></code>)</p></li>
-<li><p><strong>progress_bar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – show a progress bar</p></li>
-<li><p><strong>task_description</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – task description
-that will be displayed next to progress bar</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">power</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">run_worker_threads</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="go">[1, 2, 4, 8, 16, 32, 64, 128, 256, 512]</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
 <div class="section" id="safe-path">
 <h2>safe_path<a class="headerlink" href="#safe-path" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -688,8 +647,8 @@ that will be displayed next to progress bar</p></li>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">):]</span>
-<span class="go">&#39;/path&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+<span class="go">&#39;path&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -777,7 +736,7 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/10/22 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/10/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.6.3
+                v1.6.4
               </div>
             
           
@@ -169,6 +169,7 @@
 <span></span><span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
 <span class="kn">import</span> <span class="nn">typing</span>
@@ -178,6 +179,12 @@
     <span class="n">format_display_message</span><span class="p">,</span>
     <span class="n">progress_bar</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="c1"># Exclude common_directory example from doctest on Windows</span>
+<span class="c1"># as it outputs a path in Linux syntax in the example</span>
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Windows&#39;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;common_directory&#39;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="basename_wo_ext"><a class="viewcode-back" href="../../../api-audeer.html#audeer.basename_wo_ext">[docs]</a><span class="k">def</span> <span class="nf">basename_wo_ext</span><span class="p">(</span>
@@ -472,8 +479,8 @@
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; home = safe_path(&#39;~&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; path = safe_path(&#39;~/path/.././path&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; path[len(home):]</span>
-<span class="sd">        &#39;/path&#39;</span>
+<span class="sd">        &gt;&gt;&gt; path[len(home) + 1:]</span>
+<span class="sd">        &#39;path&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
@@ -497,7 +504,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/10/22 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/10/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
