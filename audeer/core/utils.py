@@ -204,7 +204,7 @@ def run_worker_threads(
         num_workers: int = None,
         progress_bar: bool = False,
         task_description: str = None
-) -> Sequence[Any]:
+) -> Sequence[Any]:  # pragma: no cover
     r"""Run parallel tasks using worker threads.
 
     .. note:: Result values are returned in order of ``params``.
