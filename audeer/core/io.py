@@ -15,7 +15,7 @@ from audeer.core.tqdm import (
 
 # Exclude common_directory example from doctest on Windows
 # as it outputs a path in Linux syntax in the example
-if platform.system() == 'Windows':
+if platform.system() == 'Windows':  # pragma: nocover
     __doctest_skip__ = ['common_directory']
 
 
