@@ -7,6 +7,15 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.6.4 (2020-10-23)
+--------------------------
+
+* Added: run tests on Windows
+* Removed: deprecated :func:`audb.run_worker_threads` from docs
+  and code coverage
+* Fixed: "Edit on Github" link in docs
+
+
 Version 1.6.3 (2020-10-22)
 --------------------------
 
