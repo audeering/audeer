@@ -44,4 +44,7 @@ html_theme_options = {
     'footer_links': False,
     'logo_only': False,
 }
+html_context = {
+    'display_github': True,
+}
 html_title = title
