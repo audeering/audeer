@@ -265,7 +265,7 @@ def test_mkdir(tmpdir):
     path = os.path.join(str(tmpdir.mkdir('folder10')), 'sub-folder')
     os.umask(0)
     p = audeer.mkdir(path, mode=0o755)
-    expected_mode = '775'
+    expected_mode = '755'
     if platform.system() == 'Windows':
         expected_mode = '777'
     mode = stat.S_IMODE(os.stat(p).st_mode)
