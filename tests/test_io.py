@@ -1,4 +1,5 @@
 import os
+import platform
 import stat
 import tarfile
 import zipfile
@@ -148,7 +149,13 @@ def test_basename_wo_ext(path, ext, basename):
     ),
 ])
 def test_common_directory(dirs, expected):
-    assert audeer.common_directory(dirs) == expected
+    common = audeer.common_directory(dirs)
+    # Change paths always to Linux syntax
+    _, common = os.path.splitdrive(common)
+    _, expected = os.path.splitdrive(expected)
+    common = common.replace('\\', '/')
+    expected = expected.replace('\\', '/')
+    assert common == expected
 
 
 @pytest.mark.parametrize('path,extension', [
@@ -224,7 +231,7 @@ def test_mkdir(tmpdir):
     p = audeer.mkdir('folder5/folder6')
     os.chdir(current_path)
     assert os.path.isdir(p) is True
-    assert p == os.path.join(path, 'folder5/folder6')
+    assert p == os.path.join(path, 'folder5', 'folder6')
     # Path in bytes
     path = str(tmpdir.mkdir('folder7'))
     path = bytes(path, 'utf8')
@@ -244,17 +251,25 @@ def test_mkdir(tmpdir):
     expected_mode = int('777', 8)
     assert mode == expected_mode
     # Non-default modes
+    # Under Windows, changing permissions does not work,
+    # there we always expect 777
     path = os.path.join(str(tmpdir.mkdir('folder9')), 'sub-folder')
     os.umask(0)
     p = audeer.mkdir(path, mode=0o775)
+    expected_mode = '775'
+    if platform.system() == 'Windows':
+        expected_mode = '777'
     mode = stat.S_IMODE(os.stat(p).st_mode)
-    assert mode == int('775', 8)
+    assert mode == int(expected_mode, 8)
     assert mode != int('755', 8)
     path = os.path.join(str(tmpdir.mkdir('folder10')), 'sub-folder')
     os.umask(0)
     p = audeer.mkdir(path, mode=0o755)
+    expected_mode = '755'
+    if platform.system() == 'Windows':
+        expected_mode = '777'
     mode = stat.S_IMODE(os.stat(p).st_mode)
-    assert mode == int('755', 8)
+    assert mode == int(expected_mode, 8)
     assert mode != int('775', 8)
 
 
@@ -292,5 +307,7 @@ def test_safe_path_symlinks(tmpdir):
     os.symlink(file, link)
     expected_path = os.path.realpath(os.path.expanduser(link))
     path = audeer.safe_path(link)
+    _, path = os.path.splitdrive(path)
+    _, expected_path = os.path.splitdrive(expected_path)
     assert path == expected_path
     assert type(path) is str
