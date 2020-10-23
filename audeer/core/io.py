@@ -1,6 +1,7 @@
 from glob import glob
 import itertools
 import os
+import platform
 import shutil
 import tarfile
 import typing
@@ -10,6 +11,12 @@ from audeer.core.tqdm import (
     format_display_message,
     progress_bar,
 )
+
+
+# Exclude common_directory example from doctest on Windows
+# as it outputs a path in Linux syntax in the example
+if platform.system() == 'Windows':
+    __doctest_skip__ = ['common_directory']
 
 
 def basename_wo_ext(
@@ -304,8 +311,8 @@ def safe_path(
     Example:
         >>> home = safe_path('~')
         >>> path = safe_path('~/path/.././path')
-        >>> path[len(home):]
-        '/path'
+        >>> path[len(home) + 1:]
+        'path'
 
     """
     if path:

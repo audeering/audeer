@@ -148,7 +148,13 @@ def test_basename_wo_ext(path, ext, basename):
     ),
 ])
 def test_common_directory(dirs, expected):
-    assert audeer.common_directory(dirs) == expected
+    common = audeer.common_directory(dirs)
+    # Change paths always to Linux syntax
+    _, common = os.path.splitdrive(common)
+    _, expected = os.path.splitdrive(expected)
+    common = common.replace(r'\\', '/')
+    expected = expected.replace(r'\\', '/')
+    assert common == expected
 
 
 @pytest.mark.parametrize('path,extension', [
@@ -224,7 +230,7 @@ def test_mkdir(tmpdir):
     p = audeer.mkdir('folder5/folder6')
     os.chdir(current_path)
     assert os.path.isdir(p) is True
-    assert p == os.path.join(path, 'folder5/folder6')
+    assert p == os.path.join(path, 'folder5', 'folder6')
     # Path in bytes
     path = str(tmpdir.mkdir('folder7'))
     path = bytes(path, 'utf8')
@@ -292,5 +298,6 @@ def test_safe_path_symlinks(tmpdir):
     os.symlink(file, link)
     expected_path = os.path.realpath(os.path.expanduser(link))
     path = audeer.safe_path(link)
+    _, path = os.path.splitdrive(path)
     assert path == expected_path
     assert type(path) is str
