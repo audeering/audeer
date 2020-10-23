@@ -250,17 +250,25 @@ def test_mkdir(tmpdir):
     expected_mode = int('777', 8)
     assert mode == expected_mode
     # Non-default modes
+    # Under Windows, changing permissions does not work,
+    # there we always expect 777
     path = os.path.join(str(tmpdir.mkdir('folder9')), 'sub-folder')
     os.umask(0)
     p = audeer.mkdir(path, mode=0o775)
+    expected_mode = '775'
+    if platform.system() == 'Windows':
+        expected_mode = '777'
     mode = stat.S_IMODE(os.stat(p).st_mode)
-    assert mode == int('775', 8)
+    assert mode == int(expected_mode, 8)
     assert mode != int('755', 8)
     path = os.path.join(str(tmpdir.mkdir('folder10')), 'sub-folder')
     os.umask(0)
     p = audeer.mkdir(path, mode=0o755)
+    expected_mode = '775'
+    if platform.system() == 'Windows':
+        expected_mode = '777'
     mode = stat.S_IMODE(os.stat(p).st_mode)
-    assert mode == int('755', 8)
+    assert mode == int(expected_mode, 8)
     assert mode != int('775', 8)
 
 
