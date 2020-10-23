@@ -153,8 +153,8 @@ def test_common_directory(dirs, expected):
     # Change paths always to Linux syntax
     _, common = os.path.splitdrive(common)
     _, expected = os.path.splitdrive(expected)
-    common = common.replace('\\\\', '/')
-    expected = expected.replace('\\\\', '/')
+    common = common.replace('\\', '/')
+    expected = expected.replace('\\', '/')
     assert common == expected
 
 
