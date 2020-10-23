@@ -74,11 +74,6 @@ run_tasks
 
 .. autofunction:: run_tasks
 
-run_worker_threads
-------------------
-
-.. autofunction:: run_worker_threads
-
 safe_path
 ---------
 
