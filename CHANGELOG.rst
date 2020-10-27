@@ -7,6 +7,12 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.6.6 (2020-10-27)
+--------------------------
+
+* Fixed: multi-line statements in Github releases
+
+
 Version 1.6.5 (2020-10-27)
 --------------------------
 
