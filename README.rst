@@ -13,6 +13,8 @@ The package is lightweight,
 and has the small tqdm_ package
 as it's only external dependency.
 
+Have a look at the installation_ and usage_ instructions as a starting point.
+
 Code example,
 that lists all WAV files in the ``data`` folder:
 
@@ -24,6 +26,8 @@ that lists all WAV files in the ``data`` folder:
 
 
 .. _tqdm: https://tqdm.github.io/
+.. _installation: https://audeering.github.io/audeer/installation.html
+.. _usage: https://audeering.github.io/audeer/usage.html
 
 .. badges images and links:
 .. |tests| image:: https://github.com/audeering/audeer/workflows/Test/badge.svg
