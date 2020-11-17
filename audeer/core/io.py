@@ -103,7 +103,7 @@ def extract_archive(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        members of archive
+        member filenames of archive
 
     Raises:
         RuntimeError: if the provided archive is not a ZIP or TAR.GZ file
@@ -136,6 +136,7 @@ def extract_archive(
                     for member in members:
                         zf.extract(member, destination)
                         pbar.update()
+                    member_names = [m.filename for m in members]
         elif archive.endswith('tar.gz'):
             with tarfile.open(archive, 'r') as tf:
                 members = tf.getmembers()
@@ -147,6 +148,7 @@ def extract_archive(
                     for member in members:
                         tf.extract(member, destination, numeric_owner=True)
                         pbar.update()
+                    member_names = [m.name for m in members]
         else:
             raise RuntimeError(
                 f'You can only extract ZIP and TAR.GZ files, '
@@ -164,7 +166,7 @@ def extract_archive(
     if not keep_archive:
         os.remove(archive)
 
-    return members
+    return member_names
 
 
 def extract_archives(
@@ -184,14 +186,14 @@ def extract_archives(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        combined members of archives
+        combined member filenames of archives
 
     """
     with progress_bar(
         total=len(archives),
         disable=not verbose,
     ) as pbar:
-        members = []
+        member_names = []
         for archive in archives:
             desc = format_display_message(
                 f'Extract {os.path.basename(archive)}',
@@ -199,7 +201,7 @@ def extract_archives(
             )
             pbar.set_description_str(desc)
             pbar.refresh()
-            members += extract_archive(
+            member_names += extract_archive(
                 archive,
                 destination,
                 keep_archive=keep_archive,
@@ -207,7 +209,7 @@ def extract_archives(
             )
             pbar.update()
 
-    return members
+    return member_names
 
 
 def file_extension(

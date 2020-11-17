@@ -49,14 +49,14 @@ def test_archives(tmpdir):
     for filename, member in zip(filenames, members):
         target_file = os.path.join(destination, f'{filename}.txt')
         assert os.path.exists(target_file)
-        assert os.path.basename(target_file) == member.filename
+        assert os.path.basename(target_file) == member
         os.remove(target_file)
 
     members = audeer.extract_archives(tar_files, destination)
     for filename, member in zip(filenames, members):
         target_file = os.path.join(destination, f'{filename}.txt')
         assert os.path.exists(target_file)
-        assert os.path.basename(target_file) == member.name
+        assert os.path.basename(target_file) == member
         os.remove(target_file)
 
     with pytest.raises(RuntimeError):
