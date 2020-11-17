@@ -92,7 +92,7 @@ def extract_archive(
         *,
         keep_archive: bool = True,
         verbose: bool = False,
-):
+) -> typing.List[str]:
     r"""Extract a ZIP or TAR.GZ file.
 
     Args:
@@ -101,6 +101,9 @@ def extract_archive(
             Will be created if it doesn't exist
         keep_archive: if ``False`` delete archive file after extraction
         verbose: if ``True`` a progress bar is shown
+
+    Returns:
+        member filenames of archive
 
     Raises:
         RuntimeError: if the provided archive is not a ZIP or TAR.GZ file
@@ -133,6 +136,7 @@ def extract_archive(
                     for member in members:
                         zf.extract(member, destination)
                         pbar.update()
+                    member_names = [m.filename for m in members]
         elif archive.endswith('tar.gz'):
             with tarfile.open(archive, 'r') as tf:
                 members = tf.getmembers()
@@ -144,6 +148,7 @@ def extract_archive(
                     for member in members:
                         tf.extract(member, destination, numeric_owner=True)
                         pbar.update()
+                    member_names = [m.name for m in members]
         else:
             raise RuntimeError(
                 f'You can only extract ZIP and TAR.GZ files, '
@@ -161,6 +166,8 @@ def extract_archive(
     if not keep_archive:
         os.remove(archive)
 
+    return member_names
+
 
 def extract_archives(
         archives: typing.Sequence[str],
@@ -168,7 +175,7 @@ def extract_archives(
         *,
         keep_archive: bool = True,
         verbose: bool = False,
-):
+) -> typing.List[str]:
     r"""Extract ZIP or TAR.GZ archives.
 
     Args:
@@ -178,11 +185,15 @@ def extract_archives(
         keep_archive: if ``False`` delete archive files after extraction
         verbose: if ``True`` a progress bar is shown
 
+    Returns:
+        combined member filenames of archives
+
     """
     with progress_bar(
         total=len(archives),
         disable=not verbose,
     ) as pbar:
+        member_names = []
         for archive in archives:
             desc = format_display_message(
                 f'Extract {os.path.basename(archive)}',
@@ -190,13 +201,15 @@ def extract_archives(
             )
             pbar.set_description_str(desc)
             pbar.refresh()
-            extract_archive(
+            member_names += extract_archive(
                 archive,
                 destination,
                 keep_archive=keep_archive,
                 verbose=False,
             )
             pbar.update()
+
+    return member_names
 
 
 def file_extension(

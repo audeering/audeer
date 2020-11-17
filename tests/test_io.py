@@ -45,16 +45,18 @@ def test_archives(tmpdir):
         tar_files.append(tar_file)
 
     # Extract archives
-    audeer.extract_archives(zip_files, destination)
-    for filename in filenames:
+    members = audeer.extract_archives(zip_files, destination)
+    for filename, member in zip(filenames, members):
         target_file = os.path.join(destination, f'{filename}.txt')
         assert os.path.exists(target_file)
+        assert os.path.basename(target_file) == member
         os.remove(target_file)
 
-    audeer.extract_archives(tar_files, destination)
-    for filename in filenames:
+    members = audeer.extract_archives(tar_files, destination)
+    for filename, member in zip(filenames, members):
         target_file = os.path.join(destination, f'{filename}.txt')
         assert os.path.exists(target_file)
+        assert os.path.basename(target_file) == member
         os.remove(target_file)
 
     with pytest.raises(RuntimeError):
