@@ -92,7 +92,7 @@ def extract_archive(
         *,
         keep_archive: bool = True,
         verbose: bool = False,
-):
+) -> typing.List:
     r"""Extract a ZIP or TAR.GZ file.
 
     Args:
@@ -101,6 +101,9 @@ def extract_archive(
             Will be created if it doesn't exist
         keep_archive: if ``False`` delete archive file after extraction
         verbose: if ``True`` a progress bar is shown
+
+    Returns:
+        members of archive
 
     Raises:
         RuntimeError: if the provided archive is not a ZIP or TAR.GZ file
@@ -161,6 +164,8 @@ def extract_archive(
     if not keep_archive:
         os.remove(archive)
 
+    return members
+
 
 def extract_archives(
         archives: typing.Sequence[str],
@@ -168,7 +173,7 @@ def extract_archives(
         *,
         keep_archive: bool = True,
         verbose: bool = False,
-):
+) -> typing.List:
     r"""Extract ZIP or TAR.GZ archives.
 
     Args:
@@ -178,11 +183,15 @@ def extract_archives(
         keep_archive: if ``False`` delete archive files after extraction
         verbose: if ``True`` a progress bar is shown
 
+    Returns:
+        combined members of archives
+
     """
     with progress_bar(
         total=len(archives),
         disable=not verbose,
     ) as pbar:
+        members = []
         for archive in archives:
             desc = format_display_message(
                 f'Extract {os.path.basename(archive)}',
@@ -190,13 +199,15 @@ def extract_archives(
             )
             pbar.set_description_str(desc)
             pbar.refresh()
-            extract_archive(
+            members += extract_archive(
                 archive,
                 destination,
                 keep_archive=keep_archive,
                 verbose=False,
             )
             pbar.update()
+
+    return members
 
 
 def file_extension(
