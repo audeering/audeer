@@ -175,7 +175,7 @@ def extract_archives(
         *,
         keep_archive: bool = True,
         verbose: bool = False,
-) -> typing.List:
+) -> typing.List[str]:
     r"""Extract ZIP or TAR.GZ archives.
 
     Args:
