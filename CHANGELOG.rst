@@ -7,6 +7,14 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.6.7 (2020-11-18)
+--------------------------
+
+* Changed: return member filenames of archives in
+  :func:`audeer.extract_archive`
+  and :func:`audeer.extract_archives`
+
+
 Version 1.6.6 (2020-10-27)
 --------------------------
 
