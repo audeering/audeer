@@ -76,7 +76,7 @@ def deprecated_keyword_argument(
     You have to specify the version,
     for which the deprecated argument will be removed.
     The content assigned to ``deprecated_argument``
-    is passed on to the ``alternative_argument``.
+    is passed on to the ``new_argument``.
 
     Args:
         deprecated_argument: keyword argument to be marked as deprecated
