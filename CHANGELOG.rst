@@ -7,6 +7,14 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.7.0 (2020-12-02)
+--------------------------
+
+* Added: :func:`audeer.deprecated_keyword_argument` decorator
+* Changed: :func:`audeer.deprecated` raises now a ``UserWarning``
+  instead of ``DeprecationWarning``
+
+
 Version 1.6.7 (2020-11-18)
 --------------------------
 
