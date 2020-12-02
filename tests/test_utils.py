@@ -22,7 +22,7 @@ def test_deprecated():
         warnings.simplefilter("always")
         # Raise warning
         deprecated_function()
-        assert issubclass(w[-1].category, DeprecationWarning)
+        assert issubclass(w[-1].category, UserWarning)
         assert expected_message == str(w[-1].message)
 
     @audeer.deprecated(removal_version='2.0.0')
@@ -38,7 +38,7 @@ def test_deprecated():
         warnings.simplefilter("always")
         # Raise warning
         deprecated_function()
-        assert issubclass(w[-1].category, DeprecationWarning)
+        assert issubclass(w[-1].category, UserWarning)
         assert expected_message == str(w[-1].message)
 
     @audeer.deprecated(removal_version='2.0.0')
@@ -54,7 +54,7 @@ def test_deprecated():
         warnings.simplefilter("always")
         # Raise warning
         DeprecatedClass()
-        assert issubclass(w[-1].category, DeprecationWarning)
+        assert issubclass(w[-1].category, UserWarning)
         assert expected_message == str(w[-1].message)
 
 
@@ -81,7 +81,7 @@ def test_deprecated_keyword_argument():
         warnings.simplefilter("always")
         # Raise warning
         r = function_with_deprecated_keyword_argument(foo=value)
-        assert issubclass(w[-1].category, DeprecationWarning)
+        assert issubclass(w[-1].category, UserWarning)
         assert expected_message == str(w[-1].message)
         assert r == 2 * value
 
@@ -102,7 +102,7 @@ def test_deprecated_keyword_argument():
         warnings.simplefilter("always")
         # Raise warning
         r = function_with_deprecated_keyword_argument(foo=2)
-        assert issubclass(w[-1].category, DeprecationWarning)
+        assert issubclass(w[-1].category, UserWarning)
         assert expected_message == str(w[-1].message)
         assert r == 1
 
@@ -128,7 +128,7 @@ def test_deprecated_keyword_argument():
         warnings.simplefilter("always")
         # Raise warning
         r = class_with_deprecated_keyword_argument(foo=value)
-        assert issubclass(w[-1].category, DeprecationWarning)
+        assert issubclass(w[-1].category, UserWarning)
         assert expected_message == str(w[-1].message)
         assert r.bar == value
 
