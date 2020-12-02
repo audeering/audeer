@@ -55,7 +55,7 @@ def deprecated(
             )
             if alternative is not None:
                 message += f' Use {alternative} instead.'
-            warnings.warn(message, category=DeprecationWarning, stacklevel=2)
+            warnings.warn(message, category=UserWarning, stacklevel=2)
             return func(*args, **kwargs)
         return new_func
     return _deprecated
@@ -116,7 +116,7 @@ def deprecated_keyword_argument(
                         kwargs[new_argument] = argument_content
                 warnings.warn(
                     message,
-                    category=DeprecationWarning,
+                    category=UserWarning,
                     stacklevel=2,
                 )
             return func(*args, **kwargs)
