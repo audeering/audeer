@@ -65,7 +65,8 @@ def deprecated_keyword_argument(
         *,
         deprecated_argument: str,
         removal_version: str,
-        alternative_argument: str = None,
+        new_argument: str = None,
+        mapping: typing.Callable = None,
 ) -> Callable:
     r"""Mark keyword argument as deprecated.
 
@@ -80,12 +81,15 @@ def deprecated_keyword_argument(
     Args:
         deprecated_argument: keyword argument to be marked as deprecated
         removal_version: version the code will be removed
-        alternative_argument: keyword argument that should be used instead
+        new_argument: keyword argument that should be used instead
+        mapping: if the keyword argument is not only renamed,
+            but expects also different input values,
+            you can map to the new ones with this callable
 
     Example:
         >>> @deprecated_keyword_argument(
         ...     deprecated_argument='foo',
-        ...     alternative_argument='bar',
+        ...     new_argument='bar',
         ...     removal_version='2.0.0',
         ... )
         ... def function_with_new_argument(*, bar):
@@ -104,9 +108,12 @@ def deprecated_keyword_argument(
                     f"and will be removed with version {removal_version}."
                 )
                 argument_content = kwargs.pop(deprecated_argument)
-                if alternative_argument is not None:
-                    message += f" Use '{alternative_argument}' instead."
-                    kwargs[alternative_argument] = argument_content
+                if new_argument is not None:
+                    message += f" Use '{new_argument}' instead."
+                    if mapping is not None:
+                        kwargs[new_argument] = mapping(argument_content)
+                    else:
+                        kwargs[new_argument] = argument_content
                 warnings.warn(
                     message,
                     category=DeprecationWarning,

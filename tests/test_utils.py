@@ -62,8 +62,9 @@ def test_deprecated_keyword_argument():
 
     @audeer.deprecated_keyword_argument(
         deprecated_argument='foo',
-        alternative_argument='bar',
+        new_argument='bar',
         removal_version='1.0.0',
+        mapping=lambda x: 2 * x,
     )
     def function_with_deprecated_keyword_argument(*, bar):
         return bar
@@ -82,7 +83,7 @@ def test_deprecated_keyword_argument():
         r = function_with_deprecated_keyword_argument(foo=value)
         assert issubclass(w[-1].category, DeprecationWarning)
         assert expected_message == str(w[-1].message)
-        assert r == value
+        assert r == 2 * value
 
     @audeer.deprecated_keyword_argument(
         deprecated_argument='foo',
@@ -107,7 +108,7 @@ def test_deprecated_keyword_argument():
 
     @audeer.deprecated_keyword_argument(
         deprecated_argument='foo',
-        alternative_argument='bar',
+        new_argument='bar',
         removal_version='1.0.0',
     )
     class class_with_deprecated_keyword_argument(object):
