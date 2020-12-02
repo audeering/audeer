@@ -61,6 +61,62 @@ def deprecated(
     return _deprecated
 
 
+def deprecated_keyword_argument(
+        *,
+        deprecated_argument: str,
+        removal_version: str,
+        alternative_argument: str = None,
+) -> Callable:
+    r"""Mark keyword argument as deprecated.
+
+    Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
+    to mark keyword arguments as deprecated.
+
+    You have to specify the version,
+    for which the deprecated argument will be removed.
+    The content assigned to the deprecated keyword argument
+    is passed on to the ``new_keyword_argument``.
+
+    Args:
+        deprecated_argument: keyword argument to be marked as deprecated
+        removal_version: version the code will be removed
+        alternative_argument: keyword argument that should be used instead
+
+    Example:
+        >>> @deprecated_keyword_argument(
+        ...     deprecated_argument='foo',
+        ...     alternative_argument='bar',
+        ...     removal_version='2.0.0',
+        ... )
+        ... def function_with_new_argument(*, bar):
+        ...     pass
+
+    """
+    def _deprecated(func):
+        # functools.wraps preserves the name
+        # and docstring of the decorated code:
+        # https://docs.python.org/3/library/functools.html#functools.wraps
+        @functools.wraps(func)
+        def new_func(*args, **kwargs):
+            if deprecated_argument in kwargs:
+                message = (
+                    f"'{deprecated_argument}' argument is deprecated "
+                    f"and will be removed with version {removal_version}."
+                )
+                if alternative_argument is not None:
+                    message += f" Use '{alternative_argument}' instead."
+                    argument_content = kwargs.pop(deprecated_argument)
+                    kwargs[alternative_argument] = argument_content
+                warnings.warn(
+                    message,
+                    category=DeprecationWarning,
+                    stacklevel=2,
+                )
+            return func(*args, **kwargs)
+        return new_func
+    return _deprecated
+
+
 def flatten_list(
         nested_list: List
 ) -> List:
