@@ -103,9 +103,9 @@ def deprecated_keyword_argument(
                     f"'{deprecated_argument}' argument is deprecated "
                     f"and will be removed with version {removal_version}."
                 )
+                argument_content = kwargs.pop(deprecated_argument)
                 if alternative_argument is not None:
                     message += f" Use '{alternative_argument}' instead."
-                    argument_content = kwargs.pop(deprecated_argument)
                     kwargs[alternative_argument] = argument_content
                 warnings.warn(
                     message,
