@@ -61,6 +61,69 @@ def deprecated(
     return _deprecated
 
 
+def deprecated_keyword_argument(
+        *,
+        deprecated_argument: str,
+        removal_version: str,
+        new_argument: str = None,
+        mapping: typing.Callable = None,
+) -> Callable:
+    r"""Mark keyword argument as deprecated.
+
+    Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
+    to mark keyword arguments as deprecated.
+
+    You have to specify the version,
+    for which the deprecated argument will be removed.
+    The content assigned to ``deprecated_argument``
+    is passed on to the ``new_argument``.
+
+    Args:
+        deprecated_argument: keyword argument to be marked as deprecated
+        removal_version: version the code will be removed
+        new_argument: keyword argument that should be used instead
+        mapping: if the keyword argument is not only renamed,
+            but expects also different input values,
+            you can map to the new ones with this callable
+
+    Example:
+        >>> @deprecated_keyword_argument(
+        ...     deprecated_argument='foo',
+        ...     new_argument='bar',
+        ...     removal_version='2.0.0',
+        ... )
+        ... def function_with_new_argument(*, bar):
+        ...     pass
+
+    """
+    def _deprecated(func):
+        # functools.wraps preserves the name
+        # and docstring of the decorated code:
+        # https://docs.python.org/3/library/functools.html#functools.wraps
+        @functools.wraps(func)
+        def new_func(*args, **kwargs):
+            if deprecated_argument in kwargs:
+                message = (
+                    f"'{deprecated_argument}' argument is deprecated "
+                    f"and will be removed with version {removal_version}."
+                )
+                argument_content = kwargs.pop(deprecated_argument)
+                if new_argument is not None:
+                    message += f" Use '{new_argument}' instead."
+                    if mapping is not None:
+                        kwargs[new_argument] = mapping(argument_content)
+                    else:
+                        kwargs[new_argument] = argument_content
+                warnings.warn(
+                    message,
+                    category=DeprecationWarning,
+                    stacklevel=2,
+                )
+            return func(*args, **kwargs)
+        return new_func
+    return _deprecated
+
+
 def flatten_list(
         nested_list: List
 ) -> List:
