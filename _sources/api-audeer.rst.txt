@@ -24,6 +24,11 @@ deprecated
 
 .. autofunction:: deprecated
 
+deprecated_keyword_argument
+---------------------------
+
+.. autofunction:: deprecated_keyword_argument
+
 extract_archive
 ---------------
 

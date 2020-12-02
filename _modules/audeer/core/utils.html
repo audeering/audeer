@@ -54,7 +54,7 @@
 
           <a href="../../../index.html">
           
-            <img src="../../../_static/images/audeering.png" class="logo" alt="audEERING"/>
+            <img src="../../../_static/images/audeering.svg" class="logo" alt="audEERING"/>
           
           
             <span> audeer</span>
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.6.7
+                v1.7.0
               </div>
             
           
@@ -223,7 +223,70 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">alternative</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; Use </span><span class="si">{</span><span class="n">alternative</span><span class="si">}</span><span class="s1"> instead.&#39;</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_func</span>
+    <span class="k">return</span> <span class="n">_deprecated</span></div>
+
+
+<div class="viewcode-block" id="deprecated_keyword_argument"><a class="viewcode-back" href="../../../api-audeer.html#audeer.deprecated_keyword_argument">[docs]</a><span class="k">def</span> <span class="nf">deprecated_keyword_argument</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">deprecated_argument</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">removal_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">new_argument</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mapping</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Mark keyword argument as deprecated.</span>
+
+<span class="sd">    Provide a `decorator &lt;https://www.python.org/dev/peps/pep-0318/&gt;`_</span>
+<span class="sd">    to mark keyword arguments as deprecated.</span>
+
+<span class="sd">    You have to specify the version,</span>
+<span class="sd">    for which the deprecated argument will be removed.</span>
+<span class="sd">    The content assigned to ``deprecated_argument``</span>
+<span class="sd">    is passed on to the ``new_argument``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        deprecated_argument: keyword argument to be marked as deprecated</span>
+<span class="sd">        removal_version: version the code will be removed</span>
+<span class="sd">        new_argument: keyword argument that should be used instead</span>
+<span class="sd">        mapping: if the keyword argument is not only renamed,</span>
+<span class="sd">            but expects also different input values,</span>
+<span class="sd">            you can map to the new ones with this callable</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; @deprecated_keyword_argument(</span>
+<span class="sd">        ...     deprecated_argument=&#39;foo&#39;,</span>
+<span class="sd">        ...     new_argument=&#39;bar&#39;,</span>
+<span class="sd">        ...     removal_version=&#39;2.0.0&#39;,</span>
+<span class="sd">        ... )</span>
+<span class="sd">        ... def function_with_new_argument(*, bar):</span>
+<span class="sd">        ...     pass</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_deprecated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="c1"># functools.wraps preserves the name</span>
+        <span class="c1"># and docstring of the decorated code:</span>
+        <span class="c1"># https://docs.python.org/3/library/functools.html#functools.wraps</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">new_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">deprecated_argument</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">deprecated_argument</span><span class="si">}</span><span class="s2">&#39; argument is deprecated &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;and will be removed with version </span><span class="si">{</span><span class="n">removal_version</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+                <span class="n">argument_content</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">deprecated_argument</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">new_argument</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Use &#39;</span><span class="si">{</span><span class="n">new_argument</span><span class="si">}</span><span class="s2">&#39; instead.&quot;</span>
+                    <span class="k">if</span> <span class="n">mapping</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="n">new_argument</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">(</span><span class="n">argument_content</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="n">new_argument</span><span class="p">]</span> <span class="o">=</span> <span class="n">argument_content</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="n">message</span><span class="p">,</span>
+                    <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_func</span>
     <span class="k">return</span> <span class="n">_deprecated</span></div>
@@ -541,7 +604,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/11/18 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/12/02 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -562,6 +625,11 @@
   </div>
   
 
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
 
     

@@ -56,7 +56,7 @@
 
           <a href="index.html">
           
-            <img src="_static/images/audeering.png" class="logo" alt="audEERING"/>
+            <img src="_static/images/audeering.svg" class="logo" alt="audEERING"/>
           
           
             <span> audeer</span>
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.6.7
+                v1.7.0
               </div>
             
           
@@ -103,6 +103,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#common-directory">common_directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#config">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#deprecated">deprecated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deprecated-keyword-argument">deprecated_keyword_argument</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extract-archive">extract_archive</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extract-archives">extract_archives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#file-extension">file_extension</a></li>
@@ -176,7 +177,7 @@
         
             
             
-              <a href="https://github.com/audeering/audeer/blob/v1.6.7/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/audeering/audeer/blob/v1.7.0/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -319,6 +320,48 @@ Otherwise, choose the next major release (<cite>(X+1).Y.Z</cite>).</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@deprecated</span><span class="p">(</span><span class="n">removal_version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
 <span class="gp">... </span><span class="k">def</span> <span class="nf">deprecated_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="deprecated-keyword-argument">
+<h2>deprecated_keyword_argument<a class="headerlink" href="#deprecated-keyword-argument" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.deprecated_keyword_argument">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">deprecated_keyword_argument</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">deprecated_argument</span></em>, <em class="sig-param"><span class="n">removal_version</span></em>, <em class="sig-param"><span class="n">new_argument</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#deprecated_keyword_argument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.deprecated_keyword_argument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark keyword argument as deprecated.</p>
+<p>Provide a <a class="reference external" href="https://www.python.org/dev/peps/pep-0318/">decorator</a>
+to mark keyword arguments as deprecated.</p>
+<p>You have to specify the version,
+for which the deprecated argument will be removed.
+The content assigned to <code class="docutils literal notranslate"><span class="pre">deprecated_argument</span></code>
+is passed on to the <code class="docutils literal notranslate"><span class="pre">new_argument</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deprecated_argument</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – keyword argument to be marked as deprecated</p></li>
+<li><p><strong>removal_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – version the code will be removed</p></li>
+<li><p><strong>new_argument</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – keyword argument that should be used instead</p></li>
+<li><p><strong>mapping</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>]) – if the keyword argument is not only renamed,
+but expects also different input values,
+you can map to the new ones with this callable</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@deprecated_keyword_argument</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">deprecated_argument</span><span class="o">=</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">new_argument</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">removal_version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">function_with_new_argument</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bar</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">pass</span>
 </pre></div>
 </div>
@@ -748,7 +791,7 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/11/18 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/12/02 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -769,6 +812,11 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
   </div>
   
 
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
 
     
