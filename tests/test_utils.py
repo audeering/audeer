@@ -58,6 +58,80 @@ def test_deprecated():
         assert expected_message == str(w[-1].message)
 
 
+def test_deprecated_keyword_argument():
+
+    @audeer.deprecated_keyword_argument(
+        deprecated_argument='foo',
+        alternative_argument='bar',
+        removal_version='1.0.0',
+    )
+    def function_with_deprecated_keyword_argument(*, bar):
+        return bar
+
+    expected_message = (
+        "'foo' argument is deprecated "
+        "and will be removed with version 1.0.0."
+        " Use 'bar' instead."
+    )
+    value = 1
+    assert function_with_deprecated_keyword_argument(bar=value) == value
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        # Raise warning
+        r = function_with_deprecated_keyword_argument(foo=value)
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert expected_message == str(w[-1].message)
+        assert r == value
+
+    @audeer.deprecated_keyword_argument(
+        deprecated_argument='foo',
+        removal_version='1.0.0',
+    )
+    def function_with_deprecated_keyword_argument(**kwargs):
+        return 1
+
+    expected_message = (
+        "'foo' argument is deprecated "
+        "and will be removed with version 1.0.0."
+    )
+    assert function_with_deprecated_keyword_argument() == 1
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        # Raise warning
+        r = function_with_deprecated_keyword_argument(foo=2)
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert expected_message == str(w[-1].message)
+        assert r == 1
+
+    @audeer.deprecated_keyword_argument(
+        deprecated_argument='foo',
+        alternative_argument='bar',
+        removal_version='1.0.0',
+    )
+    class class_with_deprecated_keyword_argument(object):
+
+        def __init__(self, *, bar):
+            self.bar = bar
+
+    expected_message = (
+        "'foo' argument is deprecated "
+        "and will be removed with version 1.0.0."
+        " Use 'bar' instead."
+    )
+    value = 1
+    assert class_with_deprecated_keyword_argument(bar=value).bar == value
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        # Raise warning
+        r = class_with_deprecated_keyword_argument(foo=value)
+        assert issubclass(w[-1].category, DeprecationWarning)
+        assert expected_message == str(w[-1].message)
+        assert r.bar == value
+
+
 @pytest.mark.parametrize('nested_list,expected_list', [
     ([1, 2, 3, [4], [], [[[[[[[[[5]]]]]]]]]], [1, 2, 3, 4, 5]),
     ([[1, 2], 3], [1, 2, 3]),
