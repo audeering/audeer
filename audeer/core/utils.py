@@ -179,6 +179,29 @@ def freeze_requirements(outfile: str):
             raise RuntimeError(f'Freezing Python packages failed: {err}')
 
 
+def is_uid(uid: str) -> bool:
+    r"""Check if string is a unique identifier.
+
+    Unique identifiers can be generated with :func:`audeer.uid`.
+
+    Args:
+        uid: string
+
+    Returns:
+        ``True`` if string is a unique identifier
+
+    """
+    if uid is None:
+        return False
+    if not isinstance(uid, str):
+        return False
+    try:
+        uuid.UUID(uid, version=1)
+    except ValueError:
+        return False
+    return True
+
+
 def run_tasks(
         task_func: typing.Callable,
         params: typing.Sequence[
