@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.7.0
+                v1.8.0
               </div>
             
           
@@ -347,6 +347,29 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Freezing Python packages failed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="is_uid"><a class="viewcode-back" href="../../../api-audeer.html#audeer.is_uid">[docs]</a><span class="k">def</span> <span class="nf">is_uid</span><span class="p">(</span><span class="n">uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if string is a unique identifier.</span>
+
+<span class="sd">    Unique identifiers can be generated with :func:`audeer.uid`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        uid: string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``True`` if string is a unique identifier</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">uid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
 <div class="viewcode-block" id="run_tasks"><a class="viewcode-back" href="../../../api-audeer.html#audeer.run_tasks">[docs]</a><span class="k">def</span> <span class="nf">run_tasks</span><span class="p">(</span>
         <span class="n">task_func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span>
@@ -604,7 +627,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/12/02 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/12/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
