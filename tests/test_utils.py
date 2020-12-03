@@ -158,6 +158,22 @@ def test_freeze_requirements(tmpdir):
         audeer.freeze_requirements(outfile)
 
 
+@pytest.mark.parametrize(
+    'uid, expected',
+    [
+        (audeer.uid(), True),
+        (audeer.uid(from_string='from string'), True),
+        (None, False),
+        (1234, False),
+        ('', False),
+        ('some random string', False),
+        (audeer.uid()[:-1], False),
+    ]
+)
+def test_is_uid(uid, expected):
+    assert audeer.is_uid(uid) == expected
+
+
 def power(a: int = 0, *, b: int = 1):
     return a ** b
 

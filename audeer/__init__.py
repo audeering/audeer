@@ -18,10 +18,11 @@ from audeer.core.utils import (
     deprecated_keyword_argument,
     flatten_list,
     freeze_requirements,
-    uid,
+    is_uid,
     run_tasks,
     run_worker_threads,
     to_list,
+    uid,
 )
 
 

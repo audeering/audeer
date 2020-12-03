@@ -59,6 +59,11 @@ freeze_requirements
 
 .. autofunction:: freeze_requirements
 
+is_uid
+------
+
+.. autofunction:: is_uid
+
 list_file_names
 ---------------
 
