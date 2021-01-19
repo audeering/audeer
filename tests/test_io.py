@@ -161,6 +161,7 @@ def test_common_directory(dirs, expected):
 
 
 @pytest.mark.parametrize('path,extension', [
+    ('', ''),
     ('~/.bashrc', ''),
     ('file.tar.gz', 'gz'),
     ('/a/c.d/g', ''),
@@ -169,6 +170,8 @@ def test_common_directory(dirs, expected):
     (b'../.././README.md', 'md'),
     ('folder/file.txt', 'txt'),
     (b'folder/file.txt', 'txt'),
+    ('test.WAV', 'WAV'),
+    ('test.WaV', 'WaV'),
 ])
 def test_file_extension(path, extension):
     ext = audeer.file_extension(path)
