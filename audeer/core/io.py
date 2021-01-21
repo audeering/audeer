@@ -233,6 +233,29 @@ def file_extension(
     return os.path.splitext(path)[-1][1:]
 
 
+def list_dir_names(
+        path: typing.Union[str, bytes],
+) -> typing.List:
+    """List of folder names located inside provided path.
+
+    Args:
+        path: path to directory
+
+    Returns:
+        list of paths to directories
+
+    Example:
+        >>> path = mkdir('path1/path2')
+        >>> dirs = list_dir_names('path1')
+        >>> os.path.basename(dirs[0])
+        'path2'
+
+    """
+    path = safe_path(path)
+    paths = [os.path.join(path, p) for p in os.listdir(path)]
+    return sorted([p for p in paths if os.path.isdir(p)])
+
+
 def list_file_names(
         path: typing.Union[str, bytes],
         *,
