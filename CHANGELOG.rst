@@ -7,6 +7,12 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.9.0 (2021-01-21)
+--------------------------
+
+* Added: ``audeer.list_dir_names()``
+
+
 Version 1.8.0 (2020-12-03)
 --------------------------
 
