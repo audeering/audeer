@@ -5,6 +5,7 @@ from audeer.core.io import (
     extract_archive,
     extract_archives,
     file_extension,
+    list_dir_names,
     list_file_names,
     mkdir,
     safe_path,

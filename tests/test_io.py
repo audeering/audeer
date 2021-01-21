@@ -179,6 +179,27 @@ def test_file_extension(path, extension):
     assert type(ext) is str
 
 
+@pytest.mark.parametrize('dir_list', [
+    [],
+    ['a', 'b', 'c'],
+    ['a'],
+])
+def test_list_dir_names(tmpdir, dir_list):
+    dir_tmp = tmpdir.mkdir('folder')
+    directories = []
+    for directory in dir_list:
+        directory = os.path.join(str(dir_tmp), directory)
+        directories.append(audeer.mkdir(directory))
+
+    for directory in directories:
+        assert os.path.isdir(directory)
+
+    path = os.path.join(str(dir_tmp), '.')
+    dirs = audeer.list_dir_names(path)
+    assert dirs == sorted(directories)
+    assert type(dirs) is list
+
+
 @pytest.mark.parametrize('files,path,filetype,file_list', [
     ([], '.', '', []),
     ([], '.', 'wav', []),
