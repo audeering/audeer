@@ -64,6 +64,11 @@ is_uid
 
 .. autofunction:: is_uid
 
+list_dir_names
+---------------
+
+.. autofunction:: list_dir_names
+
 list_file_names
 ---------------
 

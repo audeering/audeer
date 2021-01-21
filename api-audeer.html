@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.8.0
+                v1.9.0
               </div>
             
           
@@ -111,6 +111,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#format-display-message">format_display_message</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#freeze-requirements">freeze_requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#is-uid">is_uid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-dir-names">list_dir_names</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#list-file-names">list_file_names</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mkdir">mkdir</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#progress-bar">progress_bar</a></li>
@@ -165,6 +166,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -176,9 +179,9 @@
     
       <li class="wy-breadcrumbs-aside">
         
+          
             
-            
-              <a href="https://github.com/audeering/audeer/blob/v1.8.0/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/audeering/audeer/blob/v1.9.0/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -559,6 +562,33 @@ Usually a name like <code class="file docutils literal notranslate"><span class=
 </dd></dl>
 
 </div>
+<div class="section" id="list-dir-names">
+<h2>list_dir_names<a class="headerlink" href="#list-dir-names" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.list_dir_names">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">list_dir_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_dir_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.list_dir_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of folder names located inside provided path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to directory</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of paths to directories</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1/path2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dirs</span> <span class="o">=</span> <span class="n">list_dir_names</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">&#39;path2&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 <div class="section" id="list-file-names">
 <h2>list_file_names<a class="headerlink" href="#list-file-names" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -813,7 +843,7 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2020/12/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/01/21 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -847,7 +877,6 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
     
