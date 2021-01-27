@@ -1,15 +1,12 @@
 from subprocess import check_output
 
+import audeer
+
 
 # Project -----------------------------------------------------------------
 project = 'audeer'
 author = 'Hagen Wierstorf, Johannes Wagner'
-# The x.y.z version read from tags
-try:
-    version = check_output(['git', 'describe', '--tags', '--always'])
-    version = version.decode().strip()
-except Exception:
-    version = '<unknown>'
+version = audeer.version_from_git()
 title = '{} Documentation'.format(project)
 
 

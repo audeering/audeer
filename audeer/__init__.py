@@ -24,6 +24,7 @@ from audeer.core.utils import (
     run_worker_threads,
     to_list,
     uid,
+    version_from_git,
 )
 
 

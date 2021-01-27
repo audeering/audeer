@@ -1,4 +1,5 @@
 import os
+import subprocess
 import warnings
 
 import pytest
@@ -265,3 +266,11 @@ def test_uid(from_string):
         assert uid == uid2
     else:
         assert uid != uid2
+
+
+def test_version_from_git():
+    git = ['git', 'describe', '--tags', '--always']
+    expected_version = subprocess.check_output(git)
+    expected_version = expected_version.decode().strip()
+    version = audeer.version_from_git()
+    assert version == expected_version

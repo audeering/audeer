@@ -103,3 +103,8 @@ uid
 ---
 
 .. autofunction:: uid
+
+version_from_git
+----------------
+
+.. autofunction:: version_from_git
