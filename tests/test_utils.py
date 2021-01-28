@@ -272,5 +272,9 @@ def test_version_from_git():
     git = ['git', 'describe', '--tags', '--always']
     expected_version = subprocess.check_output(git)
     expected_version = expected_version.decode().strip()
-    version = audeer.version_from_git()
+    version = audeer.version_from_git(v=True)
+    if not expected_version.startswith('v'):
+        expected_version = f'v{expected_version}'
     assert version == expected_version
+    version = audeer.version_from_git(v=False)
+    assert version == expected_version[1:]

@@ -449,13 +449,20 @@ def uid(
     return uid
 
 
-def version_from_git() -> str:
+def version_from_git(
+        *,
+        v=True,
+) -> str:
     r"""Get a version number from current git ref.
 
     The version is inferred executing
     ``git describe --tags --always``.
     If the command fails,
     ``'<unknown>'`` is returned.
+
+    Args:
+        v: if ``True`` version starts always with ``v``,
+            otherwise it never starts with ``v``
 
     Returns:
         version number
@@ -471,4 +478,8 @@ def version_from_git() -> str:
         version = version.decode().strip()
     except Exception:  # pragma: nocover
         version = '<unknown>'
+    if version.startswith('v') and not v:  # pragma: nocover (only local)
+        version = version[1:]
+    elif not version.startswith('v') and v:  # pragma: nocover (only github)
+        version = f'v{version}'
     return version
