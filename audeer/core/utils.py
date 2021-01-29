@@ -15,7 +15,7 @@ import warnings
 import audeer
 
 
-__doctest_skip__ = ['git_tags', 'git_repo_version']
+__doctest_skip__ = ['git_repo_tags', 'git_repo_version']
 
 
 def deprecated(
@@ -182,7 +182,7 @@ def freeze_requirements(outfile: str):
             raise RuntimeError(f'Freezing Python packages failed: {err}')
 
 
-def git_tags(
+def git_repo_tags(
         *,
         v: bool = None,
 ) -> typing.List:
@@ -202,7 +202,7 @@ def git_tags(
         list of tags
 
     Example:
-        >>> git_tags()
+        >>> git_repo_tags()
         ['v1.0.0', 'v1.1.0', 'v2.0.0']
 
     """

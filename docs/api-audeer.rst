@@ -59,10 +59,10 @@ freeze_requirements
 
 .. autofunction:: freeze_requirements
 
-git_tags
---------
+git_repo_tags
+-------------
 
-.. autofunction:: git_tags
+.. autofunction:: git_repo_tags
 
 git_repo_version
 ----------------

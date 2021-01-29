@@ -159,18 +159,18 @@ def test_freeze_requirements(tmpdir):
         audeer.freeze_requirements(outfile)
 
 
-def test_git_tags():
+def test_git_repo_tags():
     git = ['git', 'tag']
     expected_tags = subprocess.check_output(git)
     expected_tags = expected_tags.decode().strip().split('\n')
-    tags = audeer.git_tags()
+    tags = audeer.git_repo_tags()
     assert tags == expected_tags
-    tags = audeer.git_tags(v=True)
+    tags = audeer.git_repo_tags(v=True)
     expected_tags = [
         f'v{t}' if not t.startswith('v') else t for t in expected_tags
     ]
     assert tags == expected_tags
-    tags = audeer.git_tags(v=False)
+    tags = audeer.git_repo_tags(v=False)
     expected_tags = [
         t[1:] if t.startswith('v') else t for t in expected_tags
     ]

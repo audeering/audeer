@@ -19,7 +19,7 @@ from audeer.core.utils import (
     deprecated_keyword_argument,
     flatten_list,
     freeze_requirements,
-    git_tags,
+    git_repo_tags,
     git_repo_version,
     is_uid,
     run_tasks,
