@@ -15,7 +15,7 @@ import warnings
 import audeer
 
 
-__doctest_skip__ = ['git_tags', 'version_from_git']
+__doctest_skip__ = ['git_tags', 'git_repo_version']
 
 
 def deprecated(
@@ -219,6 +219,42 @@ def git_tags(
     else:
         tags = [t[1:] if t.startswith('v') else t for t in tags]
     return tags
+
+
+def git_repo_version(
+        *,
+        v: bool = True,
+) -> str:
+    r"""Get a version number from current git ref.
+
+    The version is inferred executing
+    ``git describe --tags --always``.
+    If the command fails,
+    ``'<unknown>'`` is returned.
+
+    Args:
+        v: if ``True`` version starts always with ``v``,
+            otherwise it never starts with ``v``
+
+    Returns:
+        version number
+
+    Example:
+        >>> git_repo_version()
+        'v1.0.0'
+
+    """
+    try:
+        git = ['git', 'describe', '--tags', '--always']
+        version = subprocess.check_output(git)
+        version = version.decode().strip()
+    except Exception:  # pragma: nocover
+        version = '<unknown>'
+    if version.startswith('v') and not v:  # pragma: nocover (only local)
+        version = version[1:]
+    elif not version.startswith('v') and v:  # pragma: nocover (only github)
+        version = f'v{version}'
+    return version
 
 
 def is_uid(uid: str) -> bool:
@@ -486,39 +522,3 @@ def uid(
         uid = uid.hexdigest()
         uid = f'{uid[0:8]}-{uid[8:12]}-{uid[12:16]}-{uid[16:20]}-{uid[20:]}'
     return uid
-
-
-def version_from_git(
-        *,
-        v: bool = True,
-) -> str:
-    r"""Get a version number from current git ref.
-
-    The version is inferred executing
-    ``git describe --tags --always``.
-    If the command fails,
-    ``'<unknown>'`` is returned.
-
-    Args:
-        v: if ``True`` version starts always with ``v``,
-            otherwise it never starts with ``v``
-
-    Returns:
-        version number
-
-    Example:
-        >>> version_from_git()
-        'v1.0.0'
-
-    """
-    try:
-        git = ['git', 'describe', '--tags', '--always']
-        version = subprocess.check_output(git)
-        version = version.decode().strip()
-    except Exception:  # pragma: nocover
-        version = '<unknown>'
-    if version.startswith('v') and not v:  # pragma: nocover (only local)
-        version = version[1:]
-    elif not version.startswith('v') and v:  # pragma: nocover (only github)
-        version = f'v{version}'
-    return version

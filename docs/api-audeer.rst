@@ -64,6 +64,11 @@ git_tags
 
 .. autofunction:: git_tags
 
+git_repo_version
+----------------
+
+.. autofunction:: git_repo_version
+
 is_uid
 ------
 
@@ -108,8 +113,3 @@ uid
 ---
 
 .. autofunction:: uid
-
-version_from_git
-----------------
-
-.. autofunction:: version_from_git

@@ -20,12 +20,12 @@ from audeer.core.utils import (
     flatten_list,
     freeze_requirements,
     git_tags,
+    git_repo_version,
     is_uid,
     run_tasks,
     run_worker_threads,
     to_list,
     uid,
-    version_from_git,
 )
 
 
