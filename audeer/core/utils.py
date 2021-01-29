@@ -15,7 +15,7 @@ import warnings
 import audeer
 
 
-__doctest_skip__ = ['version_from_git']
+__doctest_skip__ = ['git_tags', 'version_from_git']
 
 
 def deprecated(
@@ -180,6 +180,45 @@ def freeze_requirements(outfile: str):
         _, err = p.communicate()
         if bool(p.returncode):
             raise RuntimeError(f'Freezing Python packages failed: {err}')
+
+
+def git_tags(
+        *,
+        v: bool = None,
+) -> typing.List:
+    r"""Get a list of available git tags.
+
+    The tags are inferred by executing
+    ``git tag`` in the current folder.
+    If the command fails,
+    an empty list is returned.
+
+    Args:
+        v: if ``True`` tags start always with ``v``,
+            if ``False`` they never start with ``v``,
+            if ``None`` the original tag names are returned
+
+    Returns:
+        list of tags
+
+    Example:
+        >>> git_tags()
+        ['v1.0.0', 'v1.1.0', 'v2.0.0']
+
+    """
+    try:
+        git = ['git', 'tag']
+        tags = subprocess.check_output(git)
+        tags = tags.decode().strip().split('\n')
+    except Exception:  # pragma: nocover
+        tags = []
+    if v is None:
+        return tags
+    if v:
+        tags = [f'v{t}' if not t.startswith('v') else t for t in tags]
+    else:
+        tags = [t[1:] if t.startswith('v') else t for t in tags]
+    return tags
 
 
 def is_uid(uid: str) -> bool:
@@ -451,7 +490,7 @@ def uid(
 
 def version_from_git(
         *,
-        v=True,
+        v: bool = True,
 ) -> str:
     r"""Get a version number from current git ref.
 

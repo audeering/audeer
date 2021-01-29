@@ -59,6 +59,11 @@ freeze_requirements
 
 .. autofunction:: freeze_requirements
 
+git_tags
+--------
+
+.. autofunction:: git_tags
+
 is_uid
 ------
 
