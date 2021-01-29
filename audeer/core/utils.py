@@ -15,6 +15,9 @@ import warnings
 import audeer
 
 
+__doctest_skip__ = ['version_from_git']
+
+
 def deprecated(
         *,
         removal_version: str,
@@ -444,3 +447,39 @@ def uid(
         uid = uid.hexdigest()
         uid = f'{uid[0:8]}-{uid[8:12]}-{uid[12:16]}-{uid[16:20]}-{uid[20:]}'
     return uid
+
+
+def version_from_git(
+        *,
+        v=True,
+) -> str:
+    r"""Get a version number from current git ref.
+
+    The version is inferred executing
+    ``git describe --tags --always``.
+    If the command fails,
+    ``'<unknown>'`` is returned.
+
+    Args:
+        v: if ``True`` version starts always with ``v``,
+            otherwise it never starts with ``v``
+
+    Returns:
+        version number
+
+    Example:
+        >>> version_from_git()
+        'v1.0.0'
+
+    """
+    try:
+        git = ['git', 'describe', '--tags', '--always']
+        version = subprocess.check_output(git)
+        version = version.decode().strip()
+    except Exception:  # pragma: nocover
+        version = '<unknown>'
+    if version.startswith('v') and not v:  # pragma: nocover (only local)
+        version = version[1:]
+    elif not version.startswith('v') and v:  # pragma: nocover (only github)
+        version = f'v{version}'
+    return version
