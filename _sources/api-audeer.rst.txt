@@ -59,6 +59,16 @@ freeze_requirements
 
 .. autofunction:: freeze_requirements
 
+git_repo_tags
+-------------
+
+.. autofunction:: git_repo_tags
+
+git_repo_version
+----------------
+
+.. autofunction:: git_repo_version
+
 is_uid
 ------
 
