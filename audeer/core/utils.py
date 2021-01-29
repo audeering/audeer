@@ -451,7 +451,7 @@ def uid(
 
 def version_from_git(
         *,
-        v=True,
+        v: bool = True,
 ) -> str:
     r"""Get a version number from current git ref.
 
