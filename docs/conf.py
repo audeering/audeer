@@ -6,7 +6,7 @@ import audeer
 # Project -----------------------------------------------------------------
 project = 'audeer'
 author = 'Hagen Wierstorf, Johannes Wagner'
-version = audeer.version_from_git()
+version = audeer.git_repo_version()
 title = '{} Documentation'.format(project)
 
 
