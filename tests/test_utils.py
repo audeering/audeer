@@ -403,6 +403,18 @@ def test_run_worker_threads(func, params, expected_output):
             ['1.0.0', '1.2', '1.1.1.1', '1.2.1', '1.2.0'],
             ['1.0.0', '1.1.1.1', '1.2', '1.2.0', '1.2.1'],
         ),
+        (
+            ['a.b.c', 'a.c.a', 'a.c.b'],
+            ['a.b.c', 'a.c.a', 'a.c.b'],
+        ),
+        pytest.param(
+            ['a.b.c', 'v1.0.0', '2.0.0'],
+            ['v1.0.0', '2.0.0', 'a.b.c'],
+            marks=pytest.mark.xfail(
+                raises=TypeError,
+                reason='Cannot mix string and integer versions',
+            ),
+        ),
     ]
 )
 def test_sort_versions(versions, expected_versions):
