@@ -399,6 +399,10 @@ def test_run_worker_threads(func, params, expected_output):
             ['v1.0.0', 'v1.0.1', 'v1.0.1-1-gdf29c4a'],
             ['v1.0.0', 'v1.0.1', 'v1.0.1-1-gdf29c4a'],
         ),
+        (
+            ['1.0.0', '1.2', '1.1.1.1', '1.2.1', '1.2.0'],
+            ['1.0.0', '1.1.1.1', '1.2', '1.2.0', '1.2.1'],
+        ),
     ]
 )
 def test_sort_versions(versions, expected_versions):
