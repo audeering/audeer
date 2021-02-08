@@ -1,7 +1,6 @@
 import concurrent.futures
 from collections.abc import Iterable
 import copy
-from distutils.version import LooseVersion
 import functools
 import hashlib
 import queue
