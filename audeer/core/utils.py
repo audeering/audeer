@@ -3,6 +3,7 @@ from collections.abc import Iterable
 import copy
 import functools
 import hashlib
+import inspect
 import queue
 import threading
 import typing
@@ -59,6 +60,54 @@ def deprecated(
             if alternative is not None:
                 message += f' Use {alternative} instead.'
             warnings.warn(message, category=UserWarning, stacklevel=2)
+            return func(*args, **kwargs)
+        return new_func
+    return _deprecated
+
+
+def deprecated_default_value(
+        *,
+        argument: str,
+        change_in_version: str,
+        new_default_value: typing.Any,
+) -> typing.Callable:
+    """Mark default value of keyword argument as deprecated.
+
+    Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
+    to mark the default value of a keyword argument as deprecated.
+    You have to specify the version
+    for which the default value will change
+    and the new default value.
+
+    Args:
+        argument: keyword argument
+        change_in_version: version the default value will change
+        new_default_value: new default value
+
+    Example:
+        >>> @deprecated_default_value(
+        ...     argument='foo',
+        ...     change_in_version='2.0.0',
+        ...     new_default_value='bar',
+        ... )
+        ... def deprecated_function(foo='foo'):
+        ...     pass
+    """
+    def _deprecated(func):
+        # functools.wraps preserves the name
+        # and docstring of the decorated code:
+        # https://docs.python.org/3/library/functools.html#functools.wraps
+        @functools.wraps(func)
+        def new_func(*args, **kwargs):
+            if argument not in kwargs:
+                signature = inspect.signature(func)
+                default_value = signature.parameters[argument].default
+                message = (
+                    f"The default of '{argument}' will change from "
+                    f"'{default_value}' to '{new_default_value}' "
+                    f'with version {change_in_version}.'
+                )
+                warnings.warn(message, category=UserWarning, stacklevel=2)
             return func(*args, **kwargs)
         return new_func
     return _deprecated

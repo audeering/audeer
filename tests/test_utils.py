@@ -59,6 +59,35 @@ def test_deprecated():
         assert expected_message == str(w[-1].message)
 
 
+def test_deprecated_default_value():
+
+    @audeer.deprecated_default_value(
+        argument='foo',
+        new_default_value='bar',
+        change_in_version='1.0.0',
+    )
+    def function_with_deprecated_default_value(*, foo='foo'):
+        return foo
+
+    expected_message = (
+        "The default of 'foo' will change from "
+        "'foo' to 'bar' "
+        "with version 1.0.0."
+    )
+    default_value = 'foo'
+    with pytest.warns(None):
+        # no warning if we set value
+        function_with_deprecated_default_value(foo='foo')
+        function_with_deprecated_default_value(foo='bar')
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        # Raise warning
+        assert function_with_deprecated_default_value() == default_value
+        assert issubclass(w[-1].category, UserWarning)
+        assert expected_message == str(w[-1].message)
+
+
 def test_deprecated_keyword_argument():
 
     @audeer.deprecated_keyword_argument(
@@ -257,7 +286,8 @@ def test_run_tasks(multiprocessing, num_workers, task_fun, params):
 def test_run_worker_threads(func, params, expected_output):
     num_workers = [None, 1, 2, 4, 5, 100]
     for n in num_workers:
-        output = audeer.run_worker_threads(func, params, num_workers=n)
+        with pytest.warns(UserWarning):
+            output = audeer.run_worker_threads(func, params, num_workers=n)
         assert output == expected_output
 
 
