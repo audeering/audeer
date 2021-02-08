@@ -261,8 +261,6 @@ def git_repo_version(
 def is_semantic_version(version: str) -> bool:
     r"""Check if given string represents a semenatic version.
 
-    If the version strings starts with a ``'v'`` it is ignored.
-
     Args:
         version: version string
 
