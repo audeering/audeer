@@ -306,6 +306,52 @@ def git_repo_version(
     return version
 
 
+def is_semantic_version(version: str) -> bool:
+    r"""Check if given string represents a `semantic version`_.
+
+    .. _semantic version: https://semver.org
+
+    Args:
+        version: version string
+
+    Returns:
+        ``True`` if version is a semantic version
+
+    Example:
+        >>> is_semantic_version('v1')
+        False
+        >>> is_semantic_version('1.2.3-r3')
+        True
+        >>> is_semantic_version('v0.7.2-9-g1572b37')
+        True
+
+    """
+    version_parts = version.split('.')
+
+    if len(version_parts) < 3:
+        return False
+
+    def is_integer_convertable(x):
+        try:
+            int(x)
+            return True
+        except ValueError:
+            return False
+
+    x, y, z = version_parts[:3]
+    # For Z, '-' are also allowed as separators
+    z = z.split('-')[0]
+    # Ignore starting 'v'
+    if x.startswith('v'):
+        x = x[1:]
+
+    for v in (x, y, z):
+        if not is_integer_convertable(v):
+            return False
+
+    return True
+
+
 def is_uid(uid: str) -> bool:
     r"""Check if string is a unique identifier.
 

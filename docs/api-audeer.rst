@@ -74,6 +74,11 @@ git_repo_version
 
 .. autofunction:: git_repo_version
 
+is_semantic_version
+-------------------
+
+.. autofunction:: is_semantic_version
+
 is_uid
 ------
 
