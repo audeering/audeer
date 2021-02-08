@@ -586,7 +586,7 @@ def sort_versions(
         versions: sequence with semantic version numbers
 
     Returns:
-        sorted list of version with highest as last entry
+        sorted list of versions with highest as last entry
 
     Example:
         >>> vers = [
