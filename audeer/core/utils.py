@@ -309,11 +309,10 @@ def git_repo_version(
 def is_semantic_version(version: str) -> bool:
     r"""Check if given string represents a `semantic version`_.
 
-    Your version is allowed to start with a ``v``.
-    Otherwise it has to comply to ``X.Y.Z``,
+    Your version has to comply to ``X.Y.Z`` or ``vX.Y.Z``,
     where X, Y, Z are all integers.
     Additional version information, like ``beta``
-    has to be added using a ``-``,
+    has to be added using a ``-`` or ``+``,
     e.g. ``X.Y.Z-beta``.
 
     .. _semantic version: https://semver.org
