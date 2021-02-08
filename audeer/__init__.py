@@ -16,6 +16,7 @@ from audeer.core.tqdm import (
 )
 from audeer.core.utils import (
     deprecated,
+    deprecated_default_value,
     deprecated_keyword_argument,
     flatten_list,
     freeze_requirements,

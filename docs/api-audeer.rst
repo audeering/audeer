@@ -24,6 +24,11 @@ deprecated
 
 .. autofunction:: deprecated
 
+deprecated_default_value
+------------------------
+
+.. autofunction:: deprecated_default_value
+
 deprecated_keyword_argument
 ---------------------------
 
