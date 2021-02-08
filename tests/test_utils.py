@@ -190,6 +190,59 @@ def test_git_repo_version():
 
 
 @pytest.mark.parametrize(
+    'version, is_semantic',
+    [
+        (
+            '1.0.0',
+            True,
+        ),
+        (
+            'v1.0.0',
+            True,
+        ),
+        (
+            '4.0.0-20200206.095534-3',
+            True,
+        ),
+        (
+            'v1.0.1-1-gdf29c4a',
+            True,
+        ),
+        (
+            '1',
+            False,
+        ),
+        (
+            'v1',
+            False,
+        ),
+        (
+            'v1.3-r3',
+            False,
+        ),
+        (
+            'v1.3.3-r3',
+            True,
+        ),
+        (
+            'a.b.c',
+            False,
+        ),
+        (
+            'va.b.c',
+            False,
+        ),
+        (
+            '1.2.a',
+            False,
+        ),
+    ]
+)
+def test_is_semantic_version(version, is_semantic):
+    assert audeer.is_semantic_version(version) == is_semantic
+
+
+@pytest.mark.parametrize(
     'uid, expected',
     [
         (audeer.uid(), True),
