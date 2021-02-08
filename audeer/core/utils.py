@@ -259,7 +259,9 @@ def git_repo_version(
 
 
 def is_semantic_version(version: str) -> bool:
-    r"""Check if given string represents a semenatic version.
+    r"""Check if given string represents a `semantic version`_.
+
+    .. _semantic version: https://semver.org
 
     Args:
         version: version string
