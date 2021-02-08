@@ -1,3 +1,4 @@
+from distutils.version import LooseVersion
 import concurrent.futures
 from collections.abc import Iterable
 import copy
@@ -571,6 +572,39 @@ def run_worker_threads(
         for t in threads:
             t.join()
     return results
+
+
+def sort_versions(
+        versions: List[str],
+) -> List:
+    """Sort version numbers.
+
+    If the version starts with ``'v'``
+    it is ignored during sorting.
+
+    Args:
+        versions: sequence with semantic version numbers
+
+    Returns:
+        sorted list of version with highest as last entry
+
+    Example:
+        >>> vers = [
+        ...     '2.0.0',
+        ...     '2.0.1',
+        ...     'v1.0.0',
+        ...     'v2.0.0-1-gdf29c4a',
+        ... ]
+        >>> sort_versions(vers)
+        ['v1.0.0', '2.0.0', 'v2.0.0-1-gdf29c4a', '2.0.1']
+
+    """
+    def sort_key(value):
+        if value.startswith('v'):
+            value = value[1:]
+        return LooseVersion(value)
+
+    return sorted(versions, key=sort_key)
 
 
 def to_list(x: Any):

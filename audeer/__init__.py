@@ -26,6 +26,7 @@ from audeer.core.utils import (
     is_uid,
     run_tasks,
     run_worker_threads,
+    sort_versions,
     to_list,
     uid,
 )
