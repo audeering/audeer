@@ -269,6 +269,14 @@ def test_git_repo_version():
             'v1.3.3.3-r3',
             False,
         ),
+        (
+            '1.0.0+20130313144700',
+            True,
+        ),
+        (
+            '1.0.0-alpha+001',
+            True,
+        ),
     ]
 )
 def test_is_semantic_version(version, is_semantic):
