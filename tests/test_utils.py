@@ -399,27 +399,47 @@ def test_run_worker_threads(func, params, expected_output):
             ['v1.0.0', 'v1.0.1', 'v1.0.1-1-gdf29c4a'],
             ['v1.0.0', 'v1.0.1', 'v1.0.1-1-gdf29c4a'],
         ),
+        # From https://github.com/postmarketOS/pmbootstrap/issues/342
         (
-            ['1.0.0', '1', 'v2', '1.2', '1.1.1.1', '1.2.1', '1.2.0'],
-            ['1', '1.0.0', '1.1.1.1', '1.2', '1.2.0', '1.2.1', 'v2'],
+            ['22.7.3.3-r1', '22.7.3-r1'],
+            ['22.7.3-r1', '22.7.3.3-r1'],
+        ),
+        (
+            ['1.0.0', '1.1.1.1', '1.2.1', '1.2.0'],
+            ['1.0.0', '1.1.1.1', '1.2.0', '1.2.1'],
         ),
         (
             ['a.b.c', 'a.c.a', 'a.c.b'],
             ['a.b.c', 'a.c.a', 'a.c.b'],
         ),
-        pytest.param(
-            ['a.b.c', 'v1.0.0', '2.0.0'],
-            ['v1.0.0', '2.0.0', 'a.b.c'],
-            marks=pytest.mark.xfail(
-                raises=TypeError,
-                reason='Cannot mix string and integer versions',
-            ),
+        (
+            ['vb.a.a', 'vb.a.b', 'vb.a.b-1-gdf29c4a'],
+            ['vb.a.a', 'vb.a.b', 'vb.a.b-1-gdf29c4a'],
         ),
     ]
 )
 def test_sort_versions(versions, expected_versions):
     sorted_versions = audeer.sort_versions(versions)
     assert sorted_versions == expected_versions
+
+
+@pytest.mark.parametrize(
+    'versions, error_message',
+    [
+        (
+            ['1'],
+            (
+                "All version numbers have to semantic versions, "
+                "following 'X.Y.Z', "
+                "where X, Y, Z are integers. "
+                "Your vesion is instead: '1'."
+            ),
+        ),
+    ]
+)
+def test_sort_versions_errors(versions, error_message):
+    with pytest.raises(ValueError, match=error_message):
+        audeer.sort_versions(versions)
 
 
 @pytest.mark.parametrize(

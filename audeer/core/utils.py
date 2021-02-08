@@ -588,6 +588,10 @@ def sort_versions(
     Returns:
         sorted list of versions with highest as last entry
 
+    Raises:
+        ValueError: if the version does not comply
+            with :func:`is_semantic_version`
+
     Example:
         >>> vers = [
         ...     '2.0.0',
@@ -599,6 +603,15 @@ def sort_versions(
         ['v1.0.0', '2.0.0', 'v2.0.0-1-gdf29c4a', '2.0.1']
 
     """
+    for version in versions:
+        if not is_semantic_version(version):
+            raise ValueError(
+                "All version numbers have to semantic versions, "
+                "following 'X.Y.Z', "
+                "where X, Y, Z are integers. "
+                f"Your vesion is instead: '{version}'."
+            )
+
     def sort_key(value):
         if value.startswith('v'):
             value = value[1:]
