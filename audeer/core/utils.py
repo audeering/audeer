@@ -309,6 +309,13 @@ def git_repo_version(
 def is_semantic_version(version: str) -> bool:
     r"""Check if given string represents a `semantic version`_.
 
+    Your version is allowed to start with a ``'v'``.
+    Otherwise it has to comply to ``'X.Y.Z'``,
+    where X, Y, Z are all integers.
+    Additional version information, like ``'beta'``
+    has to be added using a ``-``,
+    e.g. ``'X.Y.Z-beta'``.
+
     .. _semantic version: https://semver.org
 
     Args:
@@ -338,12 +345,17 @@ def is_semantic_version(version: str) -> bool:
         except ValueError:
             return False
 
-    x, y, z = version_parts[:3]
-    # For Z, '-' are also allowed as separators
-    z = z.split('-')[0]
+    x, y = version_parts[:2]
     # Ignore starting 'v'
     if x.startswith('v'):
         x = x[1:]
+
+    z = '.'.join(version_parts[2:])
+    # For Z, '-' are also allowed as separators,
+    # but you are not allowed to have an additonal '.' before
+    z = z.split('-')[0]
+    if len(z.split('.')) > 1:
+        return False
 
     for v in (x, y, z):
         if not is_integer_convertable(v):
