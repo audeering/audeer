@@ -408,14 +408,6 @@ def test_run_worker_threads(func, params, expected_output):
             ['1.0.0', '1.1.1.1', '1.2.1', '1.2.0'],
             ['1.0.0', '1.1.1.1', '1.2.0', '1.2.1'],
         ),
-        (
-            ['a.b.c', 'a.c.a', 'a.c.b'],
-            ['a.b.c', 'a.c.a', 'a.c.b'],
-        ),
-        (
-            ['vb.a.a', 'vb.a.b', 'vb.a.b-1-gdf29c4a'],
-            ['vb.a.a', 'vb.a.b', 'vb.a.b-1-gdf29c4a'],
-        ),
     ]
 )
 def test_sort_versions(versions, expected_versions):
