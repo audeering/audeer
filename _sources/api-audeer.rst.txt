@@ -24,6 +24,11 @@ deprecated
 
 .. autofunction:: deprecated
 
+deprecated_default_value
+------------------------
+
+.. autofunction:: deprecated_default_value
+
 deprecated_keyword_argument
 ---------------------------
 
@@ -69,6 +74,11 @@ git_repo_version
 
 .. autofunction:: git_repo_version
 
+is_semantic_version
+-------------------
+
+.. autofunction:: is_semantic_version
+
 is_uid
 ------
 
@@ -103,6 +113,11 @@ safe_path
 ---------
 
 .. autofunction:: safe_path
+
+sort_versions
+-------------
+
+.. autofunction:: sort_versions
 
 to_list
 -------

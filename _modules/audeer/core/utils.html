@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.10.0
+                v1.11.0
               </div>
             
           
@@ -171,8 +171,10 @@
 <span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">distutils.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">queue</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">typing</span>
@@ -229,6 +231,54 @@
             <span class="k">if</span> <span class="n">alternative</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; Use </span><span class="si">{</span><span class="n">alternative</span><span class="si">}</span><span class="s1"> instead.&#39;</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_func</span>
+    <span class="k">return</span> <span class="n">_deprecated</span></div>
+
+
+<div class="viewcode-block" id="deprecated_default_value"><a class="viewcode-back" href="../../../api-audeer.html#audeer.deprecated_default_value">[docs]</a><span class="k">def</span> <span class="nf">deprecated_default_value</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">argument</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">change_in_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">new_default_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Mark default value of keyword argument as deprecated.</span>
+
+<span class="sd">    Provide a `decorator &lt;https://www.python.org/dev/peps/pep-0318/&gt;`_</span>
+<span class="sd">    to mark the default value of a keyword argument as deprecated.</span>
+<span class="sd">    You have to specify the version</span>
+<span class="sd">    for which the default value will change</span>
+<span class="sd">    and the new default value.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        argument: keyword argument</span>
+<span class="sd">        change_in_version: version the default value will change</span>
+<span class="sd">        new_default_value: new default value</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; @deprecated_default_value(</span>
+<span class="sd">        ...     argument=&#39;foo&#39;,</span>
+<span class="sd">        ...     change_in_version=&#39;2.0.0&#39;,</span>
+<span class="sd">        ...     new_default_value=&#39;bar&#39;,</span>
+<span class="sd">        ... )</span>
+<span class="sd">        ... def deprecated_function(foo=&#39;foo&#39;):</span>
+<span class="sd">        ...     pass</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_deprecated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="c1"># functools.wraps preserves the name</span>
+        <span class="c1"># and docstring of the decorated code:</span>
+        <span class="c1"># https://docs.python.org/3/library/functools.html#functools.wraps</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">new_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">argument</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+                <span class="n">default_value</span> <span class="o">=</span> <span class="n">signature</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">argument</span><span class="p">]</span><span class="o">.</span><span class="n">default</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The default of &#39;</span><span class="si">{</span><span class="n">argument</span><span class="si">}</span><span class="s2">&#39; will change from &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">default_value</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">new_default_value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="sa">f</span><span class="s1">&#39;with version </span><span class="si">{</span><span class="n">change_in_version</span><span class="si">}</span><span class="s1">.&#39;</span>
+                <span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">new_func</span>
     <span class="k">return</span> <span class="n">_deprecated</span></div>
@@ -425,6 +475,64 @@
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># pragma: nocover (only github)</span>
         <span class="n">version</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="k">return</span> <span class="n">version</span></div>
+
+
+<div class="viewcode-block" id="is_semantic_version"><a class="viewcode-back" href="../../../api-audeer.html#audeer.is_semantic_version">[docs]</a><span class="k">def</span> <span class="nf">is_semantic_version</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if given string represents a `semantic version`_.</span>
+
+<span class="sd">    Your version has to comply to ``X.Y.Z`` or ``vX.Y.Z``,</span>
+<span class="sd">    where X, Y, Z are all integers.</span>
+<span class="sd">    Additional version information, like ``beta``</span>
+<span class="sd">    has to be added using a ``-`` or ``+``,</span>
+<span class="sd">    e.g. ``X.Y.Z-beta``.</span>
+
+<span class="sd">    .. _semantic version: https://semver.org</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        version: version string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``True`` if version is a semantic version</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; is_semantic_version(&#39;v1&#39;)</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; is_semantic_version(&#39;1.2.3-r3&#39;)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; is_semantic_version(&#39;v0.7.2-9-g1572b37&#39;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">version_parts</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">version_parts</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">is_integer_convertable</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">version_parts</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c1"># Ignore starting &#39;v&#39;</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="n">z</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">version_parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="c1"># For Z, &#39;-&#39; and &#39;+&#39; are also allowed as separators,</span>
+    <span class="c1"># but you are not allowed to have an additonal &#39;.&#39; before</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_integer_convertable</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="is_uid"><a class="viewcode-back" href="../../../api-audeer.html#audeer.is_uid">[docs]</a><span class="k">def</span> <span class="nf">is_uid</span><span class="p">(</span><span class="n">uid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -636,6 +744,52 @@
     <span class="k">return</span> <span class="n">results</span>
 
 
+<div class="viewcode-block" id="sort_versions"><a class="viewcode-back" href="../../../api-audeer.html#audeer.sort_versions">[docs]</a><span class="k">def</span> <span class="nf">sort_versions</span><span class="p">(</span>
+        <span class="n">versions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Sort version numbers.</span>
+
+<span class="sd">    If a version starts with ``v``,</span>
+<span class="sd">    the ``v`` is ignored during sorting.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        versions: sequence with semantic version numbers</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        sorted list of versions with highest as last entry</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if the version does not comply</span>
+<span class="sd">            with :func:`is_semantic_version`</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; vers = [</span>
+<span class="sd">        ...     &#39;2.0.0&#39;,</span>
+<span class="sd">        ...     &#39;2.0.1&#39;,</span>
+<span class="sd">        ...     &#39;v1.0.0&#39;,</span>
+<span class="sd">        ...     &#39;v2.0.0-1-gdf29c4a&#39;,</span>
+<span class="sd">        ... ]</span>
+<span class="sd">        &gt;&gt;&gt; sort_versions(vers)</span>
+<span class="sd">        [&#39;v1.0.0&#39;, &#39;2.0.0&#39;, &#39;v2.0.0-1-gdf29c4a&#39;, &#39;2.0.1&#39;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">version</span> <span class="ow">in</span> <span class="n">versions</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_semantic_version</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;All version numbers have to be semantic versions, &quot;</span>
+                <span class="s2">&quot;following &#39;X.Y.Z&#39;, &quot;</span>
+                <span class="s2">&quot;where X, Y, Z are integers. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;But your version is: &#39;</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">sort_key</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">versions</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="to_list"><a class="viewcode-back" href="../../../api-audeer.html#audeer.to_list">[docs]</a><span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert to list.</span>
 
@@ -707,7 +861,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/01/29 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/02/09 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

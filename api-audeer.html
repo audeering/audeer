@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.10.0
+                v1.11.0
               </div>
             
           
@@ -103,6 +103,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#common-directory">common_directory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#config">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#deprecated">deprecated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deprecated-default-value">deprecated_default_value</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#deprecated-keyword-argument">deprecated_keyword_argument</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extract-archive">extract_archive</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#extract-archives">extract_archives</a></li>
@@ -112,6 +113,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#freeze-requirements">freeze_requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#git-repo-tags">git_repo_tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#git-repo-version">git_repo_version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#is-semantic-version">is_semantic_version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#is-uid">is_uid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#list-dir-names">list_dir_names</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#list-file-names">list_file_names</a></li>
@@ -119,6 +121,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#progress-bar">progress_bar</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-tasks">run_tasks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#safe-path">safe_path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sort-versions">sort_versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#to-list">to_list</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#uid">uid</a></li>
 </ul>
@@ -183,7 +186,7 @@
         
           
             
-              <a href="https://github.com/audeering/audeer/blob/v1.10.0/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/audeering/audeer/blob/v1.11.0/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -326,6 +329,44 @@ Otherwise, choose the next major release (<cite>(X+1).Y.Z</cite>).</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@deprecated</span><span class="p">(</span><span class="n">removal_version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">)</span>
 <span class="gp">... </span><span class="k">def</span> <span class="nf">deprecated_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="deprecated-default-value">
+<h2>deprecated_default_value<a class="headerlink" href="#deprecated-default-value" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.deprecated_default_value">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">deprecated_default_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">argument</span></em>, <em class="sig-param"><span class="n">change_in_version</span></em>, <em class="sig-param"><span class="n">new_default_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#deprecated_default_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.deprecated_default_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark default value of keyword argument as deprecated.</p>
+<p>Provide a <a class="reference external" href="https://www.python.org/dev/peps/pep-0318/">decorator</a>
+to mark the default value of a keyword argument as deprecated.
+You have to specify the version
+for which the default value will change
+and the new default value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>argument</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – keyword argument</p></li>
+<li><p><strong>change_in_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – version the default value will change</p></li>
+<li><p><strong>new_default_value</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – new default value</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nd">@deprecated_default_value</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">argument</span><span class="o">=</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">change_in_version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">new_default_value</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">deprecated_function</span><span class="p">(</span><span class="n">foo</span><span class="o">=</span><span class="s1">&#39;foo&#39;</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">pass</span>
 </pre></div>
 </div>
@@ -604,6 +645,40 @@ otherwise it never starts with <code class="docutils literal notranslate"><span 
 </dd></dl>
 
 </div>
+<div class="section" id="is-semantic-version">
+<h2>is_semantic_version<a class="headerlink" href="#is-semantic-version" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.is_semantic_version">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">is_semantic_version</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">version</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#is_semantic_version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.is_semantic_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if given string represents a <a class="reference external" href="https://semver.org">semantic version</a>.</p>
+<p>Your version has to comply to <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> or <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code>,
+where X, Y, Z are all integers.
+Additional version information, like <code class="docutils literal notranslate"><span class="pre">beta</span></code>
+has to be added using a <code class="docutils literal notranslate"><span class="pre">-</span></code> or <code class="docutils literal notranslate"><span class="pre">+</span></code>,
+e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – version string</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if version is a semantic version</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_semantic_version</span><span class="p">(</span><span class="s1">&#39;v1&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_semantic_version</span><span class="p">(</span><span class="s1">&#39;1.2.3-r3&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_semantic_version</span><span class="p">(</span><span class="s1">&#39;v0.7.2-9-g1572b37&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 <div class="section" id="is-uid">
 <h2>is_uid<a class="headerlink" href="#is-uid" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -824,6 +899,43 @@ that will be displayed next to progress bar</p></li>
 </dd></dl>
 
 </div>
+<div class="section" id="sort-versions">
+<h2>sort_versions<a class="headerlink" href="#sort-versions" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audeer.sort_versions">
+<code class="sig-prename descclassname">audeer.</code><code class="sig-name descname">sort_versions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">versions</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#sort_versions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#audeer.sort_versions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort version numbers.</p>
+<p>If a version starts with <code class="docutils literal notranslate"><span class="pre">v</span></code>,
+the <code class="docutils literal notranslate"><span class="pre">v</span></code> is ignored during sorting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>versions</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – sequence with semantic version numbers</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>sorted list of versions with highest as last entry</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – if the version does not comply
+    with <a class="reference internal" href="#audeer.is_semantic_version" title="audeer.is_semantic_version"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_semantic_version()</span></code></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vers</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="s1">&#39;2.0.0&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;2.0.1&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;v1.0.0&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;v2.0.0-1-gdf29c4a&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sort_versions</span><span class="p">(</span><span class="n">vers</span><span class="p">)</span>
+<span class="go">[&#39;v1.0.0&#39;, &#39;2.0.0&#39;, &#39;v2.0.0-1-gdf29c4a&#39;, &#39;2.0.1&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
 <div class="section" id="to-list">
 <h2>to_list<a class="headerlink" href="#to-list" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -906,7 +1018,7 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/01/29 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/02/09 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
