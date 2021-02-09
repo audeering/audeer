@@ -424,7 +424,7 @@ def test_sort_versions(versions, expected_versions):
                 "All version numbers have to semantic versions, "
                 "following 'X.Y.Z', "
                 "where X, Y, Z are integers. "
-                "Your vesion is instead: '1'."
+                "But your vesion is: '1'."
             ),
         ),
     ]
