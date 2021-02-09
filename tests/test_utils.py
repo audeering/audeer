@@ -421,10 +421,10 @@ def test_sort_versions(versions, expected_versions):
         (
             ['1'],
             (
-                "All version numbers have to semantic versions, "
+                "All version numbers have to be semantic versions, "
                 "following 'X.Y.Z', "
                 "where X, Y, Z are integers. "
-                "But your vesion is: '1'."
+                "But your version is: '1'."
             ),
         ),
     ]

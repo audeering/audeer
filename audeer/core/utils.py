@@ -609,7 +609,7 @@ def sort_versions(
                 "All version numbers have to be semantic versions, "
                 "following 'X.Y.Z', "
                 "where X, Y, Z are integers. "
-                f"But your vesion is: '{version}'."
+                f"But your version is: '{version}'."
             )
 
     def sort_key(value):
