@@ -579,8 +579,8 @@ def sort_versions(
 ) -> List:
     """Sort version numbers.
 
-    If a version starts with ``'v'``,
-    the ``'v'`` is ignored during sorting.
+    If a version starts with ``v``,
+    the ``v`` is ignored during sorting.
 
     Args:
         versions: sequence with semantic version numbers
