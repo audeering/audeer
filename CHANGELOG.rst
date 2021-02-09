@@ -7,6 +7,14 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.11.0 (2021-02-09)
+---------------------------
+
+* Added: ``audeer.deprecated_default_value()``
+* Added: ``audeer.is_semantic_version()``
+* Added: ``audeer.sort_versions()``
+
+
 Version 1.10.0 (2021-01-29)
 ---------------------------
 
