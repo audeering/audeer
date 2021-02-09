@@ -606,7 +606,7 @@ def sort_versions(
     for version in versions:
         if not is_semantic_version(version):
             raise ValueError(
-                "All version numbers have to semantic versions, "
+                "All version numbers have to be semantic versions, "
                 "following 'X.Y.Z', "
                 "where X, Y, Z are integers. "
                 f"Your vesion is instead: '{version}'."
