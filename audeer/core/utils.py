@@ -1,6 +1,7 @@
 import concurrent.futures
 from collections.abc import Iterable
 import copy
+from distutils.version import LooseVersion
 import functools
 import hashlib
 import inspect
@@ -571,6 +572,52 @@ def run_worker_threads(
         for t in threads:
             t.join()
     return results
+
+
+def sort_versions(
+        versions: List[str],
+) -> List:
+    """Sort version numbers.
+
+    If a version starts with ``v``,
+    the ``v`` is ignored during sorting.
+
+    Args:
+        versions: sequence with semantic version numbers
+
+    Returns:
+        sorted list of versions with highest as last entry
+
+    Raises:
+        ValueError: if the version does not comply
+            with :func:`is_semantic_version`
+
+    Example:
+        >>> vers = [
+        ...     '2.0.0',
+        ...     '2.0.1',
+        ...     'v1.0.0',
+        ...     'v2.0.0-1-gdf29c4a',
+        ... ]
+        >>> sort_versions(vers)
+        ['v1.0.0', '2.0.0', 'v2.0.0-1-gdf29c4a', '2.0.1']
+
+    """
+    for version in versions:
+        if not is_semantic_version(version):
+            raise ValueError(
+                "All version numbers have to be semantic versions, "
+                "following 'X.Y.Z', "
+                "where X, Y, Z are integers. "
+                f"But your version is: '{version}'."
+            )
+
+    def sort_key(value):
+        if value.startswith('v'):
+            value = value[1:]
+        return LooseVersion(value)
+
+    return sorted(versions, key=sort_key)
 
 
 def to_list(x: Any):

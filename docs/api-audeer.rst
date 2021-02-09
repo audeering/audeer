@@ -114,6 +114,11 @@ safe_path
 
 .. autofunction:: safe_path
 
+sort_versions
+-------------
+
+.. autofunction:: sort_versions
+
 to_list
 -------
 

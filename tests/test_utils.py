@@ -357,6 +357,84 @@ def test_run_worker_threads(func, params, expected_output):
 
 
 @pytest.mark.parametrize(
+    'versions, expected_versions',
+    [
+        (
+            ['1.0.0', '3.0.0', '1.10.1', '1.2.0', '1.0.1'],
+            ['1.0.0', '1.0.1', '1.2.0', '1.10.1', '3.0.0'],
+        ),
+        (
+            [
+                '1.0.0-SNAPSHOT',
+                '4.0.0-20200206.095424-2',
+                '1.0.0',
+                '2.0.0-20200131.102442-1',
+                '3.0.0',
+                '3.1.0',
+                '4.0.0-20200206.095316-1',
+                '3.2.0',
+                '2.0.0-20200131.102728-2',
+                '3.3.0',
+                '3.4.0',
+                '4.0.0-20200206.095534-3',
+                '4.0.0',
+            ],
+            [
+                '1.0.0',
+                '1.0.0-SNAPSHOT',
+                '2.0.0-20200131.102442-1',
+                '2.0.0-20200131.102728-2',
+                '3.0.0',
+                '3.1.0',
+                '3.2.0',
+                '3.3.0',
+                '3.4.0',
+                '4.0.0',
+                '4.0.0-20200206.095316-1',
+                '4.0.0-20200206.095424-2',
+                '4.0.0-20200206.095534-3',
+            ],
+        ),
+        (
+            ['v1.0.0', 'v1.0.1', 'v1.0.1-1-gdf29c4a'],
+            ['v1.0.0', 'v1.0.1', 'v1.0.1-1-gdf29c4a'],
+        ),
+        # From https://github.com/postmarketOS/pmbootstrap/issues/342
+        (
+            ['22.7.3-r1.3', '22.7.3-r1'],
+            ['22.7.3-r1', '22.7.3-r1.3'],
+        ),
+        (
+            ['1.0.0', '1.1.1+1', '1.2.1', '1.2.0'],
+            ['1.0.0', '1.1.1+1', '1.2.0', '1.2.1'],
+        ),
+    ]
+)
+def test_sort_versions(versions, expected_versions):
+    sorted_versions = audeer.sort_versions(versions)
+    assert sorted_versions == expected_versions
+
+
+@pytest.mark.parametrize(
+    'versions, error_message',
+    [
+        (
+            ['1'],
+            (
+                "All version numbers have to be semantic versions, "
+                "following 'X.Y.Z', "
+                "where X, Y, Z are integers. "
+                "But your version is: '1'."
+            ),
+        ),
+    ]
+)
+def test_sort_versions_errors(versions, error_message):
+    with pytest.raises(ValueError, match=error_message):
+        audeer.sort_versions(versions)
+
+
+@pytest.mark.parametrize(
     'input,expected_output',
     [
         (1, [1]),
