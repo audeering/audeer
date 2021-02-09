@@ -5,16 +5,15 @@ from distutils.version import LooseVersion
 import functools
 import hashlib
 import inspect
+import multiprocessing
 import queue
+import subprocess
 import threading
 import typing
-import multiprocessing
-import subprocess
-from typing import Any, Callable, List, Sequence
 import uuid
 import warnings
 
-import audeer
+from audeer.core import tqdm
 
 
 __doctest_skip__ = ['git_repo_tags', 'git_repo_version']
@@ -24,7 +23,7 @@ def deprecated(
         *,
         removal_version: str,
         alternative: str = None
-) -> Callable:
+) -> typing.Callable:
     """Mark code as deprecated.
 
     Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
@@ -120,7 +119,7 @@ def deprecated_keyword_argument(
         removal_version: str,
         new_argument: str = None,
         mapping: typing.Callable = None,
-) -> Callable:
+) -> typing.Callable:
     r"""Mark keyword argument as deprecated.
 
     Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
@@ -178,8 +177,8 @@ def deprecated_keyword_argument(
 
 
 def flatten_list(
-        nested_list: List
-) -> List:
+        nested_list: typing.List
+) -> typing.List:
     """Flatten an arbitrarily nested list.
 
     Implemented without  recursion to avoid stack overflows.
@@ -435,7 +434,7 @@ def run_tasks(
 
     if num_workers == 1:  # sequential
 
-        with audeer.progress_bar(
+        with tqdm.progress_bar(
             params,
             total=len(params),
             desc=task_description,
@@ -451,7 +450,7 @@ def run_tasks(
         else:
             executor = concurrent.futures.ThreadPoolExecutor
         with executor(max_workers=num_workers) as pool:
-            with audeer.progress_bar(
+            with tqdm.progress_bar(
                     total=len(params),
                     desc=task_description,
                     disable=not progress_bar,
@@ -470,13 +469,13 @@ def run_tasks(
 
 @deprecated(removal_version='2.0.0', alternative='run_tasks')
 def run_worker_threads(
-        task_fun: Callable,
-        params: Sequence[Any] = None,
+        task_fun: typing.Callable,
+        params: typing.Sequence[typing.Any] = None,
         *,
         num_workers: int = None,
         progress_bar: bool = False,
         task_description: str = None
-) -> Sequence[Any]:  # pragma: no cover
+) -> typing.Sequence[typing.Any]:  # pragma: no cover
     r"""Run parallel tasks using worker threads.
 
     .. note:: Result values are returned in order of ``params``.
@@ -527,7 +526,7 @@ def run_worker_threads(
             class QueueWithProgbar(queue.Queue):
                 def __init__(self, num_tasks, maxsize=0):
                     super().__init__(maxsize)
-                    self.pbar = audeer.progress_bar(
+                    self.pbar = tqdm.progress_bar(
                         total=num_tasks,
                         desc=task_description,
                     )
@@ -575,8 +574,8 @@ def run_worker_threads(
 
 
 def sort_versions(
-        versions: List[str],
-) -> List:
+        versions: typing.List[str],
+) -> typing.List:
     """Sort version numbers.
 
     If a version starts with ``v``,
@@ -620,7 +619,7 @@ def sort_versions(
     return sorted(versions, key=sort_key)
 
 
-def to_list(x: Any):
+def to_list(x: typing.Any):
     """Convert to list.
 
     If an iterable is passed,
