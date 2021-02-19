@@ -100,10 +100,11 @@ def create_archive(
             will be relative to ``root``
         files: files to include in archive,
             relative to ``root``
-        archive: path to archive file
+        archive: path to archive file.
+            The archive type is determined by the file extension
 
     Raises:
-        RuntimeError: if archive does not end with ZIP or TAR.GZ
+        RuntimeError: if archive does not end with ``zip`` or ``tar.gz``
 
     """
     archive = safe_path(archive)
