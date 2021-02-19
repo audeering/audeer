@@ -2,6 +2,7 @@ from audeer.core.config import config
 from audeer.core.io import (
     basename_wo_ext,
     common_directory,
+    create_archive,
     extract_archive,
     extract_archives,
     file_extension,

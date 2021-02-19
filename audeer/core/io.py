@@ -11,6 +11,7 @@ from audeer.core.tqdm import (
     format_display_message,
     progress_bar,
 )
+from audeer.core.utils import to_list
 
 
 # Exclude common_directory example from doctest on Windows
@@ -84,6 +85,46 @@ def common_directory(
     return sep.join(x[0] for x in itertools.takewhile(
         all_names_equal, by_directory_levels,
     ))
+
+
+def create_archive(
+        root: str,
+        files: typing.Union[str, typing.Sequence[str]],
+        archive: str,
+):
+    r"""Create ZIP or TAR.GZ archive.
+
+    Args:
+        root: path to root folder of archive.
+            Path names inside the archive
+            will be relative to ``root``
+        files: files to include in archive,
+            relative to ``root``
+        archive: path to archive file.
+            The archive type is determined by the file extension
+
+    Raises:
+        RuntimeError: if archive does not end with ``zip`` or ``tar.gz``
+
+    """
+    archive = safe_path(archive)
+    mkdir(os.path.dirname(archive))
+    files = to_list(files)
+    if archive.endswith('zip'):
+        with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zf:
+            for file in files:
+                full_file = os.path.join(root, file)
+                zf.write(full_file, arcname=file)
+    elif archive.endswith('tar.gz'):
+        with tarfile.open(archive, "w:gz") as tf:
+            for file in files:
+                full_file = os.path.join(root, file)
+                tf.add(full_file, file)
+    else:
+        raise RuntimeError(
+            f'You can only create a ZIP or TAR.GZ archive, '
+            f'not {archive}'
+        )
 
 
 def extract_archive(

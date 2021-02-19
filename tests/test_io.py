@@ -35,14 +35,15 @@ def test_archives(tmpdir):
         src_file = f'{filename}.txt'
 
         zip_file = os.path.join(archive_folder, f'{filename}.zip')
-        with zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED) as zf:
-            zf.write(os.path.join(src_path, src_file), src_file)
+        audeer.create_archive(src_path, src_file, zip_file)
         zip_files.append(zip_file)
 
         tar_file = os.path.join(archive_folder, f'{filename}.tar.gz')
-        with tarfile.open(tar_file, "w:gz") as tf:
-            tf.add(os.path.join(src_path, src_file), src_file)
+        audeer.create_archive(src_path, src_file, tar_file)
         tar_files.append(tar_file)
+
+    with pytest.raises(RuntimeError):
+        audeer.create_archive(src_path, src_file, f'{filename}.7z')
 
     # Extract archives
     members = audeer.extract_archives(zip_files, destination)
