@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
+Version 1.12.0 (2021-02-22)
+---------------------------
+
+* Added: ``audeer.create_archive()``
+
 
 Version 1.11.0 (2021-02-09)
 ---------------------------
