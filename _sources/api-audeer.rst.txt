@@ -19,6 +19,11 @@ config
 .. autoclass:: config
     :members:
 
+create_archive
+--------------
+
+.. autofunction:: create_archive
+
 deprecated
 ----------
 

@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.11.0
+                v1.12.0
               </div>
             
           
@@ -142,13 +142,11 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -181,6 +179,7 @@
     <span class="n">format_display_message</span><span class="p">,</span>
     <span class="n">progress_bar</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">audeer.core.utils</span> <span class="kn">import</span> <span class="n">to_list</span>
 
 
 <span class="c1"># Exclude common_directory example from doctest on Windows</span>
@@ -254,6 +253,46 @@
     <span class="k">return</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">takewhile</span><span class="p">(</span>
         <span class="n">all_names_equal</span><span class="p">,</span> <span class="n">by_directory_levels</span><span class="p">,</span>
     <span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="create_archive"><a class="viewcode-back" href="../../../api-audeer.html#audeer.create_archive">[docs]</a><span class="k">def</span> <span class="nf">create_archive</span><span class="p">(</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">files</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">archive</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create ZIP or TAR.GZ archive.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root: path to root folder of archive.</span>
+<span class="sd">            Path names inside the archive</span>
+<span class="sd">            will be relative to ``root``</span>
+<span class="sd">        files: files to include in archive,</span>
+<span class="sd">            relative to ``root``</span>
+<span class="sd">        archive: path to archive file.</span>
+<span class="sd">            The archive type is determined by the file extension</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: if archive does not end with ``zip`` or ``tar.gz``</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">archive</span><span class="p">)</span>
+    <span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">archive</span><span class="p">))</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">to_list</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">archive</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;zip&#39;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">)</span> <span class="k">as</span> <span class="n">zf</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">full_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+                <span class="n">zf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">full_file</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">archive</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;tar.gz&#39;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="s2">&quot;w:gz&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tf</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="n">full_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">full_file</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;You can only create a ZIP or TAR.GZ archive, &#39;</span>
+            <span class="sa">f</span><span class="s1">&#39;not </span><span class="si">{</span><span class="n">archive</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="extract_archive"><a class="viewcode-back" href="../../../api-audeer.html#audeer.extract_archive">[docs]</a><span class="k">def</span> <span class="nf">extract_archive</span><span class="p">(</span>
@@ -542,7 +581,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/02/09 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/02/22 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -562,6 +601,7 @@
 
   </div>
   
+
 
 
   

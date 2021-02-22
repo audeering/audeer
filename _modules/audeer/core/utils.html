@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.11.0
+                v1.12.0
               </div>
             
           
@@ -142,13 +142,11 @@
 
 
 
-
-
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -175,16 +173,15 @@
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">import</span> <span class="nn">multiprocessing</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">audeer</span>
+<span class="kn">from</span> <span class="nn">audeer.core</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 
 <span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;git_repo_tags&#39;</span><span class="p">,</span> <span class="s1">&#39;git_repo_version&#39;</span><span class="p">]</span>
@@ -194,7 +191,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">removal_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">alternative</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Mark code as deprecated.</span>
 
 <span class="sd">    Provide a `decorator &lt;https://www.python.org/dev/peps/pep-0318/&gt;`_</span>
@@ -290,7 +287,7 @@
         <span class="n">removal_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">new_argument</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">mapping</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Mark keyword argument as deprecated.</span>
 
 <span class="sd">    Provide a `decorator &lt;https://www.python.org/dev/peps/pep-0318/&gt;`_</span>
@@ -348,8 +345,8 @@
 
 
 <div class="viewcode-block" id="flatten_list"><a class="viewcode-back" href="../../../api-audeer.html#audeer.flatten_list">[docs]</a><span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span>
-        <span class="n">nested_list</span><span class="p">:</span> <span class="n">List</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+        <span class="n">nested_list</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Flatten an arbitrarily nested list.</span>
 
 <span class="sd">    Implemented without  recursion to avoid stack overflows.</span>
@@ -605,7 +602,7 @@
 
     <span class="k">if</span> <span class="n">num_workers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># sequential</span>
 
-        <span class="k">with</span> <span class="n">audeer</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
+        <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
             <span class="n">params</span><span class="p">,</span>
             <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
             <span class="n">desc</span><span class="o">=</span><span class="n">task_description</span><span class="p">,</span>
@@ -621,7 +618,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span>
         <span class="k">with</span> <span class="n">executor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">audeer</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
+            <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
                     <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
                     <span class="n">desc</span><span class="o">=</span><span class="n">task_description</span><span class="p">,</span>
                     <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">,</span>
@@ -640,13 +637,13 @@
 
 <span class="nd">@deprecated</span><span class="p">(</span><span class="n">removal_version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;run_tasks&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">run_worker_threads</span><span class="p">(</span>
-        <span class="n">task_fun</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-        <span class="n">params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">task_fun</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">task_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run parallel tasks using worker threads.</span>
 
 <span class="sd">    .. note:: Result values are returned in order of ``params``.</span>
@@ -697,7 +694,7 @@
             <span class="k">class</span> <span class="nc">QueueWithProgbar</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">):</span>
                 <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_tasks</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
                     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">maxsize</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
                         <span class="n">total</span><span class="o">=</span><span class="n">num_tasks</span><span class="p">,</span>
                         <span class="n">desc</span><span class="o">=</span><span class="n">task_description</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -745,8 +742,8 @@
 
 
 <div class="viewcode-block" id="sort_versions"><a class="viewcode-back" href="../../../api-audeer.html#audeer.sort_versions">[docs]</a><span class="k">def</span> <span class="nf">sort_versions</span><span class="p">(</span>
-        <span class="n">versions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+        <span class="n">versions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Sort version numbers.</span>
 
 <span class="sd">    If a version starts with ``v``,</span>
@@ -790,7 +787,7 @@
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">versions</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_list"><a class="viewcode-back" href="../../../api-audeer.html#audeer.to_list">[docs]</a><span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<div class="viewcode-block" id="to_list"><a class="viewcode-back" href="../../../api-audeer.html#audeer.to_list">[docs]</a><span class="k">def</span> <span class="nf">to_list</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert to list.</span>
 
 <span class="sd">    If an iterable is passed,</span>
@@ -861,7 +858,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/02/09 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/02/22 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -881,6 +878,7 @@
 
   </div>
   
+
 
 
   
