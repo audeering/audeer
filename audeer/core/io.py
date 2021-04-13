@@ -276,6 +276,7 @@ def file_extension(
 
 def list_dir_names(
         path: typing.Union[str, bytes],
+        *,
         basename: bool = False,
 ) -> typing.List:
     """List of folder names located inside provided path.
