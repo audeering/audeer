@@ -296,10 +296,10 @@ def list_dir_names(
     """
     path = safe_path(path)
     paths = [os.path.join(path, p) for p in os.listdir(path)]
-    paths = sorted([p for p in paths if os.path.isdir(p)])
+    paths = [p for p in paths if os.path.isdir(p)]
     if basenames:
         paths = [os.path.basename(p) for p in paths]
-    return paths
+    return sorted(paths)
 
 
 def list_file_names(
@@ -334,11 +334,11 @@ def list_file_names(
             path = os.path.join(path, '')
         search_pattern = f'{path}*{filetype}'
     # Get list of files matching search pattern
-    file_names = sorted(glob(search_pattern))
+    file_names = glob(search_pattern)
     file_names = [f for f in file_names if not os.path.isdir(f)]
     if basenames:
         file_names = [os.path.basename(f) for f in file_names]
-    return file_names
+    return sorted(file_names)
 
 
 def mkdir(
