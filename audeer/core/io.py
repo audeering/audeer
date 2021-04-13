@@ -277,27 +277,27 @@ def file_extension(
 def list_dir_names(
         path: typing.Union[str, bytes],
         *,
-        basename: bool = False,
+        basenames: bool = False,
 ) -> typing.List:
     """List of folder names located inside provided path.
 
     Args:
         path: path to directory
-        basename: if ``True`` returns basename of directories
+        basenames: if ``True`` returns basenames of directories
 
     Returns:
         list of paths to directories
 
     Example:
         >>> path = mkdir('path1/path2')
-        >>> list_dir_names('path1', basename=True)
+        >>> list_dir_names('path1', basenames=True)
         ['path2']
 
     """
     path = safe_path(path)
     paths = [os.path.join(path, p) for p in os.listdir(path)]
     paths = sorted([p for p in paths if os.path.isdir(p)])
-    if basename:
+    if basenames:
         paths = [os.path.basename(p) for p in paths]
     return paths
 
@@ -306,14 +306,14 @@ def list_file_names(
         path: typing.Union[str, bytes],
         *,
         filetype: str = '',
-        basename: bool = False,
+        basenames: bool = False,
 ) -> typing.List:
     """List of file names inferred from provided path.
 
     Args:
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
-        basename: if ``True`` returns basename of directories
+        basenames: if ``True`` returns basenames of directories
 
     Returns:
         list of path(s) to file(s)
@@ -321,7 +321,7 @@ def list_file_names(
     Example:
         >>> path = mkdir('path1')
         >>> open(os.path.join(path, 'file1'), 'a').close()
-        >>> list_file_names(path, basename=True)
+        >>> list_file_names(path, basenames=True)
         ['file1']
 
     """
@@ -336,7 +336,7 @@ def list_file_names(
     # Get list of files matching search pattern
     file_names = sorted(glob(search_pattern))
     file_names = [f for f in file_names if not os.path.isdir(f)]
-    if basename:
+    if basenames:
         file_names = [os.path.basename(f) for f in file_names]
     return file_names
 
