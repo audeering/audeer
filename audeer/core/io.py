@@ -276,37 +276,44 @@ def file_extension(
 
 def list_dir_names(
         path: typing.Union[str, bytes],
+        *,
+        basenames: bool = False,
 ) -> typing.List:
     """List of folder names located inside provided path.
 
     Args:
         path: path to directory
+        basenames: if ``True`` returns basenames of directories
 
     Returns:
         list of paths to directories
 
     Example:
         >>> path = mkdir('path1/path2')
-        >>> dirs = list_dir_names('path1')
-        >>> os.path.basename(dirs[0])
-        'path2'
+        >>> list_dir_names('path1', basenames=True)
+        ['path2']
 
     """
     path = safe_path(path)
     paths = [os.path.join(path, p) for p in os.listdir(path)]
-    return sorted([p for p in paths if os.path.isdir(p)])
+    paths = [p for p in paths if os.path.isdir(p)]
+    if basenames:
+        paths = [os.path.basename(p) for p in paths]
+    return sorted(paths)
 
 
 def list_file_names(
         path: typing.Union[str, bytes],
         *,
-        filetype: str = ''
+        filetype: str = '',
+        basenames: bool = False,
 ) -> typing.List:
     """List of file names inferred from provided path.
 
     Args:
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
+        basenames: if ``True`` returns basenames of directories
 
     Returns:
         list of path(s) to file(s)
@@ -314,7 +321,7 @@ def list_file_names(
     Example:
         >>> path = mkdir('path1')
         >>> open(os.path.join(path, 'file1'), 'a').close()
-        >>> [os.path.basename(p) for p in list_file_names(path)]
+        >>> list_file_names(path, basenames=True)
         ['file1']
 
     """
@@ -327,8 +334,11 @@ def list_file_names(
             path = os.path.join(path, '')
         search_pattern = f'{path}*{filetype}'
     # Get list of files matching search pattern
-    file_names = sorted(glob(search_pattern))
-    return [f for f in file_names if not os.path.isdir(f)]
+    file_names = glob(search_pattern)
+    file_names = [f for f in file_names if not os.path.isdir(f)]
+    if basenames:
+        file_names = [os.path.basename(f) for f in file_names]
+    return sorted(file_names)
 
 
 def mkdir(
