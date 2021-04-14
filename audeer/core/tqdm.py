@@ -53,6 +53,31 @@ def progress_bar(
 ) -> tqdm:
     r"""Progress bar with optional text on the right.
 
+    If you want to show a constant description text
+    during presenting the prgress bar,
+    you can use it similar to:
+
+    .. code-block:: python
+
+        for file in progress_bar(files, desc='Copying'):
+            copy(file)
+
+    When the text should be updated as well,
+    you have to explicetly do that in each step:
+
+    .. code-block:: python
+
+        with progress_bar(files) as pbar:
+            for file in pbar:
+                desc = format_display_message(
+                    f'Copying {file}',
+                    pbar=True,
+                )
+                pbar.set_description_str(desc)
+                pbar.refresh()
+                copy(file)
+                pbar.update()
+
     Args:
         iterable: sequence to iterate through
         total: total number of iterations
