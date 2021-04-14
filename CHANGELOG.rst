@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
+Version 1.13.0 (2021-04-14)
+---------------------------
+
+* Added: ``basenames`` argument to ``audeer.list_dir_names()``
+* Added: ``basenames`` argument to ``audeer.list_file_names()``
+
+
 Version 1.12.0 (2021-02-22)
 ---------------------------
 
