@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.12.0
+                v1.13.0
               </div>
             
           
@@ -185,7 +185,7 @@
         
             
             
-              <a href="https://github.com/audeering/audeer/blob/v1.12.0/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/audeering/audeer/blob/v1.13.0/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -728,11 +728,14 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
 <h2>list_dir_names<a class="headerlink" href="#list-dir-names" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="audeer.list_dir_names">
-<code class="sig-prename descclassname"><span class="pre">audeer.</span></code><code class="sig-name descname"><span class="pre">list_dir_names</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_dir_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.list_dir_names" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">audeer.</span></code><code class="sig-name descname"><span class="pre">list_dir_names</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_dir_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.list_dir_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of folder names located inside provided path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to directory</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to directory</p></li>
+<li><p><strong>basenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> returns basenames of directories</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></p>
@@ -743,9 +746,8 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
 </dl>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1/path2&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dirs</span> <span class="o">=</span> <span class="n">list_dir_names</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">&#39;path2&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_dir_names</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;path2&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -755,13 +757,14 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
 <h2>list_file_names<a class="headerlink" href="#list-file-names" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="audeer.list_file_names">
-<code class="sig-prename descclassname"><span class="pre">audeer.</span></code><code class="sig-name descname"><span class="pre">list_file_names</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_file_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.list_file_names" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">audeer.</span></code><code class="sig-name descname"><span class="pre">list_file_names</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_file_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.list_file_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of file names inferred from provided path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file, directory or pattern</p></li>
 <li><p><strong>filetype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – optional consider only this filetype</p></li>
+<li><p><strong>basenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> returns basenames of directories</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -774,7 +777,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file1&#39;</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">[&#39;file1&#39;]</span>
 </pre></div>
 </div>
@@ -1042,7 +1045,7 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/02/22 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/04/14 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

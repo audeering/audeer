@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.12.0
+                v1.13.0
               </div>
             
           
@@ -444,37 +444,44 @@
 
 <div class="viewcode-block" id="list_dir_names"><a class="viewcode-back" href="../../../api-audeer.html#audeer.list_dir_names">[docs]</a><span class="k">def</span> <span class="nf">list_dir_names</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">basenames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;List of folder names located inside provided path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to directory</span>
+<span class="sd">        basenames: if ``True`` returns basenames of directories</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list of paths to directories</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; path = mkdir(&#39;path1/path2&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; dirs = list_dir_names(&#39;path1&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; os.path.basename(dirs[0])</span>
-<span class="sd">        &#39;path2&#39;</span>
+<span class="sd">        &gt;&gt;&gt; list_dir_names(&#39;path1&#39;, basenames=True)</span>
+<span class="sd">        [&#39;path2&#39;]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">p</span><span class="p">)])</span></div>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">basenames</span><span class="p">:</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="list_file_names"><a class="viewcode-back" href="../../../api-audeer.html#audeer.list_file_names">[docs]</a><span class="k">def</span> <span class="nf">list_file_names</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">filetype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">filetype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="n">basenames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;List of file names inferred from provided path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to file, directory or pattern</span>
 <span class="sd">        filetype: optional consider only this filetype</span>
+<span class="sd">        basenames: if ``True`` returns basenames of directories</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list of path(s) to file(s)</span>
@@ -482,7 +489,7 @@
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; path = mkdir(&#39;path1&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; open(os.path.join(path, &#39;file1&#39;), &#39;a&#39;).close()</span>
-<span class="sd">        &gt;&gt;&gt; [os.path.basename(p) for p in list_file_names(path)]</span>
+<span class="sd">        &gt;&gt;&gt; list_file_names(path, basenames=True)</span>
 <span class="sd">        [&#39;file1&#39;]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -495,8 +502,11 @@
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">search_pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">*</span><span class="si">{</span><span class="n">filetype</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="c1"># Get list of files matching search pattern</span>
-    <span class="n">file_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">))</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_names</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span></div>
+    <span class="n">file_names</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
+    <span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_names</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">basenames</span><span class="p">:</span>
+        <span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">file_names</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="mkdir"><a class="viewcode-back" href="../../../api-audeer.html#audeer.mkdir">[docs]</a><span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span>
@@ -581,7 +591,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/02/22 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/04/14 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
