@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.13.0
+                v1.13.1
               </div>
             
           
@@ -221,6 +221,31 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tqdm</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Progress bar with optional text on the right.</span>
 
+<span class="sd">    If you want to show a constant description text</span>
+<span class="sd">    during presenting the prgress bar,</span>
+<span class="sd">    you can use it similar to:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        for file in progress_bar(files, desc=&#39;Copying&#39;):</span>
+<span class="sd">            copy(file)</span>
+
+<span class="sd">    When the text should be updated as well,</span>
+<span class="sd">    you have to explicetly do that in each step:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        with progress_bar(files) as pbar:</span>
+<span class="sd">            for file in pbar:</span>
+<span class="sd">                desc = format_display_message(</span>
+<span class="sd">                    f&#39;Copying {file}&#39;,</span>
+<span class="sd">                    pbar=True,</span>
+<span class="sd">                )</span>
+<span class="sd">                pbar.set_description_str(desc)</span>
+<span class="sd">                pbar.refresh()</span>
+<span class="sd">                copy(file)</span>
+<span class="sd">                pbar.update()</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        iterable: sequence to iterate through</span>
 <span class="sd">        total: total number of iterations</span>
@@ -257,7 +282,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/04/14 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/04/15 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

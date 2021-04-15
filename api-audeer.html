@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.13.0
+                v1.13.1
               </div>
             
           
@@ -185,7 +185,7 @@
         
             
             
-              <a href="https://github.com/audeering/audeer/blob/v1.13.0/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/audeering/audeer/blob/v1.13.1/docs/api-audeer.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -834,6 +834,27 @@ explicitly to set them.</p>
 <dt id="audeer.progress_bar">
 <code class="sig-prename descclassname"><span class="pre">audeer.</span></code><code class="sig-name descname"><span class="pre">progress_bar</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/tqdm.html#progress_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.progress_bar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Progress bar with optional text on the right.</p>
+<p>If you want to show a constant description text
+during presenting the prgress bar,
+you can use it similar to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Copying&#39;</span><span class="p">):</span>
+    <span class="n">copy</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When the text should be updated as well,
+you have to explicetly do that in each step:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">progress_bar</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">format_display_message</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Copying </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">pbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span>
+        <span class="n">pbar</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
+        <span class="n">copy</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1045,7 +1066,7 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/04/14 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/04/15 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
