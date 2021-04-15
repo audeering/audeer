@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
+Version 1.13.1 (2021-04-15)
+---------------------------
+
+* Added: usage example to ``audeer.progress_bar()``
+
+
 Version 1.13.0 (2021-04-14)
 ---------------------------
 
