@@ -109,6 +109,11 @@ progress_bar
 
 .. autofunction:: progress_bar
 
+replace_file_extension
+----------------------
+
+.. autofunction:: replace_file_extension
+
 run_tasks
 ---------
 
