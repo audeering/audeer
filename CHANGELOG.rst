@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
+Version 1.14.0 (2021-04-26)
+---------------------------
+
+* Added: ``audeer.replace_file_extension()``
+
+
 Version 1.13.1 (2021-04-15)
 ---------------------------
 
