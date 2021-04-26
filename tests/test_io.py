@@ -338,3 +338,16 @@ def test_safe_path_symlinks(tmpdir):
     _, expected_path = os.path.splitdrive(expected_path)
     assert path == expected_path
     assert type(path) is str
+
+
+@pytest.mark.parametrize(
+    'path, new_extension, expected_path',
+    [
+        ('file.txt', 'wav', 'file.wav'),
+        ('test/file.txt', 'wav', 'test/file.wav'),
+        ('a/b/../file.txt', 'wav', 'a/b/../file.wav'),
+    ]
+)
+def test_replace_file_extension(path, new_extension, expected_path):
+    path = audeer.replace_file_extension(path, new_extension)
+    assert path == expected_path

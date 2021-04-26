@@ -384,6 +384,33 @@ def mkdir(
     return path
 
 
+def replace_file_extension(
+        path: typing.Union[str, bytes],
+        new_extension: str,
+) -> str:
+    """Replace file extension.
+
+    It uses :func:`audeer.file_extension`
+    to identify the current extension
+    and replaces it with ``new_extension``.
+
+    Args:
+        path: path to file
+        new_extension: new file extension
+
+    Returns:
+        path to file with new extension
+
+    Example:
+        >>> path = 'file.txt'
+        >>> replace_file_extension(path, 'rst')
+        'file.rst'
+
+    """
+    extension = file_extension(path)
+    return f'{path[:-len(extension)]}{new_extension}'
+
+
 def safe_path(
         path: typing.Union[str, bytes]
 ) -> str:

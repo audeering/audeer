@@ -9,6 +9,7 @@ from audeer.core.io import (
     list_dir_names,
     list_file_names,
     mkdir,
+    replace_file_extension,
     safe_path,
 )
 from audeer.core.tqdm import (
