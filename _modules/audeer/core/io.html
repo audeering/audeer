@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.13.1
+                v1.14.0
               </div>
             
           
@@ -552,6 +552,33 @@
     <span class="k">return</span> <span class="n">path</span></div>
 
 
+<div class="viewcode-block" id="replace_file_extension"><a class="viewcode-back" href="../../../api-audeer.html#audeer.replace_file_extension">[docs]</a><span class="k">def</span> <span class="nf">replace_file_extension</span><span class="p">(</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
+        <span class="n">new_extension</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Replace file extension.</span>
+
+<span class="sd">    It uses :func:`audeer.file_extension`</span>
+<span class="sd">    to identify the current extension</span>
+<span class="sd">    and replaces it with ``new_extension``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path: path to file</span>
+<span class="sd">        new_extension: new file extension</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        path to file with new extension</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; path = &#39;file.txt&#39;</span>
+<span class="sd">        &gt;&gt;&gt; replace_file_extension(path, &#39;rst&#39;)</span>
+<span class="sd">        &#39;file.rst&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">extension</span> <span class="o">=</span> <span class="n">file_extension</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">extension</span><span class="p">)]</span><span class="si">}{</span><span class="n">new_extension</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+
 <div class="viewcode-block" id="safe_path"><a class="viewcode-back" href="../../../api-audeer.html#audeer.safe_path">[docs]</a><span class="k">def</span> <span class="nf">safe_path</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -591,7 +618,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/04/15 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/04/26 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
