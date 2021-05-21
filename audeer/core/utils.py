@@ -396,7 +396,7 @@ def run_tasks(
             ]
         ],
         *,
-        num_workers: int = None,
+        num_workers: int = 1,
         multiprocessing: bool = False,
         progress_bar: bool = False,
         task_description: str = None
