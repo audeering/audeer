@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
+Version 1.15.0 (2021-05-21)
+---------------------------
+
+* Changed: default value of ``num_workers`` argument
+  for ``audeer.tun_tasks()`` changed from ``None``
+  to ``1``
+
+
 Version 1.14.0 (2021-04-26)
 ---------------------------
 
