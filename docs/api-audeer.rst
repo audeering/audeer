@@ -39,6 +39,11 @@ deprecated_keyword_argument
 
 .. autofunction:: deprecated_keyword_argument
 
+download_url
+------------
+
+.. autofunction:: download_url
+
 extract_archive
 ---------------
 

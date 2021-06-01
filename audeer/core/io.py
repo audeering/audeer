@@ -5,6 +5,7 @@ import platform
 import shutil
 import tarfile
 import typing
+import urllib.request
 import zipfile
 
 from audeer.core.tqdm import (
@@ -125,6 +126,52 @@ def create_archive(
             f'You can only create a ZIP or TAR.GZ archive, '
             f'not {archive}'
         )
+
+
+def download_url(
+        url: str,
+        destination: str,
+        *,
+        force_download: bool = False,
+        verbose: bool = False,
+) -> str:
+    r"""Download URL to destination.
+
+    Args:
+        url: URL of file to download
+        destination: file or folder to store file locally
+        force_download: if ``True`` forces the artifact to be downloaded
+            even if it exists locally already
+        verbose: if ``True`` a progress bar is shown
+
+    Returns:
+        path of locally stored file
+
+    Example:
+        >>> dst = download_url('https://audeering.github.io/audeer/_static/favicon.png', '.')
+        >>> os.path.basename(dst)
+        'favicon.png'
+
+    """  # noqa: E501
+    destination = safe_path(destination)
+    if os.path.isdir(destination):
+        destination = os.path.join(destination, os.path.basename(url))
+    if os.path.exists(destination) and not force_download:
+        return destination
+
+    with progress_bar(
+            disable=not verbose,
+            desc=format_display_message(f'Downloading {url}', pbar=True),
+    ) as pbar:
+
+        def bar_update(block_num, block_size, total_size):
+            if pbar.total is None and total_size:
+                pbar.total = total_size
+            pbar.update(block_size)
+
+        urllib.request.urlretrieve(url, destination, reporthook=bar_update)
+
+    return destination
 
 
 def extract_archive(
