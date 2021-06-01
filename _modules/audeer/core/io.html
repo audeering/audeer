@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.15.0
+                v1.16.0
               </div>
             
           
@@ -175,6 +175,7 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
 <span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 
 <span class="kn">from</span> <span class="nn">audeer.core.tqdm</span> <span class="kn">import</span> <span class="p">(</span>
@@ -295,6 +296,52 @@
             <span class="sa">f</span><span class="s1">&#39;You can only create a ZIP or TAR.GZ archive, &#39;</span>
             <span class="sa">f</span><span class="s1">&#39;not </span><span class="si">{</span><span class="n">archive</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="download_url"><a class="viewcode-back" href="../../../api-audeer.html#audeer.download_url">[docs]</a><span class="k">def</span> <span class="nf">download_url</span><span class="p">(</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">force_download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Download URL to destination.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url: URL of file to download</span>
+<span class="sd">        destination: file or folder to store file locally</span>
+<span class="sd">        force_download: if ``True`` forces the artifact to be downloaded</span>
+<span class="sd">            even if it exists locally already</span>
+<span class="sd">        verbose: if ``True`` a progress bar is shown</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        path of locally stored file</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; dst = download_url(&#39;https://audeering.github.io/audeer/_static/favicon.png&#39;, &#39;.&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(dst)</span>
+<span class="sd">        &#39;favicon.png&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+    <span class="n">destination</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">url</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force_download</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">destination</span>
+
+    <span class="k">with</span> <span class="n">progress_bar</span><span class="p">(</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">verbose</span><span class="p">,</span>
+            <span class="n">desc</span><span class="o">=</span><span class="n">format_display_message</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Downloading </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pbar</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">bar_update</span><span class="p">(</span><span class="n">block_num</span><span class="p">,</span> <span class="n">block_size</span><span class="p">,</span> <span class="n">total_size</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pbar</span><span class="o">.</span><span class="n">total</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">total_size</span><span class="p">:</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">total_size</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">block_size</span><span class="p">)</span>
+
+        <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">reporthook</span><span class="o">=</span><span class="n">bar_update</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">destination</span></div>
 
 
 <div class="viewcode-block" id="extract_archive"><a class="viewcode-back" href="../../../api-audeer.html#audeer.extract_archive">[docs]</a><span class="k">def</span> <span class="nf">extract_archive</span><span class="p">(</span>
@@ -620,7 +667,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/05/21 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/06/01 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
