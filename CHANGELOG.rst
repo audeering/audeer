@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
+
+Version 1.16.0 (2021-06-01)
+---------------------------
+
+* Added: ``audeer.download_url()``
+
+
 Version 1.15.0 (2021-05-21)
 ---------------------------
 
