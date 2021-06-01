@@ -161,6 +161,14 @@ def test_common_directory(dirs, expected):
     assert common == expected
 
 
+def test_download_url(tmpdir):
+    url = 'https://audeering.github.io/audeer/_static/favicon.png'
+    audeer.download_url(url, tmpdir)
+    audeer.download_url(url, tmpdir)
+    dst = audeer.download_url(url, tmpdir, force_download=True)
+    assert dst == os.path.join(tmpdir, os.path.basename(url))
+
+
 @pytest.mark.parametrize('path,extension', [
     ('', ''),
     ('~/.bashrc', ''),

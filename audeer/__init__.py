@@ -3,6 +3,7 @@ from audeer.core.io import (
     basename_wo_ext,
     common_directory,
     create_archive,
+    download_url,
     extract_archive,
     extract_archives,
     file_extension,
