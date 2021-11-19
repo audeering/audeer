@@ -5,8 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Changelog &mdash; audeer Documentation</title>
@@ -58,7 +57,7 @@
 
           <a href="index.html">
           
-            <img src="_static/images/audeering.svg" class="logo" alt="audEERING"/>
+            <img src="_static/images/audeering.png" class="logo" alt="audEERING"/>
           
           
             <span> audeer</span>
@@ -69,7 +68,7 @@
             
             
               <div class="version">
-                v1.16.0
+                v1.17.0
               </div>
             
           
@@ -93,20 +92,21 @@
               
             
             
-              <p class="caption"><span class="caption-text">Getting started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api-audeer.html">audeer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Development</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-17-0-2021-11-19">Version 1.17.0 (2021-11-19)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-16-0-2021-06-01">Version 1.16.0 (2021-06-01)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-15-0-2021-05-21">Version 1.15.0 (2021-05-21)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-14-0-2021-04-26">Version 1.14.0 (2021-04-26)</a></li>
@@ -187,151 +187,127 @@
         
         <div class="rst-content">
         
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li>Changelog</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
-            
-              <a href="https://github.com/audeering/audeer/blob/v1.16.0/docs/changelog.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
+              <a href="https://github.com/audeering/audeer/" class="fa fa-github"> GitHub</a>
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="changelog">
+  <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<section id="version-1-16-0-2021-06-01">
+<div class="section" id="version-1-17-0-2021-11-19">
+<h2>Version 1.17.0 (2021-11-19)<a class="headerlink" href="#version-1-17-0-2021-11-19" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.rmdir()</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="version-1-16-0-2021-06-01">
 <h2>Version 1.16.0 (2021-06-01)<a class="headerlink" href="#version-1-16-0-2021-06-01" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.download_url()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-15-0-2021-05-21">
+</div>
+<div class="section" id="version-1-15-0-2021-05-21">
 <h2>Version 1.15.0 (2021-05-21)<a class="headerlink" href="#version-1-15-0-2021-05-21" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed: default value of <code class="docutils literal notranslate"><span class="pre">num_workers</span></code> argument
 for <code class="docutils literal notranslate"><span class="pre">audeer.tun_tasks()</span></code> changed from <code class="docutils literal notranslate"><span class="pre">None</span></code>
 to <code class="docutils literal notranslate"><span class="pre">1</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-14-0-2021-04-26">
+</div>
+<div class="section" id="version-1-14-0-2021-04-26">
 <h2>Version 1.14.0 (2021-04-26)<a class="headerlink" href="#version-1-14-0-2021-04-26" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.replace_file_extension()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-13-1-2021-04-15">
+</div>
+<div class="section" id="version-1-13-1-2021-04-15">
 <h2>Version 1.13.1 (2021-04-15)<a class="headerlink" href="#version-1-13-1-2021-04-15" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: usage example to <code class="docutils literal notranslate"><span class="pre">audeer.progress_bar()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-13-0-2021-04-14">
+</div>
+<div class="section" id="version-1-13-0-2021-04-14">
 <h2>Version 1.13.0 (2021-04-14)<a class="headerlink" href="#version-1-13-0-2021-04-14" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">basenames</span></code> argument to <code class="docutils literal notranslate"><span class="pre">audeer.list_dir_names()</span></code></p></li>
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">basenames</span></code> argument to <code class="docutils literal notranslate"><span class="pre">audeer.list_file_names()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-12-0-2021-02-22">
+</div>
+<div class="section" id="version-1-12-0-2021-02-22">
 <h2>Version 1.12.0 (2021-02-22)<a class="headerlink" href="#version-1-12-0-2021-02-22" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.create_archive()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-11-0-2021-02-09">
+</div>
+<div class="section" id="version-1-11-0-2021-02-09">
 <h2>Version 1.11.0 (2021-02-09)<a class="headerlink" href="#version-1-11-0-2021-02-09" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.deprecated_default_value()</span></code></p></li>
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.is_semantic_version()</span></code></p></li>
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.sort_versions()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-10-0-2021-01-29">
+</div>
+<div class="section" id="version-1-10-0-2021-01-29">
 <h2>Version 1.10.0 (2021-01-29)<a class="headerlink" href="#version-1-10-0-2021-01-29" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.git_repo_version()</span></code></p></li>
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.git_repo_tags()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-9-0-2021-01-21">
+</div>
+<div class="section" id="version-1-9-0-2021-01-21">
 <h2>Version 1.9.0 (2021-01-21)<a class="headerlink" href="#version-1-9-0-2021-01-21" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.list_dir_names()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-8-0-2020-12-03">
+</div>
+<div class="section" id="version-1-8-0-2020-12-03">
 <h2>Version 1.8.0 (2020-12-03)<a class="headerlink" href="#version-1-8-0-2020-12-03" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <a class="reference internal" href="api-audeer.html#audeer.is_uid" title="audeer.is_uid"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.is_uid()</span></code></a></p></li>
 </ul>
-</section>
-<section id="version-1-7-0-2020-12-02">
+</div>
+<div class="section" id="version-1-7-0-2020-12-02">
 <h2>Version 1.7.0 (2020-12-02)<a class="headerlink" href="#version-1-7-0-2020-12-02" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <a class="reference internal" href="api-audeer.html#audeer.deprecated_keyword_argument" title="audeer.deprecated_keyword_argument"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.deprecated_keyword_argument()</span></code></a> decorator</p></li>
 <li><p>Changed: <a class="reference internal" href="api-audeer.html#audeer.deprecated" title="audeer.deprecated"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.deprecated()</span></code></a> raises now a <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code>
 instead of <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-6-7-2020-11-18">
+</div>
+<div class="section" id="version-1-6-7-2020-11-18">
 <h2>Version 1.6.7 (2020-11-18)<a class="headerlink" href="#version-1-6-7-2020-11-18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed: return member filenames of archives in
 <a class="reference internal" href="api-audeer.html#audeer.extract_archive" title="audeer.extract_archive"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.extract_archive()</span></code></a>
 and <a class="reference internal" href="api-audeer.html#audeer.extract_archives" title="audeer.extract_archives"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.extract_archives()</span></code></a></p></li>
 </ul>
-</section>
-<section id="version-1-6-6-2020-10-27">
+</div>
+<div class="section" id="version-1-6-6-2020-10-27">
 <h2>Version 1.6.6 (2020-10-27)<a class="headerlink" href="#version-1-6-6-2020-10-27" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: multi-line statements in Github releases</p></li>
 </ul>
-</section>
-<section id="version-1-6-5-2020-10-27">
+</div>
+<div class="section" id="version-1-6-5-2020-10-27">
 <h2>Version 1.6.5 (2020-10-27)<a class="headerlink" href="#version-1-6-5-2020-10-27" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: long description in <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code>,
 which is included on pypi.org</p></li>
 <li><p>Fixed: multi-line statements in Github releases</p></li>
 </ul>
-</section>
-<section id="version-1-6-4-2020-10-23">
+</div>
+<div class="section" id="version-1-6-4-2020-10-23">
 <h2>Version 1.6.4 (2020-10-23)<a class="headerlink" href="#version-1-6-4-2020-10-23" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: run tests on Windows</p></li>
@@ -339,70 +315,70 @@ which is included on pypi.org</p></li>
 and code coverage</p></li>
 <li><p>Fixed: “Edit on Github” link in docs</p></li>
 </ul>
-</section>
-<section id="version-1-6-3-2020-10-22">
+</div>
+<div class="section" id="version-1-6-3-2020-10-22">
 <h2>Version 1.6.3 (2020-10-22)<a class="headerlink" href="#version-1-6-3-2020-10-22" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: release instructions for Github</p></li>
 </ul>
-</section>
-<section id="version-1-6-2-2020-10-21">
+</div>
+<div class="section" id="version-1-6-2-2020-10-21">
 <h2>Version 1.6.2 (2020-10-21)<a class="headerlink" href="#version-1-6-2-2020-10-21" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed: host documentation on Github pages</p></li>
 </ul>
-</section>
-<section id="version-1-6-1-2020-10-20">
+</div>
+<div class="section" id="version-1-6-1-2020-10-20">
 <h2>Version 1.6.1 (2020-10-20)<a class="headerlink" href="#version-1-6-1-2020-10-20" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: license specification in Python package</p></li>
 </ul>
-</section>
-<section id="version-1-6-0-2020-10-20">
+</div>
+<div class="section" id="version-1-6-0-2020-10-20">
 <h2>Version 1.6.0 (2020-10-20)<a class="headerlink" href="#version-1-6-0-2020-10-20" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: first public release on Github</p></li>
 </ul>
-</section>
-<section id="version-1-5-1-2020-09-28">
+</div>
+<div class="section" id="version-1-5-1-2020-09-28">
 <h2>Version 1.5.1 (2020-09-28)<a class="headerlink" href="#version-1-5-1-2020-09-28" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: return actual path for symbolic links with <a class="reference internal" href="api-audeer.html#audeer.safe_path" title="audeer.safe_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.safe_path()</span></code></a>
-by using <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.realpath" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.realpath()</span></code></a> instead of <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.abspath" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.abspath()</span></code></a></p></li>
+by using <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.realpath" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.realpath()</span></code></a> instead of <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.abspath" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.abspath()</span></code></a></p></li>
 <li><p>Fixed: clean up test scripts and remove obsolete <code class="file docutils literal notranslate"><span class="pre">tests/test_audeer.py</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-5-0-2020-09-22">
+</div>
+<div class="section" id="version-1-5-0-2020-09-22">
 <h2>Version 1.5.0 (2020-09-22)<a class="headerlink" href="#version-1-5-0-2020-09-22" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <a class="reference internal" href="api-audeer.html#audeer.common_directory" title="audeer.common_directory"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.common_directory()</span></code></a></p></li>
 </ul>
-</section>
-<section id="version-1-4-0-2020-09-21">
+</div>
+<div class="section" id="version-1-4-0-2020-09-21">
 <h2>Version 1.4.0 (2020-09-21)<a class="headerlink" href="#version-1-4-0-2020-09-21" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <a class="reference internal" href="api-audeer.html#audeer.run_tasks" title="audeer.run_tasks"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.run_tasks()</span></code></a></p></li>
 </ul>
-</section>
-<section id="version-1-3-0-2020-09-08">
+</div>
+<div class="section" id="version-1-3-0-2020-09-08">
 <h2>Version 1.3.0 (2020-09-08)<a class="headerlink" href="#version-1-3-0-2020-09-08" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <a class="reference internal" href="api-audeer.html#audeer.uid" title="audeer.uid"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.uid()</span></code></a></p></li>
 </ul>
-</section>
-<section id="version-1-2-3-2020-09-01">
+</div>
+<div class="section" id="version-1-2-3-2020-09-01">
 <h2>Version 1.2.3 (2020-09-01)<a class="headerlink" href="#version-1-2-3-2020-09-01" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed: use <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">project_urls</span></code> in <code class="file docutils literal notranslate"><span class="pre">setup.cfg</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-2-2-2020-08-28">
+</div>
+<div class="section" id="version-1-2-2-2020-08-28">
 <h2>Version 1.2.2 (2020-08-28)<a class="headerlink" href="#version-1-2-2-2020-08-28" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed: switch home page of package to documentation page</p></li>
 </ul>
-</section>
-<section id="version-1-2-1-2020-08-18">
+</div>
+<div class="section" id="version-1-2-1-2020-08-18">
 <h2>Version 1.2.1 (2020-08-18)<a class="headerlink" href="#version-1-2-1-2020-08-18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><dl class="simple">
@@ -411,8 +387,8 @@ by using <a class="reference external" href="https://docs.python.org/3/library/o
 </dl>
 </li>
 </ul>
-</section>
-<section id="version-1-2-0-2020-08-14">
+</div>
+<div class="section" id="version-1-2-0-2020-08-14">
 <h2>Version 1.2.0 (2020-08-14)<a class="headerlink" href="#version-1-2-0-2020-08-14" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="xref py py-func docutils literal notranslate"><span class="pre">audb.extract_archive()</span></code></p></li>
@@ -420,20 +396,20 @@ by using <a class="reference external" href="https://docs.python.org/3/library/o
 <li><p>Added: Python 3.8 support</p></li>
 <li><p>Removed: Python 3.5 support</p></li>
 </ul>
-</section>
-<section id="version-1-1-2-2020-06-12">
+</div>
+<div class="section" id="version-1-1-2-2020-06-12">
 <h2>Version 1.1.2 (2020-06-12)<a class="headerlink" href="#version-1-1-2-2020-06-12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: wrong homepage link in <code class="file docutils literal notranslate"><span class="pre">setup.cfg</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-1-1-2020-05-20">
+</div>
+<div class="section" id="version-1-1-1-2020-05-20">
 <h2>Version 1.1.1 (2020-05-20)<a class="headerlink" href="#version-1-1-1-2020-05-20" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument to <a class="reference internal" href="api-audeer.html#audeer.mkdir" title="audeer.mkdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.mkdir()</span></code></a></p></li>
 </ul>
-</section>
-<section id="version-1-1-0-2020-04-08">
+</div>
+<div class="section" id="version-1-1-0-2020-04-08">
 <h2>Version 1.1.0 (2020-04-08)<a class="headerlink" href="#version-1-1-0-2020-04-08" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <a class="reference internal" href="api-audeer.html#audeer.to_list" title="audeer.to_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.to_list()</span></code></a></p></li>
@@ -441,52 +417,52 @@ by using <a class="reference external" href="https://docs.python.org/3/library/o
 <li><p>Removed: deprecated <code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.generate_dir()</span></code></p></li>
 <li><p>Removed: deprecated <code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.basename()</span></code></p></li>
 </ul>
-</section>
-<section id="version-1-0-7-2020-02-19">
+</div>
+<div class="section" id="version-1-0-7-2020-02-19">
 <h2>Version 1.0.7 (2020-02-19)<a class="headerlink" href="#version-1-0-7-2020-02-19" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: CI again token for automatic package publishing</p></li>
 </ul>
-</section>
-<section id="version-1-0-6-2020-02-19">
+</div>
+<div class="section" id="version-1-0-6-2020-02-19">
 <h2>Version 1.0.6 (2020-02-19)<a class="headerlink" href="#version-1-0-6-2020-02-19" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: CI token for automatic package publishing</p></li>
 </ul>
-</section>
-<section id="version-1-0-5-2020-02-19">
+</div>
+<div class="section" id="version-1-0-5-2020-02-19">
 <h2>Version 1.0.5 (2020-02-19)<a class="headerlink" href="#version-1-0-5-2020-02-19" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: make <a class="reference internal" href="api-audeer.html#audeer.mkdir" title="audeer.mkdir"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.mkdir()</span></code></a> multiprocessing safe</p></li>
 </ul>
-</section>
-<section id="version-1-0-4-2020-02-07">
+</div>
+<div class="section" id="version-1-0-4-2020-02-07">
 <h2>Version 1.0.4 (2020-02-07)<a class="headerlink" href="#version-1-0-4-2020-02-07" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: republish due to broken package</p></li>
 </ul>
-</section>
-<section id="version-1-0-3-2020-02-07">
+</div>
+<div class="section" id="version-1-0-3-2020-02-07">
 <h2>Version 1.0.3 (2020-02-07)<a class="headerlink" href="#version-1-0-3-2020-02-07" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: more docstring examples</p></li>
 <li><p>Changed: add extra development section in docs</p></li>
 </ul>
-</section>
-<section id="version-1-0-2-2020-02-07">
+</div>
+<div class="section" id="version-1-0-2-2020-02-07">
 <h2>Version 1.0.2 (2020-02-07)<a class="headerlink" href="#version-1-0-2-2020-02-07" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: automatic Python package publishing</p></li>
 <li><p>Fixed: another link to <a class="reference external" href="http://tools.pp.audeering.com/pyaudeer-configfile">audeer.configfile</a></p></li>
 </ul>
-</section>
-<section id="version-1-0-1-2020-02-06">
+</div>
+<div class="section" id="version-1-0-1-2020-02-06">
 <h2>Version 1.0.1 (2020-02-06)<a class="headerlink" href="#version-1-0-1-2020-02-06" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: link to <a class="reference external" href="http://tools.pp.audeering.com/pyaudeer-configfile">audeer.configfile</a></p></li>
 </ul>
-</section>
-<section id="version-1-0-0-2020-02-06">
+</div>
+<div class="section" id="version-1-0-0-2020-02-06">
 <h2>Version 1.0.0 (2020-02-06)<a class="headerlink" href="#version-1-0-0-2020-02-06" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <a class="reference internal" href="api-audeer.html#audeer.format_display_message" title="audeer.format_display_message"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.format_display_message()</span></code></a></p></li>
@@ -500,29 +476,29 @@ by using <a class="reference external" href="https://docs.python.org/3/library/o
 <li><p>Removed: all config related code is moved to <a class="reference external" href="http://tools.pp.audeering.com/pyaudeer-configfile">audeer.configfile</a></p></li>
 <li><p>Removed: Python 2.7 support</p></li>
 </ul>
-</section>
-<section id="version-0-9-3-2019-08-16">
+</div>
+<div class="section" id="version-0-9-3-2019-08-16">
 <h2>Version 0.9.3 (2019-08-16)<a class="headerlink" href="#version-0-9-3-2019-08-16" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed: update installation commands in doc</p></li>
 <li><p>Changed: update documentation building commands in doc</p></li>
 </ul>
-</section>
-<section id="version-0-9-2-2019-08-16">
+</div>
+<div class="section" id="version-0-9-2-2019-08-16">
 <h2>Version 0.9.2 (2019-08-16)<a class="headerlink" href="#version-0-9-2-2019-08-16" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: Gitlab CI tests for Python 3.7</p></li>
 </ul>
-</section>
-<section id="version-0-9-1-2019-08-13">
+</div>
+<div class="section" id="version-0-9-1-2019-08-13">
 <h2>Version 0.9.1 (2019-08-13)<a class="headerlink" href="#version-0-9-1-2019-08-13" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: tests for documentation</p></li>
 <li><p>Added: documentation deployed as Gitlab pages</p></li>
 <li><p>Fixed: inclusion of changelog in doc</p></li>
 </ul>
-</section>
-<section id="version-0-9-0-2019-06-27">
+</div>
+<div class="section" id="version-0-9-0-2019-06-27">
 <h2>Version 0.9.0 (2019-06-27)<a class="headerlink" href="#version-0-9-0-2019-06-27" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: Gitlab CI tests for Python 2.7, 3.6, 3.7</p></li>
@@ -532,94 +508,94 @@ by using <a class="reference external" href="https://docs.python.org/3/library/o
 <li><p>Fixed: <code class="docutils literal notranslate"><span class="pre">generate_dir</span></code> for Python 2.7</p></li>
 <li><p>Removed: <code class="docutils literal notranslate"><span class="pre">audeer.wav</span></code> in favor of <a class="reference external" href="https://github.com/audeering/audiofile">audiofile</a></p></li>
 </ul>
-</section>
-<section id="version-0-8-0-2019-04-04">
+</div>
+<div class="section" id="version-0-8-0-2019-04-04">
 <h2>Version 0.8.0 (2019-04-04)<a class="headerlink" href="#version-0-8-0-2019-04-04" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Deprecated: <code class="docutils literal notranslate"><span class="pre">audeer.wav</span></code> in favor of <a class="reference external" href="https://github.com/audeering/audiofile">audiofile</a></p></li>
 </ul>
-</section>
-<section id="version-0-7-2-2019-03-05">
+</div>
+<div class="section" id="version-0-7-2-2019-03-05">
 <h2>Version 0.7.2 (2019-03-05)<a class="headerlink" href="#version-0-7-2-2019-03-05" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: missing requirement toml to <code class="docutils literal notranslate"><span class="pre">doc/requirements.txt</span></code></p></li>
 </ul>
-</section>
-<section id="version-0-7-1-2019-03-05">
+</div>
+<div class="section" id="version-0-7-1-2019-03-05">
 <h2>Version 0.7.1 (2019-03-05)<a class="headerlink" href="#version-0-7-1-2019-03-05" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: URL to sphinx-audeering-theme in <code class="docutils literal notranslate"><span class="pre">doc/requirements.txt</span></code></p></li>
 </ul>
-</section>
-<section id="version-0-7-0-2019-03-01">
+</div>
+<div class="section" id="version-0-7-0-2019-03-01">
 <h2>Version 0.7.0 (2019-03-01)<a class="headerlink" href="#version-0-7-0-2019-03-01" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">always_2d</span></code> option to <code class="docutils literal notranslate"><span class="pre">wav.read</span></code></p></li>
 <li><p>Removed: <code class="docutils literal notranslate"><span class="pre">wav.to_mono</span></code></p></li>
 </ul>
-</section>
-<section id="version-0-6-2-2019-02-21">
+</div>
+<div class="section" id="version-0-6-2-2019-02-21">
 <h2>Version 0.6.2 (2019-02-21)<a class="headerlink" href="#version-0-6-2-2019-02-21" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: support for subdirectories in <code class="docutils literal notranslate"><span class="pre">generate_dir</span></code></p></li>
 <li><p>Changed: speedup <code class="docutils literal notranslate"><span class="pre">wav</span></code> operations</p></li>
 <li><p>Deprecated: <code class="docutils literal notranslate"><span class="pre">wav.to_mono</span></code></p></li>
 </ul>
-</section>
-<section id="version-0-6-1-2019-02-08">
+</div>
+<div class="section" id="version-0-6-1-2019-02-08">
 <h2>Version 0.6.1 (2019-02-08)<a class="headerlink" href="#version-0-6-1-2019-02-08" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: samples and duration for uncommon audio formats</p></li>
 </ul>
-</section>
-<section id="version-0-6-0-2019-02-08">
+</div>
+<div class="section" id="version-0-6-0-2019-02-08">
 <h2>Version 0.6.0 (2019-02-08)<a class="headerlink" href="#version-0-6-0-2019-02-08" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: support for a lot more audio formats in <code class="docutils literal notranslate"><span class="pre">wav</span></code></p></li>
 </ul>
-</section>
-<section id="version-0-5-0-2019-02-05">
+</div>
+<div class="section" id="version-0-5-0-2019-02-05">
 <h2>Version 0.5.0 (2019-02-05)<a class="headerlink" href="#version-0-5-0-2019-02-05" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">util.flatten_list</span></code></p></li>
 <li><p>Changed: improve documentation</p></li>
 </ul>
-</section>
-<section id="version-0-4-0-2019-01-07">
+</div>
+<div class="section" id="version-0-4-0-2019-01-07">
 <h2>Version 0.4.0 (2019-01-07)<a class="headerlink" href="#version-0-4-0-2019-01-07" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: MP3 support (not for writing)</p></li>
 <li><p>Changed: make <code class="docutils literal notranslate"><span class="pre">[channels,</span> <span class="pre">samples]</span></code> default audio shape</p></li>
 <li><p>Changed: switch to <a class="reference external" href="https://github.com/rabitt/pysox">sox</a> for audio file info</p></li>
 </ul>
-</section>
-<section id="version-0-3-0-2018-11-16">
+</div>
+<div class="section" id="version-0-3-0-2018-11-16">
 <h2>Version 0.3.0 (2018-11-16)<a class="headerlink" href="#version-0-3-0-2018-11-16" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Changed: make Python 2.7 compatible</p></li>
 <li><p>Changed: restructure config module</p></li>
 </ul>
-</section>
-<section id="version-0-2-0-2018-11-12">
+</div>
+<div class="section" id="version-0-2-0-2018-11-12">
 <h2>Version 0.2.0 (2018-11-12)<a class="headerlink" href="#version-0-2-0-2018-11-12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">config</span></code> module</p></li>
 </ul>
-</section>
-<section id="version-0-1-1-2018-10-29">
+</div>
+<div class="section" id="version-0-1-1-2018-10-29">
 <h2>Version 0.1.1 (2018-10-29)<a class="headerlink" href="#version-0-1-1-2018-10-29" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed: automatic version discovery</p></li>
 </ul>
-</section>
-<section id="version-0-1-0-2018-10-29">
+</div>
+<div class="section" id="version-0-1-0-2018-10-29">
 <h2>Version 0.1.0 (2018-10-29)<a class="headerlink" href="#version-0-1-0-2018-10-29" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Added: <code class="docutils literal notranslate"><span class="pre">wav</span></code> and <code class="docutils literal notranslate"><span class="pre">util</span></code> module</p></li>
 <li><p>Added: Initial release</p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
@@ -642,7 +618,7 @@ by using <a class="reference external" href="https://docs.python.org/3/library/o
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/06/01 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2021/11/19 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
