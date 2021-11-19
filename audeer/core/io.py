@@ -474,7 +474,7 @@ def rmdir(
         NotADirectoryError: if path is not a directory
 
     Example:
-        >>> p = mkdir('path1/path2/path3')
+        >>> mkdir('path1/path2/path3')  # doctest: +SKIP
         >>> rmdir('path1/path2')
         >>> list_dir_names('path1')
         []
