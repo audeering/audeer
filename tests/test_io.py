@@ -308,6 +308,35 @@ def test_mkdir(tmpdir):
     assert mode != int('775', 8)
 
 
+def test_rmdir(tmpdir):
+    # Non existing dir
+    audeer.rmdir('non-esitent')
+    # Folder with file content
+    dir_tmp = tmpdir.mkdir('folder')
+    f = dir_tmp.join('file.txt')
+    f.write('')
+    path = str(dir_tmp)
+    p = audeer.mkdir(path)
+    with pytest.raises(NotADirectoryError):
+        audeer.rmdir(os.path.join(p, 'file.txt'))
+    audeer.rmdir(p)
+    assert not os.path.exists(p)
+    # Folder with folder content
+    path = str(tmpdir.mkdir('folder'))
+    p = audeer.mkdir(os.path.join(path, 'sub-folder'))
+    audeer.rmdir(os.path.dirname(p))
+    assert not os.path.exists(p)
+    assert not os.path.exists(os.path.dirname(p))
+    # Relative path
+    path = str(tmpdir.mkdir('folder'))
+    current_path = os.getcwd()
+    os.chdir(os.path.dirname(path))
+    assert os.path.exists(path)
+    audeer.rmdir('folder')
+    assert not os.path.exists(path)
+    os.chdir(current_path)
+
+
 @pytest.mark.parametrize('path', [
     ('~/.someconfigrc'),
     ('file.tar.gz'),

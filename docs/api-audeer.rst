@@ -119,6 +119,11 @@ replace_file_extension
 
 .. autofunction:: replace_file_extension
 
+rmdir
+-----
+
+.. autofunction:: rmdir
+
 run_tasks
 ---------
 

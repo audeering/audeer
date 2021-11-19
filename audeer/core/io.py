@@ -458,6 +458,33 @@ def replace_file_extension(
     return f'{path[:-len(extension)]}{new_extension}'
 
 
+def rmdir(
+        path: typing.Union[str, bytes],
+):
+    """Remove directory.
+
+    Remove the directory
+    and all its content
+    if the directory exists.
+
+    Args:
+        path: absolute or relative path of directory to remove
+
+    Raises:
+        NotADirectoryError: if path is not a directory
+
+    Example:
+        >>> p = mkdir('path1/path2/path3')
+        >>> rmdir('path1/path2')
+        >>> list_dir_names('path1')
+        []
+
+    """
+    path = safe_path(path)
+    if os.path.exists(path):
+        shutil.rmtree(path)
+
+
 def safe_path(
         path: typing.Union[str, bytes]
 ) -> str:
