@@ -7,6 +7,12 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.17.0 (2021-11-19)
+---------------------------
+
+* Added: ``audeer.rmdir()``
+
+
 Version 1.16.0 (2021-06-01)
 ---------------------------
 
