@@ -227,27 +227,23 @@ def extract_archive(
         if archive.endswith('zip'):
             with zipfile.ZipFile(archive, 'r') as zf:
                 members = zf.infolist()
-                with progress_bar(
-                    total=len(members),
+                for member in progress_bar(
+                    members,
                     desc=desc,
                     disable=disable,
-                ) as pbar:
-                    for member in members:
-                        zf.extract(member, destination)
-                        pbar.update()
-                    member_names = [m.filename for m in members]
+                ):
+                    zf.extract(member, destination)
+                member_names = [m.filename for m in members]
         elif archive.endswith('tar.gz'):
             with tarfile.open(archive, 'r') as tf:
                 members = tf.getmembers()
-                with progress_bar(
-                    total=len(members),
+                for member in progress_bar(
+                    members,
                     desc=desc,
                     disable=disable,
-                ) as pbar:
-                    for member in members:
-                        tf.extract(member, destination, numeric_owner=True)
-                        pbar.update()
-                    member_names = [m.name for m in members]
+                ):
+                    tf.extract(member, destination, numeric_owner=True)
+                member_names = [m.name for m in members]
         else:
             raise RuntimeError(
                 f'You can only extract ZIP and TAR.GZ files, '
