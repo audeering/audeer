@@ -7,6 +7,12 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.17.1 (2021-11-25)
+---------------------------
+
+* Added: ``verbose`` argument to ``audeer.create_archive()``
+
+
 Version 1.17.0 (2021-11-19)
 ---------------------------
 
