@@ -92,6 +92,8 @@ def create_archive(
         root: str,
         files: typing.Union[str, typing.Sequence[str]],
         archive: str,
+        *,
+        verbose: bool = False,
 ):
     r"""Create ZIP or TAR.GZ archive.
 
@@ -103,6 +105,7 @@ def create_archive(
             relative to ``root``
         archive: path to archive file.
             The archive type is determined by the file extension
+        verbose: if ``True`` a progress bar is shown
 
     Raises:
         RuntimeError: if archive does not end with ``zip`` or ``tar.gz``
@@ -111,14 +114,22 @@ def create_archive(
     archive = safe_path(archive)
     mkdir(os.path.dirname(archive))
     files = to_list(files)
+
+    # Progress bar arguments
+    desc = format_display_message(
+        f'Create {os.path.basename(archive)}',
+        pbar=True,
+    )
+    disable = not verbose
+
     if archive.endswith('zip'):
         with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zf:
-            for file in files:
+            for file in progress_bar(files, desc=desc, disable=disable):
                 full_file = os.path.join(root, file)
                 zf.write(full_file, arcname=file)
     elif archive.endswith('tar.gz'):
         with tarfile.open(archive, "w:gz") as tf:
-            for file in files:
+            for file in progress_bar(files, desc=desc, disable=disable):
                 full_file = os.path.join(root, file)
                 tf.add(full_file, file)
     else:
@@ -216,27 +227,23 @@ def extract_archive(
         if archive.endswith('zip'):
             with zipfile.ZipFile(archive, 'r') as zf:
                 members = zf.infolist()
-                with progress_bar(
-                    total=len(members),
+                for member in progress_bar(
+                    members,
                     desc=desc,
                     disable=disable,
-                ) as pbar:
-                    for member in members:
-                        zf.extract(member, destination)
-                        pbar.update()
-                    member_names = [m.filename for m in members]
+                ):
+                    zf.extract(member, destination)
+                member_names = [m.filename for m in members]
         elif archive.endswith('tar.gz'):
             with tarfile.open(archive, 'r') as tf:
                 members = tf.getmembers()
-                with progress_bar(
-                    total=len(members),
+                for member in progress_bar(
+                    members,
                     desc=desc,
                     disable=disable,
-                ) as pbar:
-                    for member in members:
-                        tf.extract(member, destination, numeric_owner=True)
-                        pbar.update()
-                    member_names = [m.name for m in members]
+                ):
+                    tf.extract(member, destination, numeric_owner=True)
+                member_names = [m.name for m in members]
         else:
             raise RuntimeError(
                 f'You can only extract ZIP and TAR.GZ files, '
