@@ -334,6 +334,7 @@ def install_package(
             '-m',
             'pip',
             'install',
+            '--user',
             name,
         ],
         stdout=subprocess.DEVNULL if silent else None,
