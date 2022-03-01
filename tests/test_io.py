@@ -160,7 +160,7 @@ def test_common_directory(dirs, expected):
     common = common.replace('\\', '/')
     expected = expected.replace('\\', '/')
     # On MacOS we get a '/System/Volumes/Data' in front
-    common.replace('/System/Volumes/Data', '')
+    common = common.replace('/System/Volumes/Data', '')
     assert common == expected
 
 
