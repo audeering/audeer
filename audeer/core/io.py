@@ -442,15 +442,13 @@ def move_file(
         src_file,
         dst_file,
 ):
-    """Move file.
+    """Move a file independent of operating system.
 
-    Move a file independent of operating system.
-
-    As :func:`os.rename` works not the same
+    As :func:`os.rename` works differently
     under Unix and Windows
     and :func:`shutil.move` can be slow,
     we use :func:`os.replace`
-    under the hood.
+    to move the file.
 
     Args:
         scr_file: source file path
