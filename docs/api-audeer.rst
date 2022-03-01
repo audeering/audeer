@@ -109,6 +109,11 @@ mkdir
 
 .. autofunction:: mkdir
 
+move_file
+---------
+
+.. autofunction:: move_file
+
 progress_bar
 ------------
 

@@ -438,6 +438,38 @@ def mkdir(
     return path
 
 
+def move_file(
+        src_file,
+        dst_file,
+):
+    """Move file.
+
+    Move a file independent of operating system.
+
+    As :func:`os.rename` works not the same
+    under Unix and Windows
+    and :func:`shutil.move` can be slow,
+    we use :func:`os.replace`
+    under the hood.
+
+    Args:
+        scr_file: source file path
+        dst_file: destination file path
+
+    Example:
+        >>> path1 = mkdir('path1')
+        >>> path2 = mkdir('path1/path2')
+        >>> src_file = os.path.join(path1, 'file1')
+        >>> dst_file = os.path.join(path2, 'file2')
+        >>> open(src_file, 'a').close()
+        >>> move_file(src_file, dst_file)
+        >>> list_file_names(path2, basenames=True)
+        ['file2']
+
+    """
+    os.replace(src_file, dst_file)
+
+
 def replace_file_extension(
         path: typing.Union[str, bytes],
         new_extension: str,

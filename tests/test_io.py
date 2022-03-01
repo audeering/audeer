@@ -309,6 +309,20 @@ def test_mkdir(tmpdir):
     assert mode != int('775', 8)
 
 
+def test_move_file(tmpdir, src_file, dst_file):
+    path = str(tmpdir.mkdir('folder1'))
+    p = audeer.mkdir(path)
+    dir_tmp = tmpdir.mkdir('folder')
+    file_tmp = dir_tmp.join(file)
+    file_tmp.write('')
+
+    assert os.path.exists(src_file)
+    audeer.move_file(src_file, dst_file)
+    if src_file != dst_file:
+        assert not os.path.exists(src_file)
+    assert os.path.exists(dst_file)
+
+
 def test_rmdir(tmpdir):
     # Non existing dir
     audeer.rmdir('non-esitent')

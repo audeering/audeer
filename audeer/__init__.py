@@ -10,6 +10,7 @@ from audeer.core.io import (
     list_dir_names,
     list_file_names,
     mkdir,
+    move_file,
     replace_file_extension,
     rmdir,
     safe_path,
