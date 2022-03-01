@@ -524,6 +524,10 @@ def touch(
 ) -> str:
     """Create an empty file.
 
+    If the file exists already
+    it's access and modification times
+    are updated.
+
     Args:
         path: path to file
 
