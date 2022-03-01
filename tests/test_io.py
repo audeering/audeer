@@ -159,6 +159,8 @@ def test_common_directory(dirs, expected):
     _, expected = os.path.splitdrive(expected)
     common = common.replace('\\', '/')
     expected = expected.replace('\\', '/')
+    # On MacOS we get a '/System/Volumes/Data' in front
+    common.replace('/System/Volumes/Data', '')
     assert common == expected
 
 
