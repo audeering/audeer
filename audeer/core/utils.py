@@ -1,13 +1,13 @@
 import concurrent.futures
-import operator
 from collections.abc import Iterable
 import copy
 from distutils.version import LooseVersion
 import functools
 import hashlib
-import inspect
 import importlib
+import inspect
 import multiprocessing
+import operator
 import pkg_resources
 import queue
 import subprocess
