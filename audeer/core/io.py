@@ -373,10 +373,9 @@ def list_file_names(
         list of path(s) to file(s)
 
     Example:
-        >>> path = mkdir('path1')
-        >>> touch(os.path.join(path, 'file1'))  # doctest:+ELLIPSIS
-        '.../path1/file1'
-        >>> list_file_names(path, basenames=True)
+        >>> dir_path = mkdir('path1')
+        >>> file_path = touch(os.path.join(dir_path, 'file1'))
+        >>> list_file_names(dir_path, basenames=True)
         ['file1']
 
     """
