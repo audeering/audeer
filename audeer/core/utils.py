@@ -5,9 +5,11 @@ from distutils.version import LooseVersion
 import functools
 import hashlib
 import inspect
+import importlib
 import multiprocessing
 import queue
 import subprocess
+import sys
 import threading
 import typing
 import uuid
@@ -304,6 +306,44 @@ def git_repo_version(
     elif not version.startswith('v') and v:  # pragma: nocover (only github)
         version = f'v{version}'
     return version
+
+
+def install_package(
+        name: str,
+        *,
+        version: str = None,
+        silent: bool = False,
+):
+    r"""Install pip package.
+
+    Args:
+        name: package name
+        version: version string,
+            if ``None`` installs latest
+        silent: suppress output messages
+
+    Raises:
+         CalledProcessError: if the sub-process calling pip fails
+
+    """
+    if version is not None:
+        name = f'{name}=={version}'
+    subprocess.check_call(
+        [
+            sys.executable,
+            '-m',
+            'pip',
+            'install',
+            name,
+        ],
+        stdout=subprocess.DEVNULL if silent else None,
+        stderr=subprocess.DEVNULL if silent else None,
+    )
+    # This function should be called if any modules
+    # are created/installed while your program is running
+    # to guarantee all finders will notice the new module’s existence.
+    # see https://docs.python.org/3/library/importlib.html
+    importlib.invalidate_caches()
 
 
 def is_semantic_version(version: str) -> bool:
