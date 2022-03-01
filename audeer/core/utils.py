@@ -342,7 +342,6 @@ def install_package(
             e.g. because requested version of the package is not found
         RuntimeError: if a version of the package is already
             installed that does not satisfy the requested version
-        ValueError: if version string is invalid
 
     """
     version = version.strip() if version is not None else None
@@ -364,11 +363,6 @@ def install_package(
         elif version.startswith('<'):
             op = operator.lt
             version = version[1:].strip()
-        if not audeer.is_semantic_version(version):
-            raise ValueError(
-                f"Invalid version string "
-                f"'{version_org}'."
-            )
 
     # raise error if package is already installed
     # and does not satisfy requested version

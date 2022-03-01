@@ -7,12 +7,12 @@ import pytest
 import audeer
 
 
-PACKAGE = 'audbackend'
-MODULE = 'audbackend'
+PACKAGE = 'PyYaml'
+MODULE = 'yaml'
 
 
 def uninstall():
-    subprocess.check_call(
+    subprocess.run(
         [
             sys.executable,
             '-m',
@@ -55,25 +55,25 @@ def test():
     # install package
     audeer.install_package(
         PACKAGE,
-        version='<=0.3.6',
+        version='<=5.3',
     )
 
     # installed version satisfies requiested version
     audeer.install_package(
         PACKAGE,
-        version='>=0.3.6',
+        version='>=5.3',
     )
     audeer.install_package(
         PACKAGE,
-        version='>0.3.5',
+        version='>5.2',
     )
     audeer.install_package(
         PACKAGE,
-        version='<=0.3.6',
+        version='<=5.3',
     )
     audeer.install_package(
         PACKAGE,
-        version='<0.3.7',
+        version='<5.4',
     )
     audeer.install_package(
         PACKAGE,
@@ -84,27 +84,20 @@ def test():
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version='>=0.3.7',
+            version='>=5.4',
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version='>0.3.6',
+            version='>5.3',
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version='<=0.3.5',
+            version='<=5.2',
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version='<0.3.6',
-        )
-
-    # invalid version string
-    with pytest.raises(ValueError):
-        audeer.install_package(
-            PACKAGE,
-            version='<=0.3.8,>0.3.5',
+            version='<5.3',
         )
