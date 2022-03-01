@@ -348,8 +348,8 @@ def install_package(
     version_org = version
     op = operator.eq
 
-    # check if version is supported, e.g.
-    # 1.0, >=1.0, >1.0, <=1.0, <1.0
+    # check for operators, e.g.
+    # >=1.0, >1.0, <=1.0, <1.0
     if version is not None:
         if version.startswith('>='):
             op = operator.ge
