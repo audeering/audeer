@@ -7,9 +7,9 @@ import pytest
 import audeer
 
 
-PACKAGE = 'PyYaml'
-MODULE = 'yaml'
-VERSION = '5.4'
+PACKAGE = 'audbackend'
+MODULE = 'audbackend'
+VERSION = '0.3.12'
 
 
 @pytest.fixture(autouse=True)
