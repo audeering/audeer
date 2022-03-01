@@ -12,8 +12,9 @@ def cleanup():
         'file.txt',
         os.path.join('path', 'file'),
         os.path.join('path1', 'file1'),
+        os.path.join('folder', 'file2'),
     ]
-    folders = ['path', 'path1']
+    folders = ['folder', 'path', 'path1']
     for file in files:
         if os.path.exists(file):
             os.remove(file)
