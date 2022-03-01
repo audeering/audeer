@@ -373,10 +373,10 @@ def list_file_names(
         list of path(s) to file(s)
 
     Example:
-        >>> dir_path = mkdir('path1')
-        >>> file_path = touch(os.path.join(dir_path, 'file1'))
+        >>> dir_path = mkdir('path')
+        >>> file_path = touch(os.path.join(dir_path, 'file'))
         >>> list_file_names(dir_path, basenames=True)
-        ['file1']
+        ['file']
 
     """
     path = safe_path(path)
