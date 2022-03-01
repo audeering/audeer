@@ -1,7 +1,5 @@
-import importlib
 import os
 import subprocess
-import sys
 import warnings
 
 import pytest
@@ -218,51 +216,6 @@ def test_git_repo_version():
     assert version == expected_version
     version = audeer.git_repo_version(v=False)
     assert version == expected_version[1:]
-
-
-@pytest.mark.parametrize(
-    'package, module, version',
-    [
-        ('PyYaml', 'yaml', None),
-        ('PyYaml', 'yaml', '5.4'),
-    ]
-)
-def test_install_package(package, module, version):
-
-    # install package
-    audeer.install_package(
-        package,
-        version=version,
-    )
-
-    # import module and verify version
-    m = importlib.import_module(module)
-    if version is not None:
-        m.__version__ == version
-
-    # uninstall package
-    subprocess.check_call(
-        [
-            sys.executable,
-            '-m',
-            'pip',
-            'uninstall',            
-            '--yes',
-            package,
-        ],
-    )
-
-    # remove from module cache
-    remove = []
-    for m in sys.modules:
-        if m.split('.')[0] == module:
-            remove.append(m)
-    for m in remove:
-        sys.modules.pop(m)
-
-    # verify module is no longer available
-    with pytest.raises(ModuleNotFoundError):
-        importlib.import_module(module)
 
 
 @pytest.mark.parametrize(
