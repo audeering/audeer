@@ -247,6 +247,7 @@ def test_install_package(package, module, version):
             '-m',
             'pip',
             'uninstall',
+            '--user',
             '--yes',
             package,
         ],
