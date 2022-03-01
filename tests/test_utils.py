@@ -250,8 +250,6 @@ def test_install_package(package, module, version):
             '--yes',
             package,
         ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
     )
 
     # remove from module cache
