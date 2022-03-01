@@ -439,8 +439,8 @@ def mkdir(
 
 
 def move_file(
-        src_file,
-        dst_file,
+        src_path,
+        dst_path,
 ):
     """Move a file independent of operating system.
 
@@ -451,15 +451,15 @@ def move_file(
     to move the file.
 
     Args:
-        scr_file: source file path
-        dst_file: destination file path
+        scr_path: source file path
+        dst_path: destination file path
 
     Example:
         >>> path1 = mkdir('path1')
         >>> path2 = mkdir('path1/path2')
-        >>> src_file = touch(os.path.join(path1, 'file1'))
-        >>> dst_file = os.path.join(path2, 'file2')
-        >>> move_file(src_file, dst_file)
+        >>> src_path = touch(os.path.join(path1, 'file1'))
+        >>> dst_path = os.path.join(path2, 'file2')
+        >>> move_file(src_path, dst_path)
         >>> list_file_names(path2, basenames=True)
         ['file2']
 
