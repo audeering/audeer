@@ -73,7 +73,7 @@ def test():
     )
     audeer.install_package(
         PACKAGE,
-        version='<5.4',
+        version='  <   5.4  ',  # whitespace will be ignored
     )
     audeer.install_package(
         PACKAGE,

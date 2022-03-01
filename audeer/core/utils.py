@@ -388,7 +388,7 @@ def install_package(
     # install package
     version = version_org
     if version is not None:
-        if audeer.is_semantic_version(version):
+        if op == operator.eq:
             name = f'{name}=={version}'
         else:
             name = f'{name}{version}'
