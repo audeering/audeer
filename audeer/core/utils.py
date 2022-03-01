@@ -314,7 +314,7 @@ def install_package(
         version: str = None,
         silent: bool = False,
 ):
-    r"""Install pip package.
+    r"""Install a Python package with pip.
 
     Args:
         name: package name
