@@ -373,10 +373,10 @@ def list_file_names(
         list of path(s) to file(s)
 
     Example:
-        >>> path = mkdir('path1')
-        >>> open(os.path.join(path, 'file1'), 'a').close()
-        >>> list_file_names(path, basenames=True)
-        ['file1']
+        >>> dir_path = mkdir('path')
+        >>> file_path = touch(os.path.join(dir_path, 'file'))
+        >>> list_file_names(dir_path, basenames=True)
+        ['file']
 
     """
     path = safe_path(path)
@@ -515,4 +515,33 @@ def safe_path(
         # Convert bytes to str, see https://stackoverflow.com/a/606199
         if type(path) == bytes:
             path = path.decode('utf-8').strip('\x00')
+    return path
+
+
+def touch(
+        path: typing.Union[str, bytes]
+) -> str:
+    """Create an empty file.
+
+    If the file exists already
+    it's access and modification times
+    are updated.
+
+    Args:
+        path: path to file
+
+    Returns:
+        expanded path to file
+
+    Example:
+        >>> path = touch('file.txt')
+        >>> os.path.basename(path)
+        'file.txt'
+
+    """
+    path = safe_path(path)
+    if os.path.exists(path):
+        os.utime(path, None)
+    else:
+        open(path, 'a').close()
     return path

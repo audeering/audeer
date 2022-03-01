@@ -13,6 +13,7 @@ from audeer.core.io import (
     replace_file_extension,
     rmdir,
     safe_path,
+    touch,
 )
 from audeer.core.tqdm import (
     format_display_message,
