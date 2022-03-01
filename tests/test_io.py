@@ -403,5 +403,5 @@ def test_touch(tmpdir):
     audeer.touch(path)
     assert os.path.exists(path)
     new_stat = os.stat(path)
-    assert stat.st_atime != new_stat.st_atime
-    assert stat.st_mtime != new_stat.st_mtime
+    assert stat.st_atime < new_stat.st_atime
+    assert stat.st_mtime < new_stat.st_mtime
