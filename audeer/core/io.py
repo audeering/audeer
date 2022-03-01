@@ -15,9 +15,11 @@ from audeer.core.tqdm import (
 from audeer.core.utils import to_list
 
 
-# Exclude common_directory example from doctest on Windows
+# Exclude common_directory example from doctest
+# on Windows and MacOS
+# (which adds /System/Volumes/Data in front in the Github runner)
 # as it outputs a path in Linux syntax in the example
-if platform.system() == 'Windows':  # pragma: no cover
+if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
     __doctest_skip__ = ['common_directory']
 
 
