@@ -9,7 +9,6 @@ import audeer
 
 PACKAGE = 'audbackend'
 MODULE = 'audbackend'
-VERSION = '0.3.12'
 
 
 @pytest.fixture(autouse=True)
@@ -24,7 +23,9 @@ def run_around_tests():
             'uninstall',
             '--yes',
             PACKAGE,
-        ]
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     # remove from module cache
     remove = []
@@ -35,23 +36,72 @@ def run_around_tests():
         sys.modules.pop(module)
 
 
-@pytest.mark.parametrize(
-    'version',
-    [None, VERSION],
-)
-def test_install_package(version):
+def test_install_package():
 
     # verify module is not installed
     with pytest.raises(ModuleNotFoundError):
         importlib.import_module(MODULE)
 
+    # version not found
+    with pytest.raises(subprocess.CalledProcessError):
+        audeer.install_package(
+            PACKAGE,
+            version='999.0.0',
+        )
+
     # install package
     audeer.install_package(
         PACKAGE,
-        version=version,
+        version='0.3.6',
     )
 
-    # import module and verify version
-    m = importlib.import_module(MODULE, package=PACKAGE)
-    if version is not None:
-        m.__version__ == version
+    # installed version satisfies requiested version
+    audeer.install_package(
+        PACKAGE,
+        version='>=0.3.6',
+    )
+    audeer.install_package(
+        PACKAGE,
+        version='>0.3.5',
+    )
+    audeer.install_package(
+        PACKAGE,
+        version='<=0.3.6',
+    )
+    audeer.install_package(
+        PACKAGE,
+        version='<0.3.7',
+    )
+    audeer.install_package(
+        PACKAGE,
+        version=None,
+    )
+
+    # installed version does not satisfied requested version
+    with pytest.raises(RuntimeError):
+        audeer.install_package(
+            PACKAGE,
+            version='>=0.3.7',
+        )
+    with pytest.raises(RuntimeError):
+        audeer.install_package(
+            PACKAGE,
+            version='>0.3.6',
+        )
+    with pytest.raises(RuntimeError):
+        audeer.install_package(
+            PACKAGE,
+            version='<=0.3.5',
+        )
+    with pytest.raises(RuntimeError):
+        audeer.install_package(
+            PACKAGE,
+            version='<0.3.6',
+        )
+
+    # invalid version string
+    with pytest.raises(ValueError):
+        audeer.install_package(
+            PACKAGE,
+            version='<=0.3.8,>0.3.5',
+        )
