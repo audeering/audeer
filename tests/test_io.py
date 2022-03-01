@@ -2,6 +2,7 @@ import os
 import platform
 import stat
 import tarfile
+import time
 import zipfile
 
 import pytest
@@ -388,3 +389,19 @@ def test_safe_path_symlinks(tmpdir):
 def test_replace_file_extension(path, new_extension, expected_path):
     path = audeer.replace_file_extension(path, new_extension)
     assert path == expected_path
+
+
+def test_touch(tmpdir):
+    path = str(tmpdir.mkdir('folder1'))
+    path = audeer.mkdir(path)
+    path = os.path.join(path, 'file')
+    assert not os.path.exists(path)
+    audeer.touch(path)
+    assert os.path.exists(path)
+    stat = os.stat(path)
+    time.sleep(.1)
+    audeer.touch(path)
+    assert os.path.exists(path)
+    new_stat = os.stat(path)
+    assert stat.st_atime != new_stat.st_atime
+    assert stat.st_mtime != new_stat.st_mtime
