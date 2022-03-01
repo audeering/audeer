@@ -459,9 +459,8 @@ def move_file(
     Example:
         >>> path1 = mkdir('path1')
         >>> path2 = mkdir('path1/path2')
-        >>> src_file = os.path.join(path1, 'file1')
+        >>> src_file = touch(os.path.join(path1, 'file1'))
         >>> dst_file = os.path.join(path2, 'file2')
-        >>> open(src_file, 'a').close()
         >>> move_file(src_file, dst_file)
         >>> list_file_names(path2, basenames=True)
         ['file2']
