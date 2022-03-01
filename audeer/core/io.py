@@ -69,7 +69,7 @@ def common_directory(
         ...     '/home/user1/tmp/coven/members',
         ... ]
         >>> common_directory(paths)  # doctest: +ELLIPSIS
-        '.../user1/tmp'
+        '...tmp'
 
     """
     def all_names_equal(name):
