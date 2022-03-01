@@ -51,7 +51,7 @@ def test_install_package(version):
         version=version,
     )
 
-    # # import module and verify version
-    # m = importlib.import_module(MODULE)
-    # if version is not None:
-    #     m.__version__ == version
+    # import module and verify version
+    m = importlib.import_module(MODULE, package=PACKAGE)
+    if version is not None:
+        m.__version__ == version
