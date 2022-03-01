@@ -15,12 +15,6 @@ from audeer.core.tqdm import (
 from audeer.core.utils import to_list
 
 
-# Exclude common_directory example from doctest on Windows
-# as it outputs a path in Linux syntax in the example
-if platform.system() == 'Windows':  # pragma: no cover
-    __doctest_skip__ = ['common_directory']
-
-
 def basename_wo_ext(
         path: typing.Union[str, bytes],
         *,
@@ -74,8 +68,8 @@ def common_directory(
         ...     '/home/user1/tmp/covert/operator',
         ...     '/home/user1/tmp/coven/members',
         ... ]
-        >>> common_directory(paths)
-        '/home/user1/tmp'
+        >>> common_directory(paths)  # doctest: +ELLIPSIS
+        '.../user1/tmp'
 
     """
     def all_names_equal(name):
