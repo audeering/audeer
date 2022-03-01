@@ -144,6 +144,11 @@ to_list
 
 .. autofunction:: to_list
 
+touch
+-----
+
+.. autofunction:: touch
+
 uid
 ---
 
