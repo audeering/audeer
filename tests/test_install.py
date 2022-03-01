@@ -11,10 +11,7 @@ PACKAGE = 'audbackend'
 MODULE = 'audbackend'
 
 
-@pytest.fixture(autouse=True)
-def run_around_tests():
-    yield
-    # uninstall audbackend
+def uninstall():
     subprocess.check_call(
         [
             sys.executable,
@@ -36,7 +33,13 @@ def run_around_tests():
         sys.modules.pop(module)
 
 
-def test_install_package():
+@pytest.fixture(autouse=True)
+def run_around_tests():
+    yield
+    uninstall()
+
+
+def test():
 
     # verify module is not installed
     with pytest.raises(ModuleNotFoundError):
@@ -52,7 +55,7 @@ def test_install_package():
     # install package
     audeer.install_package(
         PACKAGE,
-        version='0.3.6',
+        version='<=0.3.6',
     )
 
     # installed version satisfies requiested version

@@ -323,22 +323,22 @@ def install_package(
     of the package is already installed.
     However,
     it is possible to use one of the following
-    operators with the version string
+    operators in front of the version string
     ``'>='``, ``'>'``, ``'<='``, ``'<'``.
     In that case,
-    an error is raised only 
-    if the condition is not satisfied. 
+    an error is raised only
+    if the condition is not satisfied.
     If version is set to ``None``
-    and the package is not found,
+    and the package is not installed yet,
     the latest version will be installed.
 
     Args:
         name: package name
-        version: version string (see description)       
+        version: version string (see description)
         silent: suppress messages to stdout
 
     Raises:
-        CalledProcessError: if the sub-process calling pip fails,
+        subprocess.CalledProcessError: if the sub-process calling pip fails,
             e.g. because requested version of the package is not found
         RuntimeError: if a version of the package is already
             installed that does not satisfy the requested version
