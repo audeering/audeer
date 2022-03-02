@@ -109,6 +109,12 @@ list_file_names
 
 .. autofunction:: list_file_names
 
+LooseVersion
+------------
+
+.. autoclass:: LooseVersion
+    :members:
+    
 mkdir
 -----
 
@@ -149,6 +155,12 @@ sort_versions
 
 .. autofunction:: sort_versions
 
+StrictVersion
+-------------
+
+.. autoclass:: StrictVersion
+    :members:
+
 to_list
 -------
 
@@ -163,9 +175,3 @@ uid
 ---
 
 .. autofunction:: uid
-
-Version
--------
-
-.. autoclass:: Version
-    :members:

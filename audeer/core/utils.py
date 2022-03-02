@@ -17,7 +17,7 @@ import uuid
 import warnings
 
 from audeer.core import tqdm
-from audeer.core.version import Version
+from audeer.core.version import LooseVersion
 
 
 __doctest_skip__ = ['git_repo_tags', 'git_repo_version']
@@ -719,7 +719,7 @@ def sort_versions(
     def sort_key(value):
         if value.startswith('v'):
             value = value[1:]
-        return Version(value)
+        return LooseVersion(value)
 
     return sorted(versions, key=sort_key)
 

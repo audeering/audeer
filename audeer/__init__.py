@@ -38,7 +38,8 @@ from audeer.core.utils import (
     uid,
 )
 from audeer.core.version import (
-    Version,
+    LooseVersion,
+    StrictVersion,
 )
 
 
