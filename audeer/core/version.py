@@ -118,7 +118,7 @@ class Version:
     ``'2.2beta29'``,
     ``'1.13++'``,
     ``'5.5.kw'``,
-    ``'2.0b1pl0'``,
+    ``'2.0b1pl0'``.
 
     Args:
         version: version string
