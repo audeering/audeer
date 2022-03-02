@@ -370,7 +370,7 @@ def list_file_names(
     Args:
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
-        basenames: if ``True`` returns basenames of directories
+        basenames: if ``True`` return relative path in respect to ``path``
         recursive: if ``True`` includes subdirectories
 
     Returns:
