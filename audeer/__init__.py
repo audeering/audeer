@@ -37,6 +37,9 @@ from audeer.core.utils import (
     to_list,
     uid,
 )
+from audeer.core.version import (
+    Version,
+)
 
 
 # Discourage from audeer import *

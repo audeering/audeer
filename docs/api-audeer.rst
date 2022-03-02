@@ -163,3 +163,9 @@ uid
 ---
 
 .. autofunction:: uid
+
+Version
+-------
+
+.. autoclass:: Version
+    :members:
