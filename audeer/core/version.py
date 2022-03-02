@@ -91,7 +91,7 @@ import re
 # have a conception that matches common notions about version numbers.
 
 class Version:
-    """Version numbering for anarchists and software realists.
+    r"""Version numbering for anarchists and software realists.
 
     This implementation was originally part of :mod:`distutils`
     as ``version.LooseVersion``.
@@ -121,7 +121,7 @@ class Version:
     ``'2.0b1pl0'``,
 
     Args:
-        vstring: version string
+        version: version string
 
     Example:
         >>> v1 = Version('1.17.2')
@@ -136,9 +136,12 @@ class Version:
     """
     component_re = re.compile(r'(\d+ | [a-z]+ | \.)', re.VERBOSE)
 
-    def __init__(self, vstring=None):
+    def __init__(self, version=None):
+        self.version = None
+        r"Parsed version."
+
         if vstring:
-            self.parse(vstring)
+            self.parse(version)
 
     def __eq__(self, other):
         c = self._cmp(other)
@@ -166,7 +169,7 @@ class Version:
     def __str__(self):
         return self.vstring
 
-    def parse(self, vstring):
+    def parse(self, version):
         r"""Parse a version string.
 
         When called this updates the stored version
@@ -191,7 +194,6 @@ class Version:
                 pass
 
         self.version = components
-        """Parsed version."""
 
     def _cmp(self, other):
         if isinstance(other, str):
