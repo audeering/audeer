@@ -17,7 +17,6 @@ import typing
 import uuid
 import warnings
 
-import audeer
 from audeer.core import tqdm
 
 
