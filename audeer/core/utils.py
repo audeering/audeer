@@ -323,7 +323,7 @@ def install_package(
     of the package is already installed.
     However,
     it is possible to use one of the following
-    operators in front of the version string
+    operators in front of the version string:
     ``'>='``, ``'>'``, ``'<='``, ``'<'``.
     In that case,
     an error is raised only
