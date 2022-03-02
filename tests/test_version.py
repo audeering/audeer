@@ -19,6 +19,9 @@ import audeer
 )
 def test_version(v1, v2, wanted):
 
+    # This test is replicating the original tests from
+    # https://github.com/python/cpython/blob/20a1c8ee4bcb1c421b7cca1f3f5d6ad7ce30a9c9/Lib/distutils/tests/test_version.py
+
     v1 = audeer.Version(v1)
 
     result = v1._cmp(audeer.Version(v2))
@@ -53,6 +56,6 @@ def test_version(v1, v2, wanted):
         ('1.13++', '5.5.kw', operator.lt, True),
     ]
 )
-def test_version_eq(v1, v2, operator, expected):
+def test_version_operator(v1, v2, operator, expected):
     result = operator(audeer.Version(v1), audeer.Version(v2))
     assert result == expected
