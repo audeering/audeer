@@ -507,7 +507,8 @@ def path(
 ) -> str:
     """Expand and normalize to absolute path.
 
-    It uses :func:`os.path.realpath` and `os.path.expanduser`
+    It uses :func:`os.path.realpath`
+    and :func:`os.path.expanduser`
     to ensure an absolute path
     without ``..`` or ``~``,
     and independent of the path separator
@@ -524,8 +525,8 @@ def path(
 
     Example:
         >>> home = path('~')
-        >>> dir = path('~/path/.././path')
-        >>> dir[len(home) + 1:]
+        >>> folder = path('~/path/.././path')
+        >>> folder[len(home) + 1:]
         'path'
         >>> file = path('~/path/.././path', './file.txt')
         >>> file[len(home) + 1:]
@@ -607,14 +608,15 @@ def safe_path(
 ) -> str:
     """Expand and normalize to absolute path.
 
-    It uses :func:`os.path.realpath` and `os.path.expanduser`
+    It uses :func:`os.path.realpath`
+    and :func:`os.path.expanduser`
     to ensure an absolute path
     without ``..`` or ``~``,
     and independent of the path separator
     of the operating system.
 
-    Note:
-        :func:audeer.safe_path` is deprecated,
+    Warning:
+        :func:`audeer.safe_path` is deprecated,
         please use :func:`audeer.path` instead.
 
     Args:
@@ -628,8 +630,8 @@ def safe_path(
 
     Example:
         >>> home = safe_path('~')
-        >>> dir = safe_path('~/path/.././path')
-        >>> dir[len(home) + 1:]
+        >>> folder = safe_path('~/path/.././path')
+        >>> folder[len(home) + 1:]
         'path'
         >>> file = safe_path('~/path/.././path', './file.txt')
         >>> file[len(home) + 1:]
