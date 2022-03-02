@@ -1,7 +1,6 @@
 import concurrent.futures
 from collections.abc import Iterable
 import copy
-from distutils.version import LooseVersion
 import functools
 import hashlib
 import importlib
@@ -18,6 +17,7 @@ import uuid
 import warnings
 
 from audeer.core import tqdm
+from audeer.core.version import LooseVersion
 
 
 __doctest_skip__ = ['git_repo_tags', 'git_repo_version']
