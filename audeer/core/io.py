@@ -537,12 +537,15 @@ def rmdir(
 
 
 def safe_path(
-        path: typing.Union[str, bytes]
+        path: typing.Union[str, bytes],
+        *paths: typing.Sequence[typing.Union[str, bytes]],
 ) -> str:
     """Ensure the path is absolute and doesn't include `..` or `~`.
 
     Args:
         path: path to file, directory
+        *paths: if additional arguments are provided,
+            they are first joined with :func:`os.path.join`
 
     Returns:
         expanded path
@@ -552,8 +555,13 @@ def safe_path(
         >>> path = safe_path('~/path/.././path')
         >>> path[len(home) + 1:]
         'path'
+        >>> path = safe_path('~/path/.././path', './file.txt')
+        >>> path[len(home) + 1:]
+        'path/file.txt'
 
     """
+    if paths:
+        path = os.path.join(path, *paths)
     if path:
         path = os.path.realpath(os.path.expanduser(path))
         # Convert bytes to str, see https://stackoverflow.com/a/606199
