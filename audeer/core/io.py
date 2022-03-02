@@ -20,7 +20,7 @@ from audeer.core.utils import to_list
 # (which adds /System/Volumes/Data in front in the Github runner)
 # as it outputs a path in Linux syntax in the example
 if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
-    __doctest_skip__ = ['common_directory']
+    __doctest_skip__ = ['common_directory', 'list_file_names']
 
 
 def basename_wo_ext(
@@ -363,37 +363,51 @@ def list_file_names(
         *,
         filetype: str = '',
         basenames: bool = False,
-) -> typing.List:
+        recursive: bool = False,
+) -> typing.List[str]:
     """List of file names inferred from provided path.
 
     Args:
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
-        basenames: if ``True`` returns basenames of directories
+        basenames: if ``True`` return relative path in respect to ``path``
+        recursive: if ``True`` includes subdirectories
 
     Returns:
         list of path(s) to file(s)
 
     Example:
         >>> dir_path = mkdir('path')
-        >>> file_path = touch(os.path.join(dir_path, 'file'))
+        >>> _ = touch(os.path.join(dir_path, 'file'))
+        >>> sub_dir_path = mkdir(os.path.join('path', 'sub'))
+        >>> _ = touch(os.path.join(sub_dir_path, 'file'))
         >>> list_file_names(dir_path, basenames=True)
         ['file']
+        >>> list_file_names(dir_path, basenames=True, recursive=True)
+        ['file', 'sub/file']
 
     """
+    path = path or '.'
     path = safe_path(path)
+    if os.path.isdir(path):
+        root = path
+    else:
+        root = os.path.dirname(path)
     if os.path.isfile(path):
         search_pattern = path
     else:
         if os.path.isdir(path):
             # Ensure / at the end
             path = os.path.join(path, '')
-        search_pattern = f'{path}*{filetype}'
+        if recursive:
+            search_pattern = f'{path}/**/*{filetype}'
+        else:
+            search_pattern = f'{path}*{filetype}'
     # Get list of files matching search pattern
-    file_names = glob(search_pattern)
+    file_names = glob(search_pattern, recursive=recursive)
     file_names = [f for f in file_names if not os.path.isdir(f)]
     if basenames:
-        file_names = [os.path.basename(f) for f in file_names]
+        file_names = [f[len(root) + 1:] for f in file_names]
     return sorted(file_names)
 
 
