@@ -378,9 +378,13 @@ def list_file_names(
 
     Example:
         >>> dir_path = mkdir('path')
-        >>> file_path = touch(os.path.join(dir_path, 'file'))
+        >>> _ = touch(os.path.join(dir_path, 'file'))
+        >>> sub_dir_path = mkdir(os.path.join('path', 'sub'))
+        >>> _ = touch(os.path.join(sub_dir_path, 'file'))
         >>> list_file_names(dir_path, basenames=True)
         ['file']
+        >>> list_file_names(dir_path, basenames=True, recursive=True)
+        ['file', 'sub/file']
 
     """
     path = path or '.'

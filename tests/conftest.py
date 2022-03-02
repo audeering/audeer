@@ -10,11 +10,17 @@ def cleanup():
     files = [
         'favicon.png',
         'file.txt',
+        os.path.join('path', 'sub', 'file'),
         os.path.join('path', 'file'),
         os.path.join('path1', 'file1'),
         os.path.join('folder', 'file2'),
     ]
-    folders = ['folder', 'path', 'path1']
+    folders = [
+        os.path.join('path', 'sub'),
+        'folder',
+        'path',
+        'path1',
+    ]
     for file in files:
         if os.path.exists(file):
             os.remove(file)
