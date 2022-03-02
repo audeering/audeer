@@ -338,12 +338,14 @@ def list_dir_names(
         path: typing.Union[str, bytes],
         *,
         basenames: bool = False,
-) -> typing.List:
+        recursive: bool = False,
+) -> typing.List[str]:
     """List of folder names located inside provided path.
 
     Args:
         path: path to directory
         basenames: if ``True`` returns basenames of directories
+        recursive: if ``True`` includes subdirectories
 
     Returns:
         list of paths to directories
@@ -355,10 +357,20 @@ def list_dir_names(
 
     """
     path = safe_path(path)
-    paths = [os.path.join(path, p) for p in os.listdir(path)]
-    paths = [p for p in paths if os.path.isdir(p)]
+
+    def helper(p: str, paths: typing.List[str]):
+        ps = [os.path.join(p, x) for x in os.listdir(p)]
+        ps = [x for x in ps if os.path.isdir(x)]
+        paths.extend(ps)
+        if len(ps) > 0 and recursive:
+            for p in ps:
+                helper(p, paths)
+
+    paths = []
+    helper(path, paths)
     if basenames:
-        paths = [os.path.basename(p) for p in paths]
+        paths = [p[len(path) + 1:] for p in paths]
+
     return sorted(paths)
 
 

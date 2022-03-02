@@ -191,12 +191,19 @@ def test_file_extension(path, extension):
     assert type(ext) is str
 
 
-@pytest.mark.parametrize('dir_list', [
-    [],
-    ['a', 'b', 'c'],
-    ['a'],
-])
-def test_list_dir_names(tmpdir, dir_list):
+@pytest.mark.parametrize(
+    'dir_list,recursive',
+    [
+        ([], False),
+        ([], True),
+        (['a', 'b', 'c'], False),
+        (['a', 'b', 'c'], True),
+        (['a'], False),
+        (['a'], True),
+        (['a', 'a/b', 'a/b/c'], True),
+    ],
+)
+def test_list_dir_names(tmpdir, dir_list, recursive):
     dir_tmp = tmpdir.mkdir('folder')
     directories = []
     for directory in dir_list:
@@ -207,9 +214,20 @@ def test_list_dir_names(tmpdir, dir_list):
         assert os.path.isdir(directory)
 
     path = os.path.join(str(dir_tmp), '.')
-    dirs = audeer.list_dir_names(path)
+    dirs = audeer.list_dir_names(
+        path,
+        recursive=recursive,
+    )
     assert dirs == sorted(directories)
     assert type(dirs) is list
+
+    # test basenames
+    dirs = audeer.list_dir_names(
+        path,
+        recursive=recursive,
+        basenames=True,
+    )
+    assert dirs == sorted(dir_list)
 
 
 @pytest.mark.parametrize(
