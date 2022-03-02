@@ -24,6 +24,7 @@ if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
         'common_directory',
         'list_dir_names',
         'list_file_names',
+        'path',
         'safe_path',
     ]
 
