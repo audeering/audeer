@@ -544,11 +544,12 @@ def safe_path(
 
     Args:
         path: path to file, directory
-        *paths: if additional arguments are provided,
-            they are first joined with :func:`os.path.join`
+        *paths: additional arguments
+            to be joined with ``path``
+            by :func:`os.path.join`
 
     Returns:
-        expanded path
+        (joined and) expanded path
 
     Example:
         >>> home = safe_path('~')
