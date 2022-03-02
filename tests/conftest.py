@@ -24,6 +24,8 @@ def cleanup():
         'path1',
     ]
     for file in files:
-        os.remove(file)
+        if os.path.exists(file):
+            os.remove(file)
     for folder in folders:
-        os.rmdir(folder)
+        if os.path.exists(folder):
+            os.rmdir(folder)
