@@ -536,7 +536,7 @@ def safe_path(
     Example:
         >>> home = safe_path('~')
         >>> path = safe_path('~/path/.././path')
-        >>> path[len(home) + 1:]
+        >>> path
         'path'
 
     """
