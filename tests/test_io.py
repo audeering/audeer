@@ -200,7 +200,7 @@ def test_file_extension(path, extension):
         (['a', 'b', 'c'], True),
         (['a'], False),
         (['a'], True),
-        (['a', 'a/b', 'a/b/c'], True),
+        (['a', os.path.join('a', 'b'), os.path.join('a', 'b', 'c')], True),
     ],
 )
 def test_list_dir_names(tmpdir, dir_list, recursive):
