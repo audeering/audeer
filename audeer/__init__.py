@@ -11,6 +11,7 @@ from audeer.core.io import (
     list_file_names,
     mkdir,
     move_file,
+    path,
     replace_file_extension,
     rmdir,
     safe_path,

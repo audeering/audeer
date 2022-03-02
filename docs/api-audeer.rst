@@ -125,6 +125,11 @@ move_file
 
 .. autofunction:: move_file
 
+path
+----
+
+.. autofunction:: path
+
 progress_bar
 ------------
 
