@@ -388,6 +388,8 @@ def install_package(
     version = version_org
     if version is not None:
         if op == operator.eq:
+            # since we do not support ==1.0
+            # we have add it here
             name = f'{name}=={version}'
         else:
             name = f'{name}{version}'
