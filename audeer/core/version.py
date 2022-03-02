@@ -14,7 +14,7 @@ import re
 #    compared lexicographically
 # 3) recognize the numeric components may have leading zeroes
 #
-# The LooseVersion class below implements these rules: a version number
+# The Version class below implements these rules: a version number
 # string is split up into a tuple of integer and string components, and
 # comparison is a simple tuple comparison.  This means that version
 # numbers behave in a predictable and obvious way, but a way that might
@@ -40,35 +40,6 @@ import re
 # the "obvious" thing isn't correct.  Eg. you would expect that
 # "1.5.1" < "1.5.2a2" < "1.5.2", but under the tuple/lexical comparison
 # implemented here, this just isn't so.
-#
-# Two possible solutions come to mind.  The first is to tie the
-# comparison algorithm to a particular set of semantic rules, as has
-# been done in the StrictVersion class above.  This works great as long
-# as everyone can go along with bondage and discipline.  Hopefully a
-# (large) subset of Python module programmers will agree that the
-# particular flavour of bondage and discipline provided by StrictVersion
-# provides enough benefit to be worth using, and will submit their
-# version numbering scheme to its domination.  The free-thinking
-# anarchists in the lot will never give in, though, and something needs
-# to be done to accommodate them.
-#
-# Perhaps a "moderately strict" version class could be implemented that
-# lets almost anything slide (syntactically), and makes some heuristic
-# assumptions about non-digits in version number strings.  This could
-# sink into special-case-hell, though; if I was as talented and
-# idiosyncratic as Larry Wall, I'd go ahead and implement a class that
-# somehow knows that "1.2.1" < "1.2.2a2" < "1.2.2" < "1.2.2pl3", and is
-# just as happy dealing with things like "2g6" and "1.13++".  I don't
-# think I'm smart enough to do it right though.
-#
-# In any case, I've coded the test suite for this module (see
-# ../test/test_version.py) specifically to fail on things like comparing
-# "1.2a2" and "1.2".  That's not because the *code* is doing anything
-# wrong, it's because the simple, obvious design doesn't match my
-# complicated, hairy expectations for real-world version numbers.  It
-# would be a snap to fix the test suite to say, "Yep, LooseVersion does
-# the Right Thing" (ie. the code matches the conception).  But I'd rather
-# have a conception that matches common notions about version numbers.
 
 class Version:
     r"""Version numbering for anarchists and software realists.
