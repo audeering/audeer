@@ -20,7 +20,7 @@ from audeer.core.utils import to_list
 # (which adds /System/Volumes/Data in front in the Github runner)
 # as it outputs a path in Linux syntax in the example
 if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
-    __doctest_skip__ = ['common_directory']
+    __doctest_skip__ = ['common_directory', 'list_file_names']
 
 
 def basename_wo_ext(
@@ -371,7 +371,7 @@ def list_file_names(
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
         basenames: if ``True`` returns basenames of directories
-        recursive: include subdirectories
+        recursive: if ``True`` include subdirectories
 
     Returns:
         list of path(s) to file(s)
