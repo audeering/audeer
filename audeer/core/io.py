@@ -22,6 +22,7 @@ from audeer.core.utils import to_list
 if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
     __doctest_skip__ = [
         'common_directory',
+        'list_dir_names',
         'list_file_names',
         'safe_path',
     ]
@@ -351,9 +352,11 @@ def list_dir_names(
         list of paths to directories
 
     Example:
-        >>> path = mkdir('path1/path2')
-        >>> list_dir_names('path1', basenames=True)
-        ['path2']
+        >>> _ = mkdir('path/a/b/c')
+        >>> list_dir_names('path', basenames=True)
+        ['a']
+        >>> list_dir_names('path', basenames=True, recursive=True)
+        ['a', 'a/b', 'a/b/c']
 
     """
     path = safe_path(path)
