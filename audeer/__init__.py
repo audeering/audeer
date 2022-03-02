@@ -28,6 +28,7 @@ from audeer.core.utils import (
     freeze_requirements,
     git_repo_tags,
     git_repo_version,
+    install_package,
     is_semantic_version,
     is_uid,
     run_tasks,

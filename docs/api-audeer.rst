@@ -2,7 +2,7 @@ audeer
 ======
 
 .. automodule:: audeer
- 
+
 basename_wo_ext
 ---------------
 
@@ -83,6 +83,11 @@ git_repo_version
 ----------------
 
 .. autofunction:: git_repo_version
+
+install_package
+---------------
+
+.. autofunction:: install_package
 
 is_semantic_version
 -------------------

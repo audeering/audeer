@@ -4,10 +4,14 @@ import copy
 from distutils.version import LooseVersion
 import functools
 import hashlib
+import importlib
 import inspect
 import multiprocessing
+import operator
+import pkg_resources
 import queue
 import subprocess
+import sys
 import threading
 import typing
 import uuid
@@ -304,6 +308,107 @@ def git_repo_version(
     elif not version.startswith('v') and v:  # pragma: nocover (only github)
         version = f'v{version}'
     return version
+
+
+def install_package(
+        name: str,
+        *,
+        version: str = None,
+        silent: bool = False,
+):
+    r"""Install a Python package with pip.
+
+    An error is raised if a different version
+    of the package is already installed.
+    However,
+    it is possible to use one of the following
+    operators in front of the version string:
+    ``'>='``, ``'>'``, ``'<='``, ``'<'``.
+    In that case,
+    an error is raised only
+    if the condition is not satisfied.
+    If version is set to ``None``
+    and the package is not installed yet,
+    the latest version will be installed.
+
+    Args:
+        name: package name
+        version: version string (see description)
+        silent: suppress messages to stdout
+
+    Raises:
+        subprocess.CalledProcessError: if the sub-process calling pip fails,
+            e.g. because requested version of the package is not found
+        RuntimeError: if a version of the package is already
+            installed that does not satisfy the requested version
+
+    """
+    version = version.strip() if version is not None else None
+    version_org = version
+    op = operator.eq
+
+    # check for operators, e.g.
+    # >=1.0, >1.0, <=1.0, <1.0
+    if version is not None:
+        if version.startswith('>='):
+            op = operator.ge
+            version = version[2:].strip()
+        elif version.startswith('>'):
+            op = operator.gt
+            version = version[1:].strip()
+        elif version.startswith('<='):
+            op = operator.le
+            version = version[2:].strip()
+        elif version.startswith('<'):
+            op = operator.lt
+            version = version[1:].strip()
+
+    # raise error if package is already installed
+    # and does not satisfy requested version
+    try:
+        current_version = pkg_resources.get_distribution(name).version
+    except pkg_resources.DistributionNotFound:
+        current_version = None
+
+    if current_version is not None:
+        if version is None:
+            return  # any version is fine
+        if op(LooseVersion(current_version), LooseVersion(version)):
+            return  # installed version satisfies requested version
+        raise RuntimeError(
+            f"The installed version "
+            f"'{current_version}' "
+            f"of "
+            f"{name} "
+            "does not satisfy "
+            f"'{version_org}'."
+        )
+
+    # install package
+    version = version_org
+    if version is not None:
+        if op == operator.eq:
+            # since we do not support ==1.0
+            # we have to add it here
+            name = f'{name}=={version}'
+        else:
+            name = f'{name}{version}'
+
+    subprocess.check_call(
+        [
+            sys.executable,
+            '-m',
+            'pip',
+            'install',
+            name,
+        ],
+        stdout=subprocess.DEVNULL if silent else None,
+    )
+    # This function should be called if any modules
+    # are created/installed while your program is running
+    # to guarantee all finders will notice the new module’s existence.
+    # see https://docs.python.org/3/library/importlib.html
+    importlib.invalidate_caches()
 
 
 def is_semantic_version(version: str) -> bool:
