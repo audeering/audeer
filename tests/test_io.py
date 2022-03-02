@@ -494,6 +494,26 @@ def test_safe_path(path):
     assert type(path) is str
 
 
+@pytest.mark.parametrize(
+    'path, paths',
+    [
+        ('/a/b', ['file.tar.gz']),
+        ('/a', ['b', 'file.tar.gz']),
+        ('/a/c.d/g', ['../f']),
+        ('', ''),
+    ]
+)
+def test_safe_path_join(path, paths):
+    expected_path = os.path.join(path, *paths)
+    if expected_path:
+        expected_path = os.path.abspath(os.path.expanduser(expected_path))
+    else:
+        expected_path = ''
+    path = audeer.safe_path(path, *paths)
+    assert path == expected_path
+    assert type(path) is str
+
+
 def test_safe_path_symlinks(tmpdir):
     filename = 'file.txt'
     linkname = 'link.txt'
