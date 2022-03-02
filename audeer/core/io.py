@@ -363,6 +363,7 @@ def list_file_names(
         *,
         filetype: str = '',
         basenames: bool = False,
+        recursive: bool = False,
 ) -> typing.List:
     """List of file names inferred from provided path.
 
@@ -370,6 +371,7 @@ def list_file_names(
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
         basenames: if ``True`` returns basenames of directories
+        recursive: search also subdirectories
 
     Returns:
         list of path(s) to file(s)
@@ -381,19 +383,27 @@ def list_file_names(
         ['file']
 
     """
+    path = path or '.'
     path = safe_path(path)
+    if os.path.isdir(path):
+        root = path
+    else:
+        root = os.path.dirname(path)
     if os.path.isfile(path):
         search_pattern = path
     else:
         if os.path.isdir(path):
             # Ensure / at the end
             path = os.path.join(path, '')
-        search_pattern = f'{path}*{filetype}'
+        if recursive:
+            search_pattern = f'{path}/**/*{filetype}'
+        else:
+            search_pattern = f'{path}*{filetype}'
     # Get list of files matching search pattern
-    file_names = glob(search_pattern)
+    file_names = glob(search_pattern, recursive=recursive)
     file_names = [f for f in file_names if not os.path.isdir(f)]
     if basenames:
-        file_names = [os.path.basename(f) for f in file_names]
+        file_names = [f[len(root)+1:] for f in file_names]
     return sorted(file_names)
 
 
