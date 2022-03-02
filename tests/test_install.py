@@ -69,7 +69,7 @@ def test():
     )
     audeer.install_package(
         PACKAGE,
-        version='<=5.3',
+        version='<=6.0',
     )
     audeer.install_package(
         PACKAGE,
