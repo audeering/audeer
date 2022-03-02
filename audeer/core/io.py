@@ -364,14 +364,14 @@ def list_file_names(
         filetype: str = '',
         basenames: bool = False,
         recursive: bool = False,
-) -> typing.List:
+) -> typing.List[str]:
     """List of file names inferred from provided path.
 
     Args:
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
         basenames: if ``True`` returns basenames of directories
-        recursive: if ``True`` include subdirectories
+        recursive: if ``True`` includes subdirectories
 
     Returns:
         list of path(s) to file(s)
