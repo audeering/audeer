@@ -371,7 +371,7 @@ def list_file_names(
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
         basenames: if ``True`` returns basenames of directories
-        recursive: search also subdirectories
+        recursive: include subdirectories
 
     Returns:
         list of path(s) to file(s)
@@ -403,7 +403,7 @@ def list_file_names(
     file_names = glob(search_pattern, recursive=recursive)
     file_names = [f for f in file_names if not os.path.isdir(f)]
     if basenames:
-        file_names = [f[len(root)+1:] for f in file_names]
+        file_names = [f[len(root) + 1:] for f in file_names]
     return sorted(file_names)
 
 
