@@ -140,7 +140,7 @@ class Version:
         self.version = None
         r"Parsed version."
 
-        if vstring:
+        if version:
             self.parse(version)
 
     def __eq__(self, other):
@@ -182,9 +182,9 @@ class Version:
         # I've given up on thinking I can reconstruct the version string
         # from the parsed tuple -- so I just store the string here for
         # use by __str__
-        self.vstring = vstring
+        self.vstring = version
         components = [
-            x for x in self.component_re.split(vstring)
+            x for x in self.component_re.split(version)
             if x and x != '.'
         ]
         for i, obj in enumerate(components):
