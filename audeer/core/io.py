@@ -22,6 +22,7 @@ from audeer.core.utils import to_list
 if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
     __doctest_skip__ = [
         'common_directory',
+        'list_dir_names',
         'list_file_names',
         'safe_path',
     ]
@@ -338,27 +339,41 @@ def list_dir_names(
         path: typing.Union[str, bytes],
         *,
         basenames: bool = False,
-) -> typing.List:
+        recursive: bool = False,
+) -> typing.List[str]:
     """List of folder names located inside provided path.
 
     Args:
         path: path to directory
-        basenames: if ``True`` returns basenames of directories
+        basenames: if ``True`` return relative path in respect to ``path``
+        recursive: if ``True`` includes subdirectories
 
     Returns:
         list of paths to directories
 
     Example:
-        >>> path = mkdir('path1/path2')
-        >>> list_dir_names('path1', basenames=True)
-        ['path2']
+        >>> _ = mkdir('path/a/b/c')
+        >>> list_dir_names('path', basenames=True)
+        ['a']
+        >>> list_dir_names('path', basenames=True, recursive=True)
+        ['a', 'a/b', 'a/b/c']
 
     """
     path = safe_path(path)
-    paths = [os.path.join(path, p) for p in os.listdir(path)]
-    paths = [p for p in paths if os.path.isdir(p)]
+
+    def helper(p: str, paths: typing.List[str]):
+        ps = [os.path.join(p, x) for x in os.listdir(p)]
+        ps = [x for x in ps if os.path.isdir(x)]
+        paths.extend(ps)
+        if len(ps) > 0 and recursive:
+            for p in ps:
+                helper(p, paths)
+
+    paths = []
+    helper(path, paths)
     if basenames:
-        paths = [os.path.basename(p) for p in paths]
+        paths = [p[len(path) + 1:] for p in paths]
+
     return sorted(paths)
 
 
