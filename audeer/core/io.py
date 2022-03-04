@@ -8,6 +8,7 @@ import typing
 import urllib.request
 import zipfile
 
+from audeer.core.path import path as _path
 from audeer.core.tqdm import (
     format_display_message,
     progress_bar,
@@ -24,7 +25,6 @@ if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
         'common_directory',
         'list_dir_names',
         'list_file_names',
-        'path',
         'safe_path',
     ]
 
@@ -500,53 +500,6 @@ def move_file(
 
     """
     os.replace(src_path, dst_path)
-
-
-def path(
-        path: typing.Union[str, bytes],
-        *paths: typing.Sequence[typing.Union[str, bytes]],
-) -> str:
-    """Expand and normalize to absolute path.
-
-    It uses :func:`os.path.realpath`
-    and :func:`os.path.expanduser`
-    to ensure an absolute path
-    without ``..`` or ``~``,
-    and independent of the path separator
-    of the operating system.
-
-    Args:
-        path: path to file, directory
-        *paths: additional arguments
-            to be joined with ``path``
-            by :func:`os.path.join`
-
-    Returns:
-        (joined and) expanded path
-
-    Example:
-        >>> home = path('~')
-        >>> folder = path('~/path/.././path')
-        >>> folder[len(home) + 1:]
-        'path'
-        >>> file = path('~/path/.././path', './file.txt')
-        >>> file[len(home) + 1:]
-        'path/file.txt'
-
-    """
-    if paths:
-        path = os.path.join(path, *paths)
-    if path:
-        path = os.path.realpath(os.path.expanduser(path))
-        # Convert bytes to str, see https://stackoverflow.com/a/606199
-        if type(path) == bytes:
-            path = path.decode('utf-8').strip('\x00')
-    return path
-
-
-# Ensure function is not hidden
-# by `path` argument in `safe_path()`
-_path = path
 
 
 def replace_file_extension(
