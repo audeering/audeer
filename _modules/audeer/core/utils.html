@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.17.2
+                v1.18.0
               </div>
             
           
@@ -145,19 +145,23 @@
 <span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">distutils.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
 <span class="kn">import</span> <span class="nn">queue</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">from</span> <span class="nn">audeer.core</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">audeer.core.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
 
 
 <span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;git_repo_tags&#39;</span><span class="p">,</span> <span class="s1">&#39;git_repo_version&#39;</span><span class="p">]</span>
@@ -448,6 +452,107 @@
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># pragma: nocover (only github)</span>
         <span class="n">version</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="k">return</span> <span class="n">version</span></div>
+
+
+<div class="viewcode-block" id="install_package"><a class="viewcode-back" href="../../../api-audeer.html#audeer.install_package">[docs]</a><span class="k">def</span> <span class="nf">install_package</span><span class="p">(</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Install a Python package with pip.</span>
+
+<span class="sd">    An error is raised if a different version</span>
+<span class="sd">    of the package is already installed.</span>
+<span class="sd">    However,</span>
+<span class="sd">    it is possible to use one of the following</span>
+<span class="sd">    operators in front of the version string:</span>
+<span class="sd">    ``&#39;&gt;=&#39;``, ``&#39;&gt;&#39;``, ``&#39;&lt;=&#39;``, ``&#39;&lt;&#39;``.</span>
+<span class="sd">    In that case,</span>
+<span class="sd">    an error is raised only</span>
+<span class="sd">    if the condition is not satisfied.</span>
+<span class="sd">    If version is set to ``None``</span>
+<span class="sd">    and the package is not installed yet,</span>
+<span class="sd">    the latest version will be installed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: package name</span>
+<span class="sd">        version: version string (see description)</span>
+<span class="sd">        silent: suppress messages to stdout</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        subprocess.CalledProcessError: if the sub-process calling pip fails,</span>
+<span class="sd">            e.g. because requested version of the package is not found</span>
+<span class="sd">        RuntimeError: if a version of the package is already</span>
+<span class="sd">            installed that does not satisfy the requested version</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">version_org</span> <span class="o">=</span> <span class="n">version</span>
+    <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">eq</span>
+
+    <span class="c1"># check for operators, e.g.</span>
+    <span class="c1"># &gt;=1.0, &gt;1.0, &lt;=1.0, &lt;1.0</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&gt;=&#39;</span><span class="p">):</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">ge</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">):</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">gt</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&lt;=&#39;</span><span class="p">):</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">le</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">):</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">lt</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c1"># raise error if package is already installed</span>
+    <span class="c1"># and does not satisfy requested version</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">current_version</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">version</span>
+    <span class="k">except</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">DistributionNotFound</span><span class="p">:</span>
+        <span class="n">current_version</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">current_version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="c1"># any version is fine</span>
+        <span class="k">if</span> <span class="n">op</span><span class="p">(</span><span class="n">LooseVersion</span><span class="p">(</span><span class="n">current_version</span><span class="p">),</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">version</span><span class="p">)):</span>
+            <span class="k">return</span>  <span class="c1"># installed version satisfies requested version</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The installed version &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">current_version</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;of &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="s2">&quot;does not satisfy &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">version_org</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># install package</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">version_org</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="n">operator</span><span class="o">.</span><span class="n">eq</span><span class="p">:</span>
+            <span class="c1"># since we do not support ==1.0</span>
+            <span class="c1"># we have to add it here</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">==</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
+            <span class="s1">&#39;-m&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;pip&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;install&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span> <span class="k">if</span> <span class="n">silent</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># This function should be called if any modules</span>
+    <span class="c1"># are created/installed while your program is running</span>
+    <span class="c1"># to guarantee all finders will notice the new module’s existence.</span>
+    <span class="c1"># see https://docs.python.org/3/library/importlib.html</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">invalidate_caches</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="is_semantic_version"><a class="viewcode-back" href="../../../api-audeer.html#audeer.is_semantic_version">[docs]</a><span class="k">def</span> <span class="nf">is_semantic_version</span><span class="p">(</span><span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -834,7 +939,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/01/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/03/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

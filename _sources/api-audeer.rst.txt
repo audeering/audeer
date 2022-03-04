@@ -2,7 +2,7 @@ audeer
 ======
 
 .. automodule:: audeer
- 
+
 basename_wo_ext
 ---------------
 
@@ -84,6 +84,11 @@ git_repo_version
 
 .. autofunction:: git_repo_version
 
+install_package
+---------------
+
+.. autofunction:: install_package
+
 is_semantic_version
 -------------------
 
@@ -104,10 +109,26 @@ list_file_names
 
 .. autofunction:: list_file_names
 
+LooseVersion
+------------
+
+.. autoclass:: LooseVersion
+    :members:
+    
 mkdir
 -----
 
 .. autofunction:: mkdir
+
+move_file
+---------
+
+.. autofunction:: move_file
+
+path
+----
+
+.. autofunction:: path
 
 progress_bar
 ------------
@@ -139,10 +160,21 @@ sort_versions
 
 .. autofunction:: sort_versions
 
+StrictVersion
+-------------
+
+.. autoclass:: StrictVersion
+    :members:
+
 to_list
 -------
 
 .. autofunction:: to_list
+
+touch
+-----
+
+.. autofunction:: touch
 
 uid
 ---

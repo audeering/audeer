@@ -69,7 +69,7 @@
             
             
               <div class="version">
-                v1.17.2
+                v1.18.0
               </div>
             
           
@@ -117,18 +117,24 @@
 <li class="toctree-l2"><a class="reference internal" href="#freeze-requirements">freeze_requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#git-repo-tags">git_repo_tags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#git-repo-version">git_repo_version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-package">install_package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#is-semantic-version">is_semantic_version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#is-uid">is_uid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#list-dir-names">list_dir_names</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#list-file-names">list_file_names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#looseversion">LooseVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#mkdir">mkdir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#move-file">move_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#path">path</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#progress-bar">progress_bar</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#replace-file-extension">replace_file_extension</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#rmdir">rmdir</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-tasks">run_tasks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#safe-path">safe_path</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sort-versions">sort_versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#strictversion">StrictVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#to-list">to_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#touch">touch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#uid">uid</a></li>
 </ul>
 </li>
@@ -677,6 +683,44 @@ otherwise it never starts with <code class="docutils literal notranslate"><span 
 </dd></dl>
 
 </div>
+<div class="section" id="install-package">
+<h2>install_package<a class="headerlink" href="#install-package" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="audeer.install_package">
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">install_package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/utils.html#install_package"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.install_package" title="Permalink to this definition">¶</a></dt>
+<dd><p>Install a Python package with pip.</p>
+<p>An error is raised if a different version
+of the package is already installed.
+However,
+it is possible to use one of the following
+operators in front of the version string:
+<code class="docutils literal notranslate"><span class="pre">'&gt;='</span></code>, <code class="docutils literal notranslate"><span class="pre">'&gt;'</span></code>, <code class="docutils literal notranslate"><span class="pre">'&lt;='</span></code>, <code class="docutils literal notranslate"><span class="pre">'&lt;'</span></code>.
+In that case,
+an error is raised only
+if the condition is not satisfied.
+If version is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>
+and the package is not installed yet,
+the latest version will be installed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – package name</p></li>
+<li><p><strong>version</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – version string (see description)</p></li>
+<li><p><strong>silent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – suppress messages to stdout</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.CalledProcessError" title="(in Python v3.10)"><strong>subprocess.CalledProcessError</strong></a> – if the sub-process calling pip fails,
+    e.g. because requested version of the package is not found</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.10)"><strong>RuntimeError</strong></a> – if a version of the package is already
+    installed that does not satisfy the requested version</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="is-semantic-version">
 <h2>is_semantic_version<a class="headerlink" href="#is-semantic-version" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -736,26 +780,29 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
 <h2>list_dir_names<a class="headerlink" href="#list-dir-names" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.list_dir_names">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">list_dir_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_dir_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.list_dir_names" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">list_dir_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_dir_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.list_dir_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of folder names located inside provided path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to directory</p></li>
-<li><p><strong>basenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> returns basenames of directories</p></li>
+<li><p><strong>basenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> return relative path in respect to <code class="docutils literal notranslate"><span class="pre">path</span></code></p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> includes subdirectories</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of paths to directories</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1/path2&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_dir_names</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">[&#39;path2&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path/a/b/c&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_dir_names</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;a&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_dir_names</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;a&#39;, &#39;a/b&#39;, &#39;a/b/c&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -765,30 +812,104 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
 <h2>list_file_names<a class="headerlink" href="#list-file-names" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.list_file_names">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">list_file_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_file_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.list_file_names" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">list_file_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filetype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basenames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#list_file_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.list_file_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of file names inferred from provided path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file, directory or pattern</p></li>
 <li><p><strong>filetype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – optional consider only this filetype</p></li>
-<li><p><strong>basenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> returns basenames of directories</p></li>
+<li><p><strong>basenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> return relative path in respect to <code class="docutils literal notranslate"><span class="pre">path</span></code></p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> includes subdirectories</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>list of path(s) to file(s)</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file1&#39;</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">[&#39;file1&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dir_path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sub_dir_path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="s1">&#39;sub&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sub_dir_path</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;file&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;file&#39;, &#39;sub/file&#39;]</span>
 </pre></div>
 </div>
+</dd></dl>
+
+</div>
+<div class="section" id="looseversion">
+<h2>LooseVersion<a class="headerlink" href="#looseversion" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="audeer.LooseVersion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">LooseVersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/version.html#LooseVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Version numbering for anarchists and software realists.</p>
+<p>This implementation was originally part of <a class="reference external" href="https://docs.python.org/3/library/distutils.html#module-distutils" title="(in Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distutils</span></code></a>
+as <code class="docutils literal notranslate"><span class="pre">version.LooseVersion</span></code>.</p>
+<p>A version number consists of a series of numbers,
+separated by either periods or strings of letters.
+When comparing version numbers,
+the numeric components will be compared numerically,
+and the alphabetic components lexically.
+The following are all valid version numbers,
+in no particular order:
+<code class="docutils literal notranslate"><span class="pre">'1.5.1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.5.2b2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'161'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'3.10a'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'8.02'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'3.4j'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1996.07.12'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'3.2.pl0'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'3.1.1.6'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'2g6'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'11g'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'0.960923'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'2.2beta29'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.13++'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'5.5.kw'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'2.0b1pl0'</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>version</strong> – version string</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="s1">&#39;1.17.2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span>
+<span class="go">LooseVersion (&#39;1.17.2&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span><span class="o">.</span><span class="n">version</span>
+<span class="go">[1, 17, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="s1">&#39;1.17.2-3-g70b71bd&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">&lt;</span> <span class="n">v2</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="audeer.LooseVersion.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/version.html#LooseVersion.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a version string.</p>
+<p>When called this updates the stored version
+under <code class="docutils literal notranslate"><span class="pre">self.version</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>version</strong> – version string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="audeer.LooseVersion.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#audeer.LooseVersion.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parsed version.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -831,6 +952,78 @@ explicitly to set them.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1/path2/path3&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 <span class="go">&#39;path3&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="move-file">
+<h2>move_file<a class="headerlink" href="#move-file" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="audeer.move_file">
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">move_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#move_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.move_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move a file independent of operating system.</p>
+<p>As <a class="reference external" href="https://docs.python.org/3/library/os.html#os.rename" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.rename()</span></code></a> works differently
+under Unix and Windows
+and <a class="reference external" href="https://docs.python.org/3/library/shutil.html#shutil.move" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">shutil.move()</span></code></a> can be slow,
+we use <a class="reference external" href="https://docs.python.org/3/library/os.html#os.replace" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.replace()</span></code></a>
+to move the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scr_path</strong> – source file path</p></li>
+<li><p><strong>dst_path</strong> – destination file path</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;folder&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_path</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file1&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dst_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">move_file</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;file2&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="path">
+<h2>path<a class="headerlink" href="#path" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="audeer.path">
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/path.html#path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand and normalize to absolute path.</p>
+<p>It uses <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.realpath" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.realpath()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.expanduser" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.expanduser()</span></code></a>
+to ensure an absolute path
+without <code class="docutils literal notranslate"><span class="pre">..</span></code> or <code class="docutils literal notranslate"><span class="pre">~</span></code>,
+and independent of the path separator
+of the operating system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file, directory</p></li>
+<li><p><strong>*paths</strong> – additional arguments
+to be joined with <code class="docutils literal notranslate"><span class="pre">path</span></code>
+by <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.join" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.join()</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>(joined and) expanded path</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+<span class="go">&#39;path&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">,</span> <span class="s1">&#39;./file.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+<span class="go">&#39;path/file.txt&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -991,24 +1184,43 @@ that will be displayed next to progress bar</p></li>
 <h2>safe_path<a class="headerlink" href="#safe-path" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.safe_path">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">safe_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#safe_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.safe_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ensure the path is absolute and doesn’t include <cite>..</cite> or <cite>~</cite>.</p>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">safe_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/path.html#safe_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.safe_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand and normalize to absolute path.</p>
+<p>It uses <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.realpath" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.realpath()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.expanduser" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.expanduser()</span></code></a>
+to ensure an absolute path
+without <code class="docutils literal notranslate"><span class="pre">..</span></code> or <code class="docutils literal notranslate"><span class="pre">~</span></code>,
+and independent of the path separator
+of the operating system.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a class="reference internal" href="#audeer.safe_path" title="audeer.safe_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.safe_path()</span></code></a> is deprecated,
+please use <a class="reference internal" href="#audeer.path" title="audeer.path"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.path()</span></code></a> instead.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file, directory</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file, directory</p></li>
+<li><p><strong>*paths</strong> – additional arguments
+to be joined with <code class="docutils literal notranslate"><span class="pre">path</span></code>
+by <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.join" title="(in Python v3.10)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.join()</span></code></a></p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>expanded path</p>
+<dd class="field-odd"><p>(joined and) expanded path</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
 <span class="go">&#39;path&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">,</span> <span class="s1">&#39;./file.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+<span class="go">&#39;path/file.txt&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1051,6 +1263,89 @@ the <code class="docutils literal notranslate"><span class="pre">v</span></code>
 </dd></dl>
 
 </div>
+<div class="section" id="strictversion">
+<h2>StrictVersion<a class="headerlink" href="#strictversion" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="audeer.StrictVersion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">StrictVersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/version.html#StrictVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.StrictVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Version numbering for anal retentives and software idealists.</p>
+<p>This implementation was originally part of <a class="reference external" href="https://docs.python.org/3/library/distutils.html#module-distutils" title="(in Python v3.10)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distutils</span></code></a>
+as <code class="docutils literal notranslate"><span class="pre">version.StrictVersion</span></code>.</p>
+<p>A version number consists of two
+or three dot-separated numeric components,
+with an optional “pre-release” tag on the end.
+The pre-release tag consists of the letter ‘a’ or ‘b’
+followed by a number.
+If the numeric components of two version numbers are equal,
+then one with a pre-release tag
+will always be deemed earlier (lesser)
+than one without.</p>
+<p>The following are valid version numbers
+(shown in the order
+that would be obtained
+by sorting according to the supplied cmp function):
+<code class="docutils literal notranslate"><span class="pre">'0.4'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'0.4.1'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'0.5a1'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'0.5b3'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'0.5'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'0.9.6'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.0'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.0.4a3'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.0.4b1'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.0.4'</span></code>.</p>
+<p>The following are examples of invalid version numbers:
+<code class="docutils literal notranslate"><span class="pre">'1'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'2.7.2.2'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.3.a4'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.3pl1'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'1.3c4'</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>version</strong> – version string</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">StrictVersion</span><span class="p">(</span><span class="s1">&#39;1.17.2a1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span>
+<span class="go">StrictVersion (&#39;1.17.2a1&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span><span class="o">.</span><span class="n">version</span>
+<span class="go">(1, 17, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span><span class="o">.</span><span class="n">prerelease</span>
+<span class="go">(&#39;a&#39;, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">StrictVersion</span><span class="p">(</span><span class="s1">&#39;1.17.2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">&lt;</span> <span class="n">v2</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="audeer.StrictVersion.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/version.html#StrictVersion.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.StrictVersion.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a version string.</p>
+<p>When called this updates the stored version
+under <code class="docutils literal notranslate"><span class="pre">self.version</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>version</strong> – version string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="audeer.StrictVersion.prerelease">
+<span class="sig-name descname"><span class="pre">prerelease</span></span><a class="headerlink" href="#audeer.StrictVersion.prerelease" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parsed prerelease part of version.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="audeer.StrictVersion.version">
+<span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#audeer.StrictVersion.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parsed version.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="to-list">
 <h2>to_list<a class="headerlink" href="#to-list" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -1073,6 +1368,35 @@ Otherwise, <code class="docutils literal notranslate"><span class="pre">x</span>
 <span class="go">[&#39;abc&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">to_list</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 <span class="go">[1, 2, 3]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="touch">
+<h2>touch<a class="headerlink" href="#touch" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="audeer.touch">
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">touch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/audeer/core/io.html#touch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.touch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an empty file.</p>
+<p>If the file exists already
+it’s access and modification times
+are updated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>expanded path to file</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="s1">&#39;file.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="go">&#39;file.txt&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1133,7 +1457,7 @@ with <code class="docutils literal notranslate"><span class="pre">-</span></code
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/01/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/03/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

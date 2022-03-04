@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                v1.17.2
+                v1.18.0
               </div>
             
           
@@ -152,6 +152,7 @@
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 
+<span class="kn">from</span> <span class="nn">audeer.core.path</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">safe_path</span>
 <span class="kn">from</span> <span class="nn">audeer.core.tqdm</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">format_display_message</span><span class="p">,</span>
     <span class="n">progress_bar</span><span class="p">,</span>
@@ -159,10 +160,16 @@
 <span class="kn">from</span> <span class="nn">audeer.core.utils</span> <span class="kn">import</span> <span class="n">to_list</span>
 
 
-<span class="c1"># Exclude common_directory example from doctest on Windows</span>
+<span class="c1"># Exclude common_directory example from doctest</span>
+<span class="c1"># on Windows and MacOS</span>
+<span class="c1"># (which adds /System/Volumes/Data in front in the Github runner)</span>
 <span class="c1"># as it outputs a path in Linux syntax in the example</span>
-<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Windows&#39;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-    <span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;common_directory&#39;</span><span class="p">]</span>
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Darwin&#39;</span><span class="p">,</span> <span class="s1">&#39;Windows&#39;</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;common_directory&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;list_dir_names&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;list_file_names&#39;</span><span class="p">,</span>
+    <span class="p">]</span>
 
 
 <div class="viewcode-block" id="basename_wo_ext"><a class="viewcode-back" href="../../../api-audeer.html#audeer.basename_wo_ext">[docs]</a><span class="k">def</span> <span class="nf">basename_wo_ext</span><span class="p">(</span>
@@ -476,27 +483,41 @@
         <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">basenames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
+        <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;List of folder names located inside provided path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to directory</span>
-<span class="sd">        basenames: if ``True`` returns basenames of directories</span>
+<span class="sd">        basenames: if ``True`` return relative path in respect to ``path``</span>
+<span class="sd">        recursive: if ``True`` includes subdirectories</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list of paths to directories</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; path = mkdir(&#39;path1/path2&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; list_dir_names(&#39;path1&#39;, basenames=True)</span>
-<span class="sd">        [&#39;path2&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; _ = mkdir(&#39;path/a/b/c&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; list_dir_names(&#39;path&#39;, basenames=True)</span>
+<span class="sd">        [&#39;a&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; list_dir_names(&#39;path&#39;, basenames=True, recursive=True)</span>
+<span class="sd">        [&#39;a&#39;, &#39;a/b&#39;, &#39;a/b/c&#39;]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)]</span>
-    <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">helper</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">paths</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ps</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+        <span class="n">paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">recursive</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ps</span><span class="p">:</span>
+                <span class="n">helper</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
+
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">helper</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">basenames</span><span class="p">:</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
+
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span></div>
 
 
@@ -505,37 +526,51 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">filetype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
         <span class="n">basenames</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
+        <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;List of file names inferred from provided path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to file, directory or pattern</span>
 <span class="sd">        filetype: optional consider only this filetype</span>
-<span class="sd">        basenames: if ``True`` returns basenames of directories</span>
+<span class="sd">        basenames: if ``True`` return relative path in respect to ``path``</span>
+<span class="sd">        recursive: if ``True`` includes subdirectories</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list of path(s) to file(s)</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; path = mkdir(&#39;path1&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; open(os.path.join(path, &#39;file1&#39;), &#39;a&#39;).close()</span>
-<span class="sd">        &gt;&gt;&gt; list_file_names(path, basenames=True)</span>
-<span class="sd">        [&#39;file1&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; dir_path = mkdir(&#39;path&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; _ = touch(os.path.join(dir_path, &#39;file&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; sub_dir_path = mkdir(os.path.join(&#39;path&#39;, &#39;sub&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; _ = touch(os.path.join(sub_dir_path, &#39;file&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; list_file_names(dir_path, basenames=True)</span>
+<span class="sd">        [&#39;file&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; list_file_names(dir_path, basenames=True, recursive=True)</span>
+<span class="sd">        [&#39;file&#39;, &#39;sub/file&#39;]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">path</span> <span class="ow">or</span> <span class="s1">&#39;.&#39;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="n">search_pattern</span> <span class="o">=</span> <span class="n">path</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="c1"># Ensure / at the end</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="n">search_pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">*</span><span class="si">{</span><span class="n">filetype</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="n">recursive</span><span class="p">:</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">/**/*</span><span class="si">{</span><span class="n">filetype</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">*</span><span class="si">{</span><span class="n">filetype</span><span class="si">}</span><span class="s1">&#39;</span>
     <span class="c1"># Get list of files matching search pattern</span>
-    <span class="n">file_names</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">)</span>
+    <span class="n">file_names</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">search_pattern</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
     <span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_names</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">f</span><span class="p">)]</span>
     <span class="k">if</span> <span class="n">basenames</span><span class="p">:</span>
-        <span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">]</span>
+        <span class="n">file_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">]</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">file_names</span><span class="p">)</span></div>
 
 
@@ -580,6 +615,34 @@
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="move_file"><a class="viewcode-back" href="../../../api-audeer.html#audeer.move_file">[docs]</a><span class="k">def</span> <span class="nf">move_file</span><span class="p">(</span>
+        <span class="n">src_path</span><span class="p">,</span>
+        <span class="n">dst_path</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Move a file independent of operating system.</span>
+
+<span class="sd">    As :func:`os.rename` works differently</span>
+<span class="sd">    under Unix and Windows</span>
+<span class="sd">    and :func:`shutil.move` can be slow,</span>
+<span class="sd">    we use :func:`os.replace`</span>
+<span class="sd">    to move the file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        scr_path: source file path</span>
+<span class="sd">        dst_path: destination file path</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; path = mkdir(&#39;folder&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; src_path = touch(os.path.join(path, &#39;file1&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; dst_path = os.path.join(path, &#39;file2&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; move_file(src_path, dst_path)</span>
+<span class="sd">        &gt;&gt;&gt; list_file_names(path, basenames=True)</span>
+<span class="sd">        [&#39;file2&#39;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="replace_file_extension"><a class="viewcode-back" href="../../../api-audeer.html#audeer.replace_file_extension">[docs]</a><span class="k">def</span> <span class="nf">replace_file_extension</span><span class="p">(</span>
@@ -636,29 +699,32 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="safe_path"><a class="viewcode-back" href="../../../api-audeer.html#audeer.safe_path">[docs]</a><span class="k">def</span> <span class="nf">safe_path</span><span class="p">(</span>
+<div class="viewcode-block" id="touch"><a class="viewcode-back" href="../../../api-audeer.html#audeer.touch">[docs]</a><span class="k">def</span> <span class="nf">touch</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Ensure the path is absolute and doesn&#39;t include `..` or `~`.</span>
+    <span class="sd">&quot;&quot;&quot;Create an empty file.</span>
+
+<span class="sd">    If the file exists already</span>
+<span class="sd">    it&#39;s access and modification times</span>
+<span class="sd">    are updated.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        path: path to file, directory</span>
+<span class="sd">        path: path to file</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        expanded path</span>
+<span class="sd">        expanded path to file</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; home = safe_path(&#39;~&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; path = safe_path(&#39;~/path/.././path&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; path[len(home) + 1:]</span>
-<span class="sd">        &#39;path&#39;</span>
+<span class="sd">        &gt;&gt;&gt; path = touch(&#39;file.txt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(path)</span>
+<span class="sd">        &#39;file.txt&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-        <span class="c1"># Convert bytes to str, see https://stackoverflow.com/a/606199</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bytes</span><span class="p">:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">utime</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">path</span></div>
 </pre></div>
 
@@ -675,7 +741,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/01/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/03/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
