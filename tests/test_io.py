@@ -338,9 +338,7 @@ def test_list_file_names(tmpdir, files, path, filetype, file_list, recursive):
         audeer.mkdir(os.path.dirname(file_tmp))
         file_tmp.write('')
     if os.path.isdir(path):
-        file_list = [
-            audeer.safe_path(os.path.join(path, f)) for f in file_list
-        ]
+        file_list = [audeer.path(path, f) for f in file_list]
     else:
         file_list = [path]
     f = audeer.list_file_names(
@@ -488,66 +486,6 @@ def test_rmdir(tmpdir):
     audeer.rmdir('folder')
     assert not os.path.exists(path)
     os.chdir(current_path)
-
-
-@pytest.mark.parametrize('path', [
-    ('~/.someconfigrc'),
-    ('file.tar.gz'),
-    ('/a/c.d/g'),
-    ('/a/c.d/g.exe'),
-    ('../.././README.md'),
-    ('folder/file.txt'),
-    (b'folder/file.txt'),
-    (''),
-])
-def test_safe_path(path):
-    if path:
-        expected_path = os.path.abspath(os.path.expanduser(path))
-    else:
-        expected_path = ''
-    if type(expected_path) == bytes:
-        expected_path = expected_path.decode('utf8')
-    path = audeer.safe_path(path)
-    assert path == expected_path
-    assert type(path) is str
-
-
-@pytest.mark.parametrize(
-    'path, paths',
-    [
-        ('/a/b', ['file.tar.gz']),
-        ('/a', ['b', 'file.tar.gz']),
-        ('/a/c.d/g', ['../f']),
-        ('', ''),
-    ]
-)
-def test_safe_path_join(path, paths):
-    expected_path = os.path.join(path, *paths)
-    if expected_path:
-        expected_path = os.path.abspath(os.path.expanduser(expected_path))
-    else:
-        expected_path = ''
-    path = audeer.safe_path(path, *paths)
-    assert path == expected_path
-    assert type(path) is str
-
-
-def test_safe_path_symlinks(tmpdir):
-    filename = 'file.txt'
-    linkname = 'link.txt'
-    dir_tmp = tmpdir.mkdir('folder')
-    f = dir_tmp.join(filename)
-    f.write('')
-    folder = audeer.mkdir(str(dir_tmp))
-    file = os.path.join(folder, filename)
-    link = os.path.join(folder, linkname)
-    os.symlink(file, link)
-    expected_path = os.path.realpath(os.path.expanduser(link))
-    path = audeer.safe_path(link)
-    _, path = os.path.splitdrive(path)
-    _, expected_path = os.path.splitdrive(expected_path)
-    assert path == expected_path
-    assert type(path) is str
 
 
 @pytest.mark.parametrize(

@@ -8,6 +8,7 @@ import typing
 import urllib.request
 import zipfile
 
+from audeer.core.path import path as safe_path
 from audeer.core.tqdm import (
     format_display_message,
     progress_bar,
@@ -24,7 +25,6 @@ if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
         'common_directory',
         'list_dir_names',
         'list_file_names',
-        'safe_path',
     ]
 
 
@@ -553,41 +553,6 @@ def rmdir(
     path = safe_path(path)
     if os.path.exists(path):
         shutil.rmtree(path)
-
-
-def safe_path(
-        path: typing.Union[str, bytes],
-        *paths: typing.Sequence[typing.Union[str, bytes]],
-) -> str:
-    """Ensure the path is absolute and doesn't include `..` or `~`.
-
-    Args:
-        path: path to file, directory
-        *paths: additional arguments
-            to be joined with ``path``
-            by :func:`os.path.join`
-
-    Returns:
-        (joined and) expanded path
-
-    Example:
-        >>> home = safe_path('~')
-        >>> path = safe_path('~/path/.././path')
-        >>> path[len(home) + 1:]
-        'path'
-        >>> path = safe_path('~/path/.././path', './file.txt')
-        >>> path[len(home) + 1:]
-        'path/file.txt'
-
-    """
-    if paths:
-        path = os.path.join(path, *paths)
-    if path:
-        path = os.path.realpath(os.path.expanduser(path))
-        # Convert bytes to str, see https://stackoverflow.com/a/606199
-        if type(path) == bytes:
-            path = path.decode('utf-8').strip('\x00')
-    return path
 
 
 def touch(
