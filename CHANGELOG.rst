@@ -7,6 +7,24 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.18.0 (2022-03-04)
+---------------------------
+
+* Added: ``audeer.path()``
+  as replacement for ``audeer.safe_path()``
+* Added: ``*paths`` argument to ``audeer.safe_path()``
+  to join paths
+* Added: ``recursive`` argument to ``audeer.list_dir_names()``
+* Added: ``recursive`` argument to ``audeer.list_file_names()``
+* Added: ``audeer.StrictVersion()``
+* Added: ``audeer.LooseVersion()``
+* Added: ``audeer.install_package()``
+* Added: ``audeer.move_file()``
+* Added: ``audeer.touch()``
+* Deprecated: ``audeer.safe_path()``
+* Fixed: add test for MacOS
+
+
 Version 1.17.2 (2022-01-03)
 ---------------------------
 
