@@ -8,7 +8,7 @@ import typing
 import urllib.request
 import zipfile
 
-from audeer.core.path import path as _path
+from audeer.core.path import path as safe_path
 from audeer.core.tqdm import (
     format_display_message,
     progress_bar,
@@ -25,7 +25,6 @@ if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
         'common_directory',
         'list_dir_names',
         'list_file_names',
-        'safe_path',
     ]
 
 
@@ -554,45 +553,6 @@ def rmdir(
     path = safe_path(path)
     if os.path.exists(path):
         shutil.rmtree(path)
-
-
-def safe_path(
-        path: typing.Union[str, bytes],
-        *paths: typing.Sequence[typing.Union[str, bytes]],
-) -> str:
-    """Expand and normalize to absolute path.
-
-    It uses :func:`os.path.realpath`
-    and :func:`os.path.expanduser`
-    to ensure an absolute path
-    without ``..`` or ``~``,
-    and independent of the path separator
-    of the operating system.
-
-    Warning:
-        :func:`audeer.safe_path` is deprecated,
-        please use :func:`audeer.path` instead.
-
-    Args:
-        path: path to file, directory
-        *paths: additional arguments
-            to be joined with ``path``
-            by :func:`os.path.join`
-
-    Returns:
-        (joined and) expanded path
-
-    Example:
-        >>> home = safe_path('~')
-        >>> folder = safe_path('~/path/.././path')
-        >>> folder[len(home) + 1:]
-        'path'
-        >>> file = safe_path('~/path/.././path', './file.txt')
-        >>> file[len(home) + 1:]
-        'path/file.txt'
-
-    """
-    return _path(path, *paths)
 
 
 def touch(

@@ -13,10 +13,12 @@ from audeer.core.io import (
     move_file,
     replace_file_extension,
     rmdir,
-    safe_path,
     touch,
 )
-from audeer.core.path import path
+from audeer.core.path import (
+    path,
+    safe_path,
+)
 from audeer.core.tqdm import (
     format_display_message,
     progress_bar,
