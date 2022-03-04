@@ -25,6 +25,9 @@ def test_path(path):
     path = audeer.path(path)
     assert path == expected_path
     assert type(path) is str
+    path = audeer.safe_path(path)
+    assert path == expected_path
+    assert type(path) is str
 
 
 @pytest.mark.parametrize(
