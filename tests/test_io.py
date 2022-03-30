@@ -429,6 +429,11 @@ def test_mkdir(tmpdir):
     mode = stat.S_IMODE(os.stat(p).st_mode)
     assert mode == int(expected_mode, 8)
     assert mode != int('775', 8)
+    # Long file names
+    path = str(tmpdir.mkdir('f' * 266))
+    p = audeer.mkdir(path)
+    assert os.path.isdir(p) is True
+    assert p == path
 
 
 @pytest.mark.parametrize(
