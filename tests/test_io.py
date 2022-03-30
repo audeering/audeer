@@ -430,7 +430,9 @@ def test_mkdir(tmpdir):
     assert mode == int(expected_mode, 8)
     assert mode != int('775', 8)
     # Long file names
-    path = str(tmpdir.mkdir('f' * 266))
+    path = str(tmpdir.mkdir('abcdefghij'))
+    path = os.path.join(path, 'abcdefghij/' * 30)
+    path = path[:-1]
     p = audeer.mkdir(path)
     assert os.path.isdir(p) is True
     assert p == path
