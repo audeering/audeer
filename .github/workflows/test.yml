@@ -23,6 +23,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Check LongPathsEnabled
+      run: |
+        (Get-ItemProperty "HKLM:System\CurrentControlSet\Control\FileSystem").LongPathsEnabled
+      if: matrix.os == 'windows-latest'
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
