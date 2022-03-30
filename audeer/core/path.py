@@ -50,9 +50,14 @@ def path(
         path = os.path.join(path, *paths)
     if path:
         path = os.path.realpath(os.path.expanduser(path))
-        # Convert bytes to str, see https://stackoverflow.com/a/606199
+        # Convert bytes to str,
+        # see https://stackoverflow.com/a/606199
         if type(path) == bytes:
             path = path.decode('utf-8').strip('\x00')
+        # Handle long path names under Windows,
+        # see https://stackoverflow.com/a/60105517
+        if platform.system() == 'Windows' and length(path) > 256:
+            path = '\\\\?\\' + path
     return path
 
 
