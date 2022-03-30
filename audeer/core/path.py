@@ -56,7 +56,7 @@ def path(
             path = path.decode('utf-8').strip('\x00')
         # Handle long path names under Windows,
         # see https://stackoverflow.com/a/60105517
-        if platform.system() == 'Windows' and length(path) > 256:
+        if platform.system() == 'Windows' and len(path) > 256:
             path = '\\\\?\\' + path
     return path
 
