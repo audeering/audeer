@@ -57,7 +57,7 @@ def path(
         # Handle long path names under Windows,
         # see https://stackoverflow.com/a/60105517
         # This is tested in Github Windows runner
-        if platform.system() == 'Windows' and len(path) > 256:
+        if platform.system() == 'Windows' and len(path) > 260:
             path = '\\\\?\\' + path  # pragma: nocover
     return path
 
