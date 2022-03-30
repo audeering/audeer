@@ -23,15 +23,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Check LongPathsEnabled
+    - name: Enable LongPathsEnabled
       run: |
-        (Get-ItemProperty "HKLM:System\CurrentControlSet\Control\FileSystem").LongPathsEnabled
+        New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
       if: matrix.os == 'windows-latest'
 
     - name: Disable LongPathsEnabled
       run: |
         New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 0 -PropertyType DWORD -Force
-        (Get-ItemProperty "HKLM:System\CurrentControlSet\Control\FileSystem").LongPathsEnabled
       if: matrix.os == 'windows-2019'
 
     - name: Set up Python ${{ matrix.python-version }}
