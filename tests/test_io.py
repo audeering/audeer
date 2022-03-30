@@ -436,7 +436,6 @@ def test_mkdir(tmpdir):
     p = audeer.mkdir(path)
     if platform.system() == 'Windows' and len(path) > 260:
         path = '\\\\?\\' + path
-    print(len(path))
     assert os.path.isdir(p) is True
     assert p == path
 
