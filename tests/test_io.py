@@ -192,18 +192,39 @@ def test_file_extension(path, extension):
 
 
 @pytest.mark.parametrize(
-    'dir_list,recursive',
+    'dir_list,expected,recursive,hidden',
     [
-        ([], False),
-        ([], True),
-        (['a', 'b', 'c'], False),
-        (['a', 'b', 'c'], True),
-        (['a'], False),
-        (['a'], True),
-        (['a', os.path.join('a', 'b'), os.path.join('a', 'b', 'c')], True),
+        ([], [], False, False),
+        ([], [], True, False),
+        (['a', 'b', 'c'], ['a', 'b', 'c'], False, False),
+        (['a', 'b', 'c'], ['a', 'b', 'c'], True, False),
+        (['a'], ['a'], False, False),
+        (['a'], ['a'], True, False),
+        (
+            ['a', os.path.join('a', 'b'), os.path.join('a', 'b', 'c')],
+            ['a', os.path.join('a', 'b'), os.path.join('a', 'b', 'c')],
+            True,
+            False,
+        ),
+        # hidden
+        (['a', '.b'], ['a'], True, False),
+        (['a', '.b'], ['.b', 'a'], True, True),
+        (
+            ['a', '.b', os.path.join('a', '.b'), os.path.join('a', '.b', 'c')],
+            ['a'],
+            True,
+            False,
+        ),
+        (
+            ['a', '.b', os.path.join('a', '.b'), os.path.join('a', '.b', 'c')],
+            ['.b', 'a', os.path.join('a', '.b'), os.path.join('a', '.b', 'c')],
+            True,
+            True,
+        ),
     ],
 )
-def test_list_dir_names(tmpdir, dir_list, recursive):
+def test_list_dir_names(tmpdir, dir_list, expected, recursive, hidden):
+
     dir_tmp = tmpdir.mkdir('folder')
     directories = []
     for directory in dir_list:
@@ -216,32 +237,38 @@ def test_list_dir_names(tmpdir, dir_list, recursive):
     path = os.path.join(str(dir_tmp), '.')
     dirs = audeer.list_dir_names(
         path,
+        basenames=False,
         recursive=recursive,
+        hidden=hidden,
     )
-    assert dirs == sorted(directories)
+    assert dirs == [audeer.path(dir_tmp, d) for d in expected]
     assert type(dirs) is list
 
     # test basenames
     dirs = audeer.list_dir_names(
         path,
-        recursive=recursive,
         basenames=True,
+        recursive=recursive,
+        hidden=hidden,
     )
-    assert dirs == sorted(dir_list)
+    assert dirs == expected
 
 
 @pytest.mark.parametrize(
-    'files,path,filetype,file_list,recursive',
+    'files,path,filetype,expected,recursive,hidden',
     [
-        ([], '.', '', [], False),
-        ([], '.', '', [], True),
-        ([], '.', 'wav', [], False),
-        ([], '.', 'wav', [], True),
+        # empty
+        ([], '.', '', [], False, False),
+        ([], '.', '', [], True, False),
+        ([], '.', 'wav', [], False, False),
+        ([], '.', 'wav', [], True, False),
+        # folder
         (
             ['t3.ogg', 't2.wav', 't1.wav'],
             '.',
             '',
             ['t1.wav', 't2.wav', 't3.ogg'],
+            False,
             False,
         ),
         (
@@ -256,6 +283,7 @@ def test_list_dir_names(tmpdir, dir_list, recursive):
             '',
             ['t1.wav', 't2.wav', 't3.ogg'],
             False,
+            False,
         ),
         (
             [
@@ -275,7 +303,9 @@ def test_list_dir_names(tmpdir, dir_list, recursive):
                 't3.ogg',
             ],
             True,
+            False,
         ),
+        # filetype
         (
             [
                 't3.ogg',
@@ -288,6 +318,7 @@ def test_list_dir_names(tmpdir, dir_list, recursive):
             'ogg',
             ['t3.ogg'],
             False,
+            False,
         ),
         (
             [
@@ -304,15 +335,6 @@ def test_list_dir_names(tmpdir, dir_list, recursive):
                 't3.ogg',
             ],
             True,
-        ),
-        (
-            [
-                't1.wav',
-                os.path.join('sub', 't1.wav'),
-            ],
-            't1.wav',
-            '',
-            ['t1.wav'],
             False,
         ),
         (
@@ -323,12 +345,132 @@ def test_list_dir_names(tmpdir, dir_list, recursive):
             't1.wav',
             '',
             ['t1.wav'],
+            False,
+            False,
+        ),
+        # pattern
+        (
+            [
+                't1.wav',
+                't2.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.wav'),
+            ],
+            't1.wav',
+            '',
+            [os.path.join('sub', 't1.wav'), 't1.wav'],
+            True,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.ogg',
+                's3.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.ogg'),
+                os.path.join('sub', 's3.wav'),
+            ],
+            't*',
+            '',
+            [
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.ogg'),
+                't1.wav',
+                't2.ogg'
+            ],
+            True,
+            False,
+        ),
+        # pattern + filetype
+        (
+            [
+                't1.wav',
+                't2.ogg',
+                's3.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.ogg'),
+                os.path.join('sub', 's3.wav'),
+            ],
+            't*',
+            'ogg',
+            [
+                os.path.join('sub', 't2.ogg'),
+                't2.ogg'
+            ],
+            True,
+            False,
+        ),
+        # hidden
+        (
+            [
+                't1.wav',
+                '.t2.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', '.t2.wav'),
+            ],
+            '',
+            '',
+            [
+                't1.wav',
+            ],
+            False,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                '.t2.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', '.t2.wav'),
+            ],
+            '',
+            '',
+            [
+                os.path.join('sub', 't1.wav'),
+                't1.wav',
+            ],
+            True,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                '.t2.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', '.t2.wav'),
+            ],
+            '',
+            '',
+            [
+                '.t2.wav',
+                't1.wav',
+            ],
+            False,
+            True,
+        ),
+        (
+            [
+                't1.wav',
+                '.t2.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', '.t2.wav'),
+            ],
+            '',
+            '',
+            [
+                '.t2.wav',
+                os.path.join('sub', '.t2.wav'),
+                os.path.join('sub', 't1.wav'),
+                't1.wav',
+            ],
+            True,
             True,
         ),
     ],
 )
-def test_list_file_names(tmpdir, files, path, filetype, file_list, recursive):
-    file_list_org = file_list.copy()
+def test_list_file_names(tmpdir, files, path, filetype, expected,
+                         recursive, hidden):
     dir_tmp = tmpdir.mkdir('folder')
     dir_tmp.mkdir('subfolder')
     path = os.path.join(str(dir_tmp), path)
@@ -337,25 +479,25 @@ def test_list_file_names(tmpdir, files, path, filetype, file_list, recursive):
         file_tmp = dir_tmp.join(file)
         audeer.mkdir(os.path.dirname(file_tmp))
         file_tmp.write('')
-    if os.path.isdir(path):
-        file_list = [audeer.path(path, f) for f in file_list]
-    else:
-        file_list = [path]
     f = audeer.list_file_names(
         path,
         filetype=filetype,
+        basenames=False,
         recursive=recursive,
+        hidden=hidden,
     )
-    assert f == file_list
+    # test full path
+    assert f == [audeer.path(dir_tmp, f) for f in expected]
     assert type(f) is list
     # test basenames
     f = audeer.list_file_names(
         path,
         filetype=filetype,
-        recursive=recursive,
         basenames=True,
+        recursive=recursive,
+        hidden=hidden,
     )
-    assert f == file_list_org
+    assert f == expected
 
 
 def test_mkdir(tmpdir):

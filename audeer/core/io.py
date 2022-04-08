@@ -1,4 +1,4 @@
-from glob import glob
+import fnmatch
 import itertools
 import os
 import platform
@@ -340,6 +340,7 @@ def list_dir_names(
         *,
         basenames: bool = False,
         recursive: bool = False,
+        hidden: bool = True,
 ) -> typing.List[str]:
     """List of folder names located inside provided path.
 
@@ -347,16 +348,31 @@ def list_dir_names(
         path: path to directory
         basenames: if ``True`` return relative path in respect to ``path``
         recursive: if ``True`` includes subdirectories
+        hidden: if ``True`` includes directories starting with a dot (.)
 
     Returns:
         list of paths to directories
 
     Example:
-        >>> _ = mkdir('path/a/b/c')
-        >>> list_dir_names('path', basenames=True)
+        >>> _ = mkdir('path/a/.b/c')
+        >>> list_dir_names(
+        ...     'path',
+        ...     basenames=True,
+        ... )
         ['a']
-        >>> list_dir_names('path', basenames=True, recursive=True)
-        ['a', 'a/b', 'a/b/c']
+        >>> list_dir_names(
+        ...     'path',
+        ...     basenames=True,
+        ...     recursive=True,
+        ... )
+        ['a', 'a/.b', 'a/.b/c']
+        >>> list_dir_names(
+        ...     'path',
+        ...     basenames=True,
+        ...     recursive=True,
+        ...     hidden=False,
+        ... )
+        ['a']
 
     """
     path = safe_path(path)
@@ -364,6 +380,8 @@ def list_dir_names(
     def helper(p: str, paths: typing.List[str]):
         ps = [os.path.join(p, x) for x in os.listdir(p)]
         ps = [x for x in ps if os.path.isdir(x)]
+        if not hidden:
+            ps = [x for x in ps if not os.path.basename(x).startswith('.')]
         paths.extend(ps)
         if len(ps) > 0 and recursive:
             for p in ps:
@@ -383,6 +401,7 @@ def list_file_names(
         filetype: str = '',
         basenames: bool = False,
         recursive: bool = False,
+        hidden: bool = False,
 ) -> typing.List[str]:
     """List of file names inferred from provided path.
 
@@ -391,43 +410,96 @@ def list_file_names(
         filetype: optional consider only this filetype
         basenames: if ``True`` return relative path in respect to ``path``
         recursive: if ``True`` includes subdirectories
+        hidden: if ``True`` includes files starting with a dot (.)
 
     Returns:
         list of path(s) to file(s)
 
     Example:
         >>> dir_path = mkdir('path')
-        >>> _ = touch(os.path.join(dir_path, 'file'))
+        >>> _ = touch(os.path.join(dir_path, 'file.wav'))
+        >>> _ = touch(os.path.join(dir_path, '.lock'))
         >>> sub_dir_path = mkdir(os.path.join('path', 'sub'))
-        >>> _ = touch(os.path.join(sub_dir_path, 'file'))
-        >>> list_file_names(dir_path, basenames=True)
-        ['file']
-        >>> list_file_names(dir_path, basenames=True, recursive=True)
-        ['file', 'sub/file']
+        >>> _ = touch(os.path.join(sub_dir_path, 'file.ogg'))
+        >>> _ = touch(os.path.join(sub_dir_path, '.lock'))
+        >>> list_file_names(
+        ...     dir_path,
+        ...     basenames=True,
+        ... )
+        ['file.wav']
+        >>> list_file_names(
+        ...     dir_path,
+        ...     basenames=True,
+        ...     hidden=True,
+        ... )
+        ['.lock', 'file.wav']
+        >>> list_file_names(
+        ...     dir_path,
+        ...     basenames=True,
+        ...     recursive=True,
+        ... )
+        ['file.wav', 'sub/file.ogg']
+        >>> list_file_names(
+        ...     dir_path,
+        ...     basenames=True,
+        ...     recursive=True,
+        ...     hidden=True,
+        ... )
+        ['.lock', 'file.wav', 'sub/.lock', 'sub/file.ogg']
+        >>> list_file_names(
+        ...     os.path.join(dir_path, 'f*'),
+        ...     basenames=True,
+        ...     recursive=True,
+        ...     hidden=True,
+        ... )
+        ['file.wav', 'sub/file.ogg']
+        >>> list_file_names(
+        ...     os.path.join(dir_path, 'f*'),
+        ...     filetype='ogg',
+        ...     basenames=True,
+        ...     recursive=True,
+        ...     hidden=True,
+        ... )
+        ['sub/file.ogg']
 
     """
-    path = path or '.'
     path = safe_path(path)
-    if os.path.isdir(path):
-        root = path
+    if not os.path.isdir(path):
+        pattern = os.path.basename(path)
+        path = os.path.dirname(path)
     else:
-        root = os.path.dirname(path)
-    if os.path.isfile(path):
-        search_pattern = path
-    else:
-        if os.path.isdir(path):
-            # Ensure / at the end
-            path = os.path.join(path, '')
-        if recursive:
-            search_pattern = f'{path}/**/*{filetype}'
-        else:
-            search_pattern = f'{path}*{filetype}'
-    # Get list of files matching search pattern
-    file_names = glob(search_pattern, recursive=recursive)
-    file_names = [f for f in file_names if not os.path.isdir(f)]
+        pattern = None
+
+    def helper(p: str, paths: typing.List[str]):
+        ps = [os.path.join(p, x) for x in os.listdir(p)]
+        folders = [x for x in ps if os.path.isdir(x)]
+        files = [x for x in ps if os.path.isfile(x)]
+        if pattern:
+            files = [
+                file for file in files
+                if fnmatch.fnmatch(os.path.basename(file), f'{pattern}')
+            ]
+        if filetype:
+            files = [
+                file for file in files
+                if fnmatch.fnmatch(os.path.basename(file), f'*{filetype}')
+            ]
+        if not hidden:
+            files = [
+                file for file in files
+                if not os.path.basename(file).startswith('.')
+            ]
+        paths.extend(files)
+        if len(folders) > 0 and recursive:
+            for p in folders:
+                helper(p, paths)
+
+    paths = []
+    helper(path, paths)
     if basenames:
-        file_names = [f[len(root) + 1:] for f in file_names]
-    return sorted(file_names)
+        paths = [p[len(path) + 1:] for p in paths]
+
+    return sorted(paths)
 
 
 def mkdir(
