@@ -348,7 +348,7 @@ def list_dir_names(
         path: path to directory
         basenames: if ``True`` return relative path in respect to ``path``
         recursive: if ``True`` includes subdirectories
-        hidden: if ``True`` includes directories starting with a dot (.)
+        hidden: if ``True`` includes directories starting with a dot (``.``)
 
     Returns:
         list of paths to directories
