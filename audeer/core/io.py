@@ -410,7 +410,7 @@ def list_file_names(
         filetype: optional consider only this filetype
         basenames: if ``True`` return relative path in respect to ``path``
         recursive: if ``True`` includes subdirectories
-        hidden: if ``True`` includes files starting with a dot (.)
+        hidden: if ``True`` includes files starting with a dot (``.``)
 
     Returns:
         list of path(s) to file(s)
