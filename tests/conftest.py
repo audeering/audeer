@@ -10,14 +10,16 @@ def cleanup():
     files = [
         'favicon.png',
         'file.txt',
-        os.path.join('path', 'sub', 'file'),
-        os.path.join('path', 'file'),
+        os.path.join('path', 'sub', '.lock'),
+        os.path.join('path', 'sub', 'file.ogg'),
+        os.path.join('path', '.lock'),
+        os.path.join('path', 'file.wav'),
         os.path.join('folder', 'file2'),
     ]
     folders = [
         os.path.join('path', 'sub'),
-        os.path.join('path', 'a', 'b', 'c'),
-        os.path.join('path', 'a', 'b'),
+        os.path.join('path', 'a', '.b', 'c'),
+        os.path.join('path', 'a', '.b'),
         os.path.join('path', 'a'),
         'path',
         'folder',
