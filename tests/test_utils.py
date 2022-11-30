@@ -138,6 +138,58 @@ def test_deprecated_keyword_argument():
 
     @audeer.deprecated_keyword_argument(
         deprecated_argument='foo',
+        removal_version='1.0.0',
+        remove_from_kwargs=False,
+    )
+    def function_with_deprecated_keyword_argument(**kwargs):
+        if 'foo' in kwargs:
+            return kwargs['foo']
+        else:
+            return 1
+
+    expected_message = (
+        "'foo' argument is deprecated "
+        "and will be removed with version 1.0.0."
+    )
+    assert function_with_deprecated_keyword_argument() == 1
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        # Raise warning
+        r = function_with_deprecated_keyword_argument(foo=2)
+        assert issubclass(w[-1].category, UserWarning)
+        assert expected_message == str(w[-1].message)
+        assert r == 2
+
+    @audeer.deprecated_keyword_argument(
+        deprecated_argument='foo',
+        new_argument='bar',
+        removal_version='1.0.0',
+        remove_from_kwargs=False,
+    )
+    def function_with_deprecated_keyword_argument(**kwargs):
+        if 'foo' in kwargs:
+            return kwargs['foo']
+        else:
+            return 1
+
+    expected_message = (
+        "'foo' argument is deprecated "
+        "and will be removed with version 1.0.0."
+        " Use 'bar' instead."
+    )
+    assert function_with_deprecated_keyword_argument() == 1
+    with warnings.catch_warnings(record=True) as w:
+        # Cause all warnings to always be triggered.
+        warnings.simplefilter("always")
+        # Raise warning
+        r = function_with_deprecated_keyword_argument(foo=2)
+        assert issubclass(w[-1].category, UserWarning)
+        assert expected_message == str(w[-1].message)
+        assert r == 2
+
+    @audeer.deprecated_keyword_argument(
+        deprecated_argument='foo',
         new_argument='bar',
         removal_version='1.0.0',
     )

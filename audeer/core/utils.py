@@ -123,6 +123,7 @@ def deprecated_keyword_argument(
         removal_version: str,
         new_argument: str = None,
         mapping: typing.Callable = None,
+        remove_from_kwargs: bool = True,
 ) -> typing.Callable:
     r"""Mark keyword argument as deprecated.
 
@@ -141,6 +142,9 @@ def deprecated_keyword_argument(
         mapping: if the keyword argument is not only renamed,
             but expects also different input values,
             you can map to the new ones with this callable
+        remove_from_kwargs: if ``True``,
+            ``deprecated_argument`` will be removed
+            from ``kwargs`` inside the decorated object
 
     Example:
         >>> @deprecated_keyword_argument(
@@ -163,7 +167,10 @@ def deprecated_keyword_argument(
                     f"'{deprecated_argument}' argument is deprecated "
                     f"and will be removed with version {removal_version}."
                 )
-                argument_content = kwargs.pop(deprecated_argument)
+                if remove_from_kwargs:
+                    argument_content = kwargs.pop(deprecated_argument)
+                else:
+                    argument_content = kwargs[deprecated_argument]
                 if new_argument is not None:
                     message += f" Use '{new_argument}' instead."
                     if mapping is not None:
