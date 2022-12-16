@@ -609,6 +609,24 @@ def test_move_file(tmpdir, src_file, dst_file):
     assert os.path.exists(dst_path)
 
 
+@pytest.mark.parametrize(
+    'path, new_extension, ext, expected_path',
+    [
+        ('file.txt', 'wav', None, 'file.wav'),
+        ('test/file.txt', 'wav', None, 'test/file.wav'),
+        ('a/b/../file.txt', 'wav', None, 'a/b/../file.wav'),
+        ('file.txt', 'wav', 'txt', 'file.wav'),
+        ('file.txt', 'wav', '.txt', 'file.wav'),
+        ('file.txt', 'wav', 't', 'file.txwav'),
+        ('file.a.b', 'wav', 'a.b', 'file.wav'),
+        ('file.a.b', 'wav', '.a.b', 'file.wav'),
+    ]
+)
+def test_replace_file_extension(path, new_extension, ext, expected_path):
+    new_path = audeer.replace_file_extension(path, new_extension, ext=ext)
+    assert new_path == expected_path
+
+
 def test_rmdir(tmpdir):
     # Non existing dir
     audeer.rmdir('non-esitent')
@@ -636,19 +654,6 @@ def test_rmdir(tmpdir):
     audeer.rmdir('folder')
     assert not os.path.exists(path)
     os.chdir(current_path)
-
-
-@pytest.mark.parametrize(
-    'path, new_extension, expected_path',
-    [
-        ('file.txt', 'wav', 'file.wav'),
-        ('test/file.txt', 'wav', 'test/file.wav'),
-        ('a/b/../file.txt', 'wav', 'a/b/../file.wav'),
-    ]
-)
-def test_replace_file_extension(path, new_extension, expected_path):
-    path = audeer.replace_file_extension(path, new_extension)
-    assert path == expected_path
 
 
 def test_touch(tmpdir):
