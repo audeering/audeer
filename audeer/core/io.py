@@ -607,7 +607,6 @@ def replace_file_extension(
         'file.zip'
 
     """
-    print(f'{ext=}')
     if ext is None:
         ext = file_extension(path)
     elif ext.startswith('.'):
