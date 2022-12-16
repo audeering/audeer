@@ -580,16 +580,21 @@ def move_file(
 def replace_file_extension(
         path: typing.Union[str, bytes],
         new_extension: str,
+        *,
+        ext: str = None,
 ) -> str:
     """Replace file extension.
 
-    It uses :func:`audeer.file_extension`
+    If ``ext`` is ``None``
+    it uses :func:`audeer.file_extension`
     to identify the current extension
     and replaces it with ``new_extension``.
 
     Args:
         path: path to file
         new_extension: new file extension
+            without leading ``.``
+        ext: explicit extension to be removed
 
     Returns:
         path to file with new extension
@@ -598,10 +603,16 @@ def replace_file_extension(
         >>> path = 'file.txt'
         >>> replace_file_extension(path, 'rst')
         'file.rst'
+        >>> replace_file_extension('file.tar.gz', 'zip', ext='tar.gz')
+        'file.zip'
 
     """
-    extension = file_extension(path)
-    return f'{path[:-len(extension)]}{new_extension}'
+    print(f'{ext=}')
+    if ext is None:
+        ext = file_extension(path)
+    elif ext.startswith('.'):
+        ext = ext[1:]  # '.mp3' => 'mp3'
+    return f'{path[:-len(ext)]}{new_extension}'
 
 
 def rmdir(
