@@ -254,6 +254,14 @@ def test_list_dir_names(tmpdir, dir_list, expected, recursive, hidden):
     assert dirs == expected
 
 
+def test_list_dir_names_errors(tmpdir):
+    with pytest.raises(NotADirectoryError):
+        file = audeer.touch(audeer.path(tmpdir, 'file.txt'))
+        audeer.list_dir_names(file)
+    with pytest.raises(FileNotFoundError):
+        audeer.list_dir_names('not-existent')
+
+
 @pytest.mark.parametrize(
     'files,path,filetype,expected,recursive,hidden',
     [

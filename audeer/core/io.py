@@ -353,6 +353,10 @@ def list_dir_names(
     Returns:
         list of paths to directories
 
+    Raises:
+        NotADirectoryError: if path is not a directory
+        FileNotFoundError: if path does not exists
+
     Example:
         >>> _ = mkdir('path/a/.b/c')
         >>> list_dir_names(
