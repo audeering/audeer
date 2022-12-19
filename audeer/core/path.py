@@ -36,7 +36,7 @@ def path(
     Returns:
         (joined and) expanded path
 
-    Example:
+    Examples:
         >>> home = path('~')
         >>> folder = path('~/path/.././path')
         >>> folder[len(home) + 1:]
@@ -87,7 +87,7 @@ def safe_path(
     Returns:
         (joined and) expanded path
 
-    Example:
+    Examples:
         >>> home = safe_path('~')
         >>> folder = safe_path('~/path/.././path')
         >>> folder[len(home) + 1:]

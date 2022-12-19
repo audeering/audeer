@@ -16,7 +16,7 @@
     :caption: API Documentation
     :hidden:
 
-    api-audeer
+    api/audeer
     genindex
 
 .. toctree::

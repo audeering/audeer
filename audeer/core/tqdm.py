@@ -23,7 +23,7 @@ def format_display_message(
     Returns:
         formatted text message
 
-    Example:
+    Examples:
         >>> config.TQDM_COLUMNS = 20
         >>> format_display_message('Long text that will be shorten to fit')
         'Long te...n to fit'

@@ -45,7 +45,7 @@ def deprecated(
         removal_version: version the code will be removed
         alternative: alternative code to use
 
-    Example:
+    Examples:
         >>> @deprecated(removal_version='2.0.0')
         ... def deprecated_function():
         ...     pass
@@ -88,7 +88,7 @@ def deprecated_default_value(
         change_in_version: version the default value will change
         new_default_value: new default value
 
-    Example:
+    Examples:
         >>> @deprecated_default_value(
         ...     argument='foo',
         ...     change_in_version='2.0.0',
@@ -146,7 +146,7 @@ def deprecated_keyword_argument(
             ``deprecated_argument`` will be removed
             from ``kwargs`` inside the decorated object
 
-    Example:
+    Examples:
         >>> @deprecated_keyword_argument(
         ...     deprecated_argument='foo',
         ...     new_argument='bar',
@@ -201,7 +201,7 @@ def flatten_list(
     Returns:
         flattened list
 
-    Example:
+    Examples:
         >>> flatten_list([1, 2, 3, [4], [], [[[[[[[[[5]]]]]]]]]])
         [1, 2, 3, 4, 5]
         >>> flatten_list([[1, 2], 3])
@@ -261,7 +261,7 @@ def git_repo_tags(
     Returns:
         list of tags
 
-    Example:
+    Examples:
         >>> git_repo_tags()
         ['v1.0.0', 'v1.1.0', 'v2.0.0']
 
@@ -299,7 +299,7 @@ def git_repo_version(
     Returns:
         version number
 
-    Example:
+    Examples:
         >>> git_repo_version()
         'v1.0.0'
 
@@ -419,9 +419,10 @@ def install_package(
 
 
 def is_semantic_version(version: str) -> bool:
-    r"""Check if given string represents a `semantic version`_.
+    r"""Check if given string represents a semantic version.
 
-    Your version has to comply to ``X.Y.Z`` or ``vX.Y.Z``,
+    To be a `semantic version`_
+    your version has to comply to ``X.Y.Z`` or ``vX.Y.Z``,
     where X, Y, Z are all integers.
     Additional version information, like ``beta``
     has to be added using a ``-`` or ``+``,
@@ -435,7 +436,7 @@ def is_semantic_version(version: str) -> bool:
     Returns:
         ``True`` if version is a semantic version
 
-    Example:
+    Examples:
         >>> is_semantic_version('v1')
         False
         >>> is_semantic_version('1.2.3-r3')
@@ -534,7 +535,7 @@ def run_tasks(
         task_description: task description
             that will be displayed next to progress bar
 
-    Example:
+    Examples:
         >>> power = lambda x, n: x ** n
         >>> params = [([2, n], {}) for n in range(10)]
         >>> run_tasks(power, params, num_workers=3)
@@ -603,7 +604,7 @@ def run_worker_threads(
         task_description: task description
             that will be displayed next to progress bar
 
-    Example:
+    Examples:
         >>> power = lambda x, n: x ** n
         >>> params = [(2, n) for n in range(10)]
         >>> run_worker_threads(power, params, num_workers=3)
@@ -703,7 +704,7 @@ def sort_versions(
         ValueError: if the version does not comply
             with :func:`is_semantic_version`
 
-    Example:
+    Examples:
         >>> vers = [
         ...     '2.0.0',
         ...     '2.0.1',
@@ -744,7 +745,7 @@ def to_list(x: typing.Any):
     Returns:
         input as a list
 
-    Example:
+    Examples:
         >>> to_list('abc')
         ['abc']
         >>> to_list((1, 2, 3))
@@ -774,7 +775,7 @@ def uid(
         unique identifier containing 36 characters
         with ``-`` at position 9, 14, 19, 24
 
-    Example:
+    Examples:
         >>> uid(from_string='example_string')
         '626f68e6-d336-70b9-e753-ed9fad855840'
 
