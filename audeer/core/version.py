@@ -91,7 +91,7 @@ class StrictVersion(Version):
     Args:
         version: version string
 
-    Example:
+    Examples:
         >>> v1 = StrictVersion('1.17.2a1')
         >>> v1
         StrictVersion ('1.17.2a1')
@@ -107,6 +107,18 @@ class StrictVersion(Version):
 
     version_re = re.compile(r'^(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?$',
                             re.VERBOSE | re.ASCII)
+    """Version regexp pattern.
+
+    The regexp pattern is used to split the version
+    into
+    *major*,
+    *minor*,
+    *patch*,
+    *prerelease*,
+    *prerelease number*
+    when parsing it.
+
+    """
 
     def __init__(self, version=None):
         self.version = None
@@ -259,7 +271,7 @@ class LooseVersion(Version):
     Args:
         version: version string
 
-    Example:
+    Examples:
         >>> v1 = LooseVersion('1.17.2')
         >>> v1
         LooseVersion ('1.17.2')
@@ -270,7 +282,14 @@ class LooseVersion(Version):
         True
 
     """
-    component_re = re.compile(r'(\d+ | [a-z]+ | \.)', re.VERBOSE)
+    version_re = re.compile(r'(\d+ | [a-z]+ | \.)', re.VERBOSE)
+    """Version regexp pattern.
+
+    The regexp pattern is used to split the version
+    into single components
+    when parsing it.
+
+    """
 
     def __init__(self, version=None):
         self.version = None

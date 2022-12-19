@@ -42,7 +42,7 @@ def basename_wo_ext(
     Returns:
         basename of directory or file without extension
 
-    Example:
+    Examples:
 
         >>> path = '/test/file.wav'
         >>> basename_wo_ext(path)
@@ -75,7 +75,7 @@ def common_directory(
     Returns:
         part of the directory tree that is common to all the directories
 
-    Example:
+    Examples:
         >>> paths = [
         ...     '/home/user1/tmp/coverage/test',
         ...     '/home/user1/tmp/covert/operator',
@@ -165,7 +165,7 @@ def download_url(
     Returns:
         path of locally stored file
 
-    Example:
+    Examples:
         >>> dst = download_url('https://audeering.github.io/audeer/_static/favicon.png', '.')
         >>> os.path.basename(dst)
         'favicon.png'
@@ -325,7 +325,7 @@ def file_extension(
     Returns:
         extension of file without "."
 
-    Example:
+    Examples:
         >>> path = '/test/file.wav'
         >>> file_extension(path)
         'wav'
@@ -357,7 +357,7 @@ def list_dir_names(
         NotADirectoryError: if path is not a directory
         FileNotFoundError: if path does not exists
 
-    Example:
+    Examples:
         >>> _ = mkdir('path/a/.b/c')
         >>> list_dir_names(
         ...     'path',
@@ -419,7 +419,7 @@ def list_file_names(
     Returns:
         list of path(s) to file(s)
 
-    Example:
+    Examples:
         >>> dir_path = mkdir('path')
         >>> _ = touch(os.path.join(dir_path, 'file.wav'))
         >>> _ = touch(os.path.join(dir_path, '.lock'))
@@ -537,7 +537,7 @@ def mkdir(
     Returns:
         absolute path to the created directory
 
-    Example:
+    Examples:
         >>> p = mkdir('path1/path2/path3')
         >>> os.path.basename(p)
         'path3'
@@ -565,7 +565,7 @@ def move_file(
         scr_path: source file path
         dst_path: destination file path
 
-    Example:
+    Examples:
         >>> path = mkdir('folder')
         >>> src_path = touch(os.path.join(path, 'file1'))
         >>> dst_path = os.path.join(path, 'file2')
@@ -599,7 +599,7 @@ def replace_file_extension(
     Returns:
         path to file with new extension
 
-    Example:
+    Examples:
         >>> path = 'file.txt'
         >>> replace_file_extension(path, 'rst')
         'file.rst'
@@ -629,7 +629,7 @@ def rmdir(
     Raises:
         NotADirectoryError: if path is not a directory
 
-    Example:
+    Examples:
         >>> mkdir('path1/path2/path3')  # doctest: +SKIP
         >>> rmdir('path1/path2')
         >>> list_dir_names('path1')
@@ -656,7 +656,7 @@ def touch(
     Returns:
         expanded path to file
 
-    Example:
+    Examples:
         >>> path = touch('file.txt')
         >>> os.path.basename(path)
         'file.txt'
