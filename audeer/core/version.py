@@ -336,7 +336,7 @@ class LooseVersion(Version):
         # use by __str__
         self.vstring = version
         components = [
-            x for x in self.component_re.split(version)
+            x for x in self.version_re.split(version)
             if x and x != '.'
         ]
         for i, obj in enumerate(components):
