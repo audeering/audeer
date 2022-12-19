@@ -7,6 +7,27 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.19.0 (2022-12-19)
+---------------------------
+
+* Added: ``hidden`` argument to
+  ``audeer.list_dir_names()``
+  to include hidden folders in results
+* Added: ``remove_from_kwargs`` argument to
+  ``audeer.deprecated_keyword_argument()``
+  to indicate if the keyword marked as deprecated
+  should be removed from ``kwargs``.
+  Default is ``True``
+* Added: ``ext`` argument to
+  ``audeer.replace_file_extension()``
+* Added: support for Python 3.10
+* Added: support for Python 3.11
+* Changed: split API documentation into sub-pages
+  for each function/class
+* Fixed: add raises section to docstring of
+  ``audeer.list_dir_names()``
+
+
 Version 1.18.0 (2022-03-04)
 ---------------------------
 
