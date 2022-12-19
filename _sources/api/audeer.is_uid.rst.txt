@@ -1,0 +1,6 @@
+﻿is\_uid\(\)
+===========
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.is_uid

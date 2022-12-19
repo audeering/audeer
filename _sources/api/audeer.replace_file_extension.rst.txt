@@ -1,0 +1,6 @@
+﻿replace\_file\_extension\(\)
+============================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.replace_file_extension

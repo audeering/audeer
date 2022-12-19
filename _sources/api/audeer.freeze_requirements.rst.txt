@@ -1,0 +1,6 @@
+﻿freeze\_requirements\(\)
+========================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.freeze_requirements

@@ -1,0 +1,6 @@
+﻿git\_repo\_tags\(\)
+===================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.git_repo_tags

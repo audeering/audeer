@@ -1,0 +1,6 @@
+﻿progress\_bar\(\)
+=================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.progress_bar

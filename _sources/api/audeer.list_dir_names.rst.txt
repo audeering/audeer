@@ -1,0 +1,6 @@
+﻿list\_dir\_names\(\)
+====================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.list_dir_names

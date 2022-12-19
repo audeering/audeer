@@ -1,0 +1,6 @@
+﻿deprecated\(\)
+==============
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.deprecated

@@ -1,0 +1,6 @@
+﻿to\_list\(\)
+============
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.to_list

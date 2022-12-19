@@ -1,0 +1,20 @@
+﻿LooseVersion
+============
+
+.. currentmodule:: audeer
+
+.. autoclass:: LooseVersion
+
+
+parse\(\)
+---------
+.. automethod:: LooseVersion.parse
+    
+version
+-------
+.. autoattribute:: LooseVersion.version
+    
+version\_re
+-----------
+.. autoattribute:: LooseVersion.version_re
+    

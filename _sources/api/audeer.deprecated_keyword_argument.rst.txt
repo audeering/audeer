@@ -1,0 +1,6 @@
+﻿deprecated\_keyword\_argument\(\)
+=================================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.deprecated_keyword_argument

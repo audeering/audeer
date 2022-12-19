@@ -1,0 +1,6 @@
+﻿common\_directory\(\)
+=====================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.common_directory

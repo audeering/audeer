@@ -1,0 +1,6 @@
+﻿uid\(\)
+=======
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.uid

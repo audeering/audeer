@@ -1,0 +1,24 @@
+﻿StrictVersion
+=============
+
+.. currentmodule:: audeer
+
+.. autoclass:: StrictVersion
+
+
+parse\(\)
+---------
+.. automethod:: StrictVersion.parse
+    
+prerelease
+----------
+.. autoattribute:: StrictVersion.prerelease
+    
+version
+-------
+.. autoattribute:: StrictVersion.version
+    
+version\_re
+-----------
+.. autoattribute:: StrictVersion.version_re
+    

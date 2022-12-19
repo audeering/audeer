@@ -1,0 +1,6 @@
+﻿rmdir\(\)
+=========
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.rmdir

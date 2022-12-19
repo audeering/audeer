@@ -1,0 +1,6 @@
+﻿deprecated\_default\_value\(\)
+==============================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.deprecated_default_value

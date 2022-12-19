@@ -1,0 +1,6 @@
+﻿download\_url\(\)
+=================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.download_url

@@ -1,0 +1,6 @@
+﻿install\_package\(\)
+====================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.install_package

@@ -25,12 +25,8 @@
     
 
   
-
-  
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/css/audeering.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/css/audeering.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -67,7 +63,7 @@
             
             
               <div class="version">
-                v1.18.0
+                v1.19.0
               </div>
             
           
@@ -98,7 +94,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../api-audeer.html">audeer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/audeer.html">audeer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
@@ -194,7 +190,7 @@
 <span class="c1">#                        instance of your version class)</span>
 
 
-<div class="viewcode-block" id="StrictVersion"><a class="viewcode-back" href="../../../api-audeer.html#audeer.StrictVersion">[docs]</a><span class="k">class</span> <span class="nc">StrictVersion</span><span class="p">(</span><span class="n">Version</span><span class="p">):</span>
+<div class="viewcode-block" id="StrictVersion"><a class="viewcode-back" href="../../../api/audeer.StrictVersion.html#audeer.StrictVersion">[docs]</a><span class="k">class</span> <span class="nc">StrictVersion</span><span class="p">(</span><span class="n">Version</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Version numbering for anal retentives and software idealists.</span>
 
 <span class="sd">    This implementation was originally part of :mod:`distutils`</span>
@@ -235,7 +231,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        version: version string</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; v1 = StrictVersion(&#39;1.17.2a1&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; v1</span>
 <span class="sd">        StrictVersion (&#39;1.17.2a1&#39;)</span>
@@ -251,6 +247,18 @@
 
     <span class="n">version_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?$&#39;</span><span class="p">,</span>
                             <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">ASCII</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Version regexp pattern.</span>
+
+<span class="sd">    The regexp pattern is used to split the version</span>
+<span class="sd">    into</span>
+<span class="sd">    *major*,</span>
+<span class="sd">    *minor*,</span>
+<span class="sd">    *patch*,</span>
+<span class="sd">    *prerelease*,</span>
+<span class="sd">    *prerelease number*</span>
+<span class="sd">    when parsing it.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="kc">None</span>
@@ -261,7 +269,7 @@
         <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
 
-<div class="viewcode-block" id="StrictVersion.parse"><a class="viewcode-back" href="../../../api-audeer.html#audeer.StrictVersion.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+<div class="viewcode-block" id="StrictVersion.parse"><a class="viewcode-back" href="../../../api/audeer.StrictVersion.html#audeer.StrictVersion.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse a version string.</span>
 
 <span class="sd">        When called this updates the stored version</span>
@@ -370,7 +378,7 @@
 <span class="c1"># &quot;1.5.1&quot; &lt; &quot;1.5.2a2&quot; &lt; &quot;1.5.2&quot;, but under the tuple/lexical comparison</span>
 <span class="c1"># implemented here, this just isn&#39;t so.</span>
 
-<div class="viewcode-block" id="LooseVersion"><a class="viewcode-back" href="../../../api-audeer.html#audeer.LooseVersion">[docs]</a><span class="k">class</span> <span class="nc">LooseVersion</span><span class="p">(</span><span class="n">Version</span><span class="p">):</span>
+<div class="viewcode-block" id="LooseVersion"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion">[docs]</a><span class="k">class</span> <span class="nc">LooseVersion</span><span class="p">(</span><span class="n">Version</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Version numbering for anarchists and software realists.</span>
 
 <span class="sd">    This implementation was originally part of :mod:`distutils`</span>
@@ -403,7 +411,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        version: version string</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; v1 = LooseVersion(&#39;1.17.2&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; v1</span>
 <span class="sd">        LooseVersion (&#39;1.17.2&#39;)</span>
@@ -414,7 +422,14 @@
 <span class="sd">        True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">component_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+ | [a-z]+ | \.)&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+    <span class="n">version_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+ | [a-z]+ | \.)&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot;Version regexp pattern.</span>
+
+<span class="sd">    The regexp pattern is used to split the version</span>
+<span class="sd">    into single components</span>
+<span class="sd">    when parsing it.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="kc">None</span>
@@ -446,7 +461,7 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vstring</span>
 
-<div class="viewcode-block" id="LooseVersion.parse"><a class="viewcode-back" href="../../../api-audeer.html#audeer.LooseVersion.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+<div class="viewcode-block" id="LooseVersion.parse"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse a version string.</span>
 
 <span class="sd">        When called this updates the stored version</span>
@@ -461,7 +476,7 @@
         <span class="c1"># use by __str__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vstring</span> <span class="o">=</span> <span class="n">version</span>
         <span class="n">components</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+            <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">components</span><span class="p">):</span>
@@ -499,7 +514,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/03/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/12/19 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -534,7 +549,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
         <script src="../../../_static/clipboard.min.js"></script>
         <script src="../../../_static/copybutton.js"></script>
     

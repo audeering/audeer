@@ -1,0 +1,6 @@
+﻿format\_display\_message\(\)
+============================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.format_display_message

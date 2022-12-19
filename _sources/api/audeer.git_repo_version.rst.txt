@@ -1,0 +1,6 @@
+﻿git\_repo\_version\(\)
+======================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.git_repo_version

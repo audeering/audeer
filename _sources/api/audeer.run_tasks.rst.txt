@@ -1,0 +1,6 @@
+﻿run\_tasks\(\)
+==============
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.run_tasks

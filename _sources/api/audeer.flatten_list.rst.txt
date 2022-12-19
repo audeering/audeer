@@ -1,0 +1,6 @@
+﻿flatten\_list\(\)
+=================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.flatten_list

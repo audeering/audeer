@@ -1,0 +1,6 @@
+﻿basename\_wo\_ext\(\)
+=====================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.basename_wo_ext

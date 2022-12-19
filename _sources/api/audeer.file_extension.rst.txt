@@ -1,0 +1,6 @@
+﻿file\_extension\(\)
+===================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.file_extension

@@ -1,0 +1,6 @@
+﻿extract\_archive\(\)
+====================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.extract_archive

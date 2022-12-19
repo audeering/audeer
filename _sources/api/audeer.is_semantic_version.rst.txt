@@ -1,0 +1,6 @@
+﻿is\_semantic\_version\(\)
+=========================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.is_semantic_version

@@ -1,0 +1,6 @@
+﻿touch\(\)
+=========
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.touch

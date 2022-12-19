@@ -1,0 +1,6 @@
+﻿move\_file\(\)
+==============
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.move_file

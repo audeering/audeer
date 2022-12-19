@@ -1,0 +1,6 @@
+﻿sort\_versions\(\)
+==================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.sort_versions

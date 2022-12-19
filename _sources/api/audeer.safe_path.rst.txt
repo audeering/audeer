@@ -1,0 +1,6 @@
+﻿safe\_path\(\)
+==============
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.safe_path

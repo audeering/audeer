@@ -1,0 +1,24 @@
+﻿config
+======
+
+.. currentmodule:: audeer
+
+.. autoclass:: config
+
+
+TQDM\_COLUMNS
+-------------
+.. autoattribute:: config.TQDM_COLUMNS
+    
+TQDM\_DESCLEN
+-------------
+.. autoattribute:: config.TQDM_DESCLEN
+    
+TQDM\_FORMAT
+------------
+.. autoattribute:: config.TQDM_FORMAT
+    
+TQDM\_LEAVE
+-----------
+.. autoattribute:: config.TQDM_LEAVE
+    

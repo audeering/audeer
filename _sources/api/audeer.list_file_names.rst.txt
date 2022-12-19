@@ -1,0 +1,6 @@
+﻿list\_file\_names\(\)
+=====================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.list_file_names
