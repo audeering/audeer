@@ -1,9 +1,7 @@
 import os
 import platform
 import stat
-import tarfile
 import time
-import zipfile
 
 import pytest
 
