@@ -598,6 +598,9 @@ def replace_file_extension(
     Returns:
         path to file with new extension
 
+    Raises:
+        RuntimeError: if ``path`` does not end on ``ext``
+
     Examples:
         >>> replace_file_extension('file.txt', 'rst')
         'file.rst'
