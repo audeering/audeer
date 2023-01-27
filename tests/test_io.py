@@ -612,6 +612,8 @@ def test_move_file(tmpdir, src_file, dst_file):
     [
         ('', '', None, ''),
         ('', 'txt', None, ''),
+        ('', '', 'rst', ''),
+        ('', 'txt', 'rst', ''),
         ('file', '', None, 'file'),
         ('file', 'txt', None, 'file.txt'),
         ('file.txt', 'wav', None, 'file.wav'),
