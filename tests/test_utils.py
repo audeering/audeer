@@ -342,6 +342,7 @@ def test_is_semantic_version(version, is_semantic):
         (audeer.uid(short=True), True),
         (audeer.uid(from_string='from string'), True),
         (audeer.uid(from_string='from string', short=True), True),
+        (audeer.uid(from_string='from string', short=True).upper(), True),
         (None, False),
         (1234, False),
         ('', False),
