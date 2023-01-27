@@ -349,7 +349,7 @@ def test_is_semantic_version(version, is_semantic):
         (audeer.uid()[:-1], False),
         (audeer.uid(short=True)[:-1], False),
         ('00000000-0000-0000-0000-000000000000', True),
-        ('000000000-0000-0000-0000-00000000000', False), 
+        ('000000000-0000-0000-0000-00000000000', False),
         ('?0000000-0000-0000-0000-000000000000', False),
     ]
 )
@@ -513,7 +513,7 @@ def test_to_list(input, expected_output):
 @pytest.mark.parametrize(
     'short',
     [
-        False, 
+        False,
         True,
     ]
 )
@@ -521,13 +521,13 @@ def test_to_list(input, expected_output):
     'from_string',
     [
         None,
-        'example_string',        
+        'example_string',
     ]
 )
 def test_uid(from_string, short):
     uid = audeer.uid(from_string=from_string, short=short)
     if short:
-        assert len(uid) == 8        
+        assert len(uid) == 8
     else:
         assert len(uid) == 36
         for pos in [8, 13, 18, 23]:
