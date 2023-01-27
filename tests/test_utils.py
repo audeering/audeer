@@ -339,12 +339,19 @@ def test_is_semantic_version(version, is_semantic):
     'uid, expected',
     [
         (audeer.uid(), True),
+        (audeer.uid(short=True), True),
         (audeer.uid(from_string='from string'), True),
+        (audeer.uid(from_string='from string', short=True), True),
+        (audeer.uid(from_string='from string', short=True).upper(), True),
         (None, False),
         (1234, False),
         ('', False),
         ('some random string', False),
         (audeer.uid()[:-1], False),
+        (audeer.uid(short=True)[:-1], False),
+        ('00000000-0000-0000-0000-000000000000', True),
+        ('000000000-0000-0000-0000-00000000000', False),
+        ('?0000000-0000-0000-0000-000000000000', False),
     ]
 )
 def test_is_uid(uid, expected):
@@ -505,19 +512,29 @@ def test_to_list(input, expected_output):
 
 
 @pytest.mark.parametrize(
+    'short',
+    [
+        False,
+        True,
+    ]
+)
+@pytest.mark.parametrize(
     'from_string',
     [
         None,
         'example_string',
     ]
 )
-def test_uid(from_string):
-    uid = audeer.uid(from_string=from_string)
-    assert len(uid) == 36
-    for pos in [8, 13, 18, 23]:
-        assert uid[pos] == '-'
-    uid2 = audeer.uid(from_string=from_string)
-    if from_string is not None:
-        assert uid == uid2
+def test_uid(from_string, short):
+    uid = audeer.uid(from_string=from_string, short=short)
+    if short:
+        assert len(uid) == 8
     else:
-        assert uid != uid2
+        assert len(uid) == 36
+        for pos in [8, 13, 18, 23]:
+            assert uid[pos] == '-'
+        uid2 = audeer.uid(from_string=from_string, short=short)
+        if from_string is not None:
+            assert uid == uid2
+        else:
+            assert uid != uid2

@@ -488,15 +488,34 @@ def is_uid(uid: str) -> bool:
     Returns:
         ``True`` if string is a unique identifier
 
+    Examples:
+        >>> is_uid('626f68e6-d336-70b9-e753-ed9fad855840')
+        True
+        >>> is_uid('ad855840')
+        True
+        >>> is_uid('not a unique identifier')
+        False
+
     """
     if uid is None:
         return False
     if not isinstance(uid, str):
         return False
+    if len(uid) != 8 and len(uid) != 36:
+        return False
+
+    if len(uid) == 8:
+        uid = f'00000000-0000-0000-0000-0000{uid}'
+
+    for pos in [8, 13, 18, 23]:
+        if not uid[pos] == '-':
+            return False
+
     try:
         uuid.UUID(uid, version=1)
     except ValueError:
         return False
+
     return True
 
 
@@ -761,8 +780,14 @@ def to_list(x: typing.Any):
 def uid(
         *,
         from_string: str = None,
+        short: bool = False,
 ) -> str:
     r"""Generate unique identifier.
+
+    A unique identifier contains 36 characters
+    with ``-`` at position 9, 14, 19, 24.
+    If ``short`` is ``True``,
+    only the last 8 digits are returned.
 
     Args:
         from_string: create a unique identifier
@@ -770,14 +795,18 @@ def uid(
             This will return the same identifier
             for identical strings.
             If ``None`` :func:`uuid.uuid1` is used.
+        short: if ``True`` returns
+            a short unique identifier
+            (last 8 digits)
 
     Returns:
-        unique identifier containing 36 characters
-        with ``-`` at position 9, 14, 19, 24
+        unique identifier
 
     Examples:
         >>> uid(from_string='example_string')
         '626f68e6-d336-70b9-e753-ed9fad855840'
+        >>> uid(from_string='example_string', short=True)
+        'ad855840'
 
     """
     if from_string is None:
@@ -787,4 +816,8 @@ def uid(
         uid.update(from_string.encode('utf-8'))
         uid = uid.hexdigest()
         uid = f'{uid[0:8]}-{uid[8:12]}-{uid[12:16]}-{uid[16:20]}-{uid[20:]}'
+
+    if short:
+        uid = uid[-8:]
+
     return uid
