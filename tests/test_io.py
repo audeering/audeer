@@ -190,38 +190,46 @@ def test_file_extension(path, extension):
 
 
 @pytest.mark.parametrize(
-    'dir_list,expected,recursive,hidden',
+    'dir_list,path,expected,recursive,hidden',
     [
-        ([], [], False, False),
-        ([], [], True, False),
-        (['a', 'b', 'c'], ['a', 'b', 'c'], False, False),
-        (['a', 'b', 'c'], ['a', 'b', 'c'], True, False),
-        (['a'], ['a'], False, False),
-        (['a'], ['a'], True, False),
+        ([], [], './', False, False),
+        ([], [], './', True, False),
+        (['a', 'b', 'c'], './', ['a', 'b', 'c'], False, False),
+        (['a', 'b', 'c'], './', ['a', 'b', 'c'], True, False),
+        (['a'], ['a'], './', False, False),
+        (['a'], ['a'], './', True, False),
         (
             ['a', os.path.join('a', 'b'), os.path.join('a', 'b', 'c')],
+            './',
             ['a', os.path.join('a', 'b'), os.path.join('a', 'b', 'c')],
             True,
             False,
         ),
+        # pattern
+        ([], [], './a', True, False),
+        (['a', 'b', 'c'], './a', ['a'], False, False),
+        (['a', 'b', 'c'], './a', ['a'], True, False),
+        (['aa', 'ba', 'ca'], './a*', ['a'], False, False),
         # hidden
-        (['a', '.b'], ['a'], True, False),
-        (['a', '.b'], ['.b', 'a'], True, True),
+        (['a', '.b'], './', ['a'], True, False),
+        (['a', '.b'], './', ['.b', 'a'], True, True),
         (
             ['a', '.b', os.path.join('a', '.b'), os.path.join('a', '.b', 'c')],
+            './',
             ['a'],
             True,
             False,
         ),
         (
             ['a', '.b', os.path.join('a', '.b'), os.path.join('a', '.b', 'c')],
+            './',
             ['.b', 'a', os.path.join('a', '.b'), os.path.join('a', '.b', 'c')],
             True,
             True,
         ),
     ],
 )
-def test_list_dir_names(tmpdir, dir_list, expected, recursive, hidden):
+def test_list_dir_names(tmpdir, dir_list, path, expected, recursive, hidden):
 
     dir_tmp = tmpdir.mkdir('folder')
     directories = []
@@ -232,9 +240,9 @@ def test_list_dir_names(tmpdir, dir_list, expected, recursive, hidden):
     for directory in directories:
         assert os.path.isdir(directory)
 
-    path = os.path.join(str(dir_tmp), '.')
+    abs_path = os.path.join(str(dir_tmp), path)
     dirs = audeer.list_dir_names(
-        path,
+        abs_path,
         basenames=False,
         recursive=recursive,
         hidden=hidden,
@@ -244,7 +252,7 @@ def test_list_dir_names(tmpdir, dir_list, expected, recursive, hidden):
 
     # test basenames
     dirs = audeer.list_dir_names(
-        path,
+        abs_path,
         basenames=True,
         recursive=recursive,
         hidden=hidden,
