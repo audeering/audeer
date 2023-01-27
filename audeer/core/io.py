@@ -599,7 +599,7 @@ def replace_file_extension(
         path to file with new extension
 
     Raises:
-        RuntimeError: if ``path`` does not end on ``ext``
+        RuntimeError: if ``path`` does not end on extension ``ext``
 
     Examples:
         >>> replace_file_extension('file.txt', 'rst')
@@ -621,8 +621,8 @@ def replace_file_extension(
     if new_extension.startswith('.'):
         new_extension = new_extension[1:]
 
-    if not path.endswith(ext):
-        msg = f"Path '{path}' does not end on '{ext}'"
+    if ext and not path.endswith(f'.{ext}'):
+        msg = f"Path '{path}' does not end on extension '{ext}'"
         raise RuntimeError(msg)
 
     if not path:

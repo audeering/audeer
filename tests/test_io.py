@@ -621,7 +621,6 @@ def test_move_file(tmpdir, src_file, dst_file):
         ('file.txt', 'wav', '.txt', 'file.wav'),
         ('file.txt', '.wav', 'txt', 'file.wav'),
         ('file.txt', '.wav', '.txt', 'file.wav'),
-        ('file.txt', 'wav', 't', 'file.txwav'),
         ('file.a.b', 'wav', 'a.b', 'file.wav'),
         ('file.a.b', 'wav', '.a.b', 'file.wav'),
         pytest.param(
@@ -635,6 +634,13 @@ def test_move_file(tmpdir, src_file, dst_file):
             'file.txt',
             'wav',
             'bad',
+            None,
+            marks=pytest.mark.xfail(raises=RuntimeError),
+        ),
+        pytest.param(
+            'file.txt',
+            'wav',
+            't',
             None,
             marks=pytest.mark.xfail(raises=RuntimeError),
         ),
