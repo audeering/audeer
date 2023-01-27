@@ -625,6 +625,9 @@ def replace_file_extension(
         msg = f"Path '{path}' does not end on '{ext}'"
         raise RuntimeError(msg)
 
+    if not path:
+        return path
+
     if not ext and not new_extension:
         pass
     elif not ext:
