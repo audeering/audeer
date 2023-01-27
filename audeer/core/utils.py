@@ -491,7 +491,7 @@ def is_uid(uid: str) -> bool:
     Examples:
         >>> is_uid('626f68e6-d336-70b9-e753-ed9fad855840')
         True
-        >>> is_uid(uid(short=True))
+        >>> is_uid('ad855840')
         True
         >>> is_uid('not a unique identifier')
         False
