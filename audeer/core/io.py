@@ -590,28 +590,56 @@ def replace_file_extension(
     to identify the current extension
     and replaces it with ``new_extension``.
 
+    If ``ext`` is not ``None``
+    but ``path`` ends on a different extension,
+    the original path is returned.
+
     Args:
         path: path to file
         new_extension: new file extension
-            without leading ``.``
         ext: explicit extension to be removed
 
     Returns:
-        path to file with new extension
+        path to file with a possibly new extension
 
     Examples:
-        >>> path = 'file.txt'
-        >>> replace_file_extension(path, 'rst')
+        >>> replace_file_extension('file.txt', 'rst')
         'file.rst'
+        >>> replace_file_extension('file', 'rst')
+        'file.rst'
+        >>> replace_file_extension('file.txt', '')
+        'file'
         >>> replace_file_extension('file.tar.gz', 'zip', ext='tar.gz')
+        'file.zip'
+        >>> replace_file_extension('file.zip', 'rst', ext='txt')
         'file.zip'
 
     """
     if ext is None:
         ext = file_extension(path)
-    elif ext.startswith('.'):
-        ext = ext[1:]  # '.mp3' => 'mp3'
-    return f'{path[:-len(ext)]}{new_extension}'
+
+    # '.mp3' => 'mp3'
+    if ext.startswith('.'):
+        ext = ext[1:]
+    if new_extension.startswith('.'):
+        new_extension = new_extension[1:]
+
+    if ext and not path.endswith(f'.{ext}'):
+        return path
+
+    if not path:
+        return path
+
+    if not ext and not new_extension:
+        pass
+    elif not ext:
+        path = f'{path}.{new_extension}'
+    elif not new_extension:
+        path = path[:-len(ext) - 1]
+    else:
+        path = f'{path[:-len(ext)]}{new_extension}'
+
+    return path
 
 
 def rmdir(

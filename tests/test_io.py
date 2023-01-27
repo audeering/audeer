@@ -610,14 +610,24 @@ def test_move_file(tmpdir, src_file, dst_file):
 @pytest.mark.parametrize(
     'path, new_extension, ext, expected_path',
     [
+        ('', '', None, ''),
+        ('', 'txt', None, ''),
+        ('', '', 'rst', ''),
+        ('', 'txt', 'rst', ''),
+        ('file', '', None, 'file'),
+        ('file', 'txt', None, 'file.txt'),
         ('file.txt', 'wav', None, 'file.wav'),
         ('test/file.txt', 'wav', None, 'test/file.wav'),
         ('a/b/../file.txt', 'wav', None, 'a/b/../file.wav'),
         ('file.txt', 'wav', 'txt', 'file.wav'),
         ('file.txt', 'wav', '.txt', 'file.wav'),
-        ('file.txt', 'wav', 't', 'file.txwav'),
+        ('file.txt', '.wav', 'txt', 'file.wav'),
+        ('file.txt', '.wav', '.txt', 'file.wav'),
         ('file.a.b', 'wav', 'a.b', 'file.wav'),
         ('file.a.b', 'wav', '.a.b', 'file.wav'),
+        ('file', 'wav', 'ext', 'file'),
+        ('file.txt', 'wav', 'ext', 'file.txt'),
+        ('file.txt', 'wav', 't', 'file.txt'),
     ]
 )
 def test_replace_file_extension(path, new_extension, ext, expected_path):
