@@ -489,7 +489,7 @@ def is_uid(uid: str) -> bool:
         ``True`` if string is a unique identifier
 
     Examples:
-        >>> is_uid(uid())
+        >>> is_uid('626f68e6-d336-70b9-e753-ed9fad855840')
         True
         >>> is_uid(uid(short=True))
         True
