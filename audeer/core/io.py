@@ -590,16 +590,17 @@ def replace_file_extension(
     to identify the current extension
     and replaces it with ``new_extension``.
 
+    If ``ext`` is not ``None``
+    but ``path`` ends on a different extension,
+    the original path is returned.
+
     Args:
         path: path to file
         new_extension: new file extension
         ext: explicit extension to be removed
 
     Returns:
-        path to file with new extension
-
-    Raises:
-        RuntimeError: if ``path`` does not end on extension ``ext``
+        path to file with a possibly new extension
 
     Examples:
         >>> replace_file_extension('file.txt', 'rst')
@@ -609,6 +610,8 @@ def replace_file_extension(
         >>> replace_file_extension('file.txt', '')
         'file'
         >>> replace_file_extension('file.tar.gz', 'zip', ext='tar.gz')
+        'file.zip'
+        >>> replace_file_extension('file.zip', 'rst', ext='txt')
         'file.zip'
 
     """
@@ -622,8 +625,7 @@ def replace_file_extension(
         new_extension = new_extension[1:]
 
     if ext and not path.endswith(f'.{ext}'):
-        msg = f"Path '{path}' does not end on extension '{ext}'"
-        raise RuntimeError(msg)
+        return path
 
     if not path:
         return path

@@ -623,27 +623,9 @@ def test_move_file(tmpdir, src_file, dst_file):
         ('file.txt', '.wav', '.txt', 'file.wav'),
         ('file.a.b', 'wav', 'a.b', 'file.wav'),
         ('file.a.b', 'wav', '.a.b', 'file.wav'),
-        pytest.param(
-            'file',
-            'wav',
-            'bad',
-            None,
-            marks=pytest.mark.xfail(raises=RuntimeError),
-        ),
-        pytest.param(
-            'file.txt',
-            'wav',
-            'bad',
-            None,
-            marks=pytest.mark.xfail(raises=RuntimeError),
-        ),
-        pytest.param(
-            'file.txt',
-            'wav',
-            't',
-            None,
-            marks=pytest.mark.xfail(raises=RuntimeError),
-        ),
+        ('file', 'wav', 'ext', 'file'),
+        ('file.txt', 'wav', 'ext', 'file.txt'),
+        ('file.txt', 'wav', 't', 'file.txt'),
     ]
 )
 def test_replace_file_extension(path, new_extension, ext, expected_path):
