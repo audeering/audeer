@@ -354,8 +354,10 @@ def list_dir_names(
         list of paths to directories
 
     Raises:
-        NotADirectoryError: if path is not a directory
-        FileNotFoundError: if path does not exists
+        NotADirectoryError: if ``os.path.dirname(path)``
+            is not a directory
+        FileNotFoundError: if ``os.path.dirname(path)``
+            does not exists
 
     Examples:
         >>> _ = mkdir('path/a/.b/c')

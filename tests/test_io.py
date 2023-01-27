@@ -192,12 +192,12 @@ def test_file_extension(path, extension):
 @pytest.mark.parametrize(
     'dir_list,path,expected,recursive,hidden',
     [
-        ([], [], './', False, False),
-        ([], [], './', True, False),
+        ([], './', [], False, False),
+        ([], './', [], True, False),
         (['a', 'b', 'c'], './', ['a', 'b', 'c'], False, False),
         (['a', 'b', 'c'], './', ['a', 'b', 'c'], True, False),
-        (['a'], ['a'], './', False, False),
-        (['a'], ['a'], './', True, False),
+        (['a'], './', ['a'], False, False),
+        (['a'], './', ['a'], True, False),
         (
             ['a', os.path.join('a', 'b'), os.path.join('a', 'b', 'c')],
             './',
@@ -206,10 +206,11 @@ def test_file_extension(path, extension):
             False,
         ),
         # pattern
-        ([], [], './a', True, False),
-        (['a', 'b', 'c'], './a', ['a'], False, False),
-        (['a', 'b', 'c'], './a', ['a'], True, False),
-        (['aa', 'ba', 'ca'], './a*', ['a'], False, False),
+        ([], './a', [], True, False),
+        (['a', 'b', 'c'], './a', [], False, False),
+        (['a', 'b', 'c'], './a', [], True, False),
+        (['aa', 'ba', 'ca'], './a*', ['aa'], False, False),
+        (['aa', 'ba', 'ca'], './ba', [], False, False),
         # hidden
         (['a', '.b'], './', ['a'], True, False),
         (['a', '.b'], './', ['.b', 'a'], True, True),
@@ -262,10 +263,10 @@ def test_list_dir_names(tmpdir, dir_list, path, expected, recursive, hidden):
 
 def test_list_dir_names_errors(tmpdir):
     with pytest.raises(NotADirectoryError):
-        file = audeer.touch(audeer.path(tmpdir, 'file.txt'))
-        audeer.list_dir_names(file)
+        file = audeer.touch(audeer.path(tmpdir, 'file'))
+        audeer.list_dir_names(audeer.path(file, 'pattern'))
     with pytest.raises(FileNotFoundError):
-        audeer.list_dir_names('not-existent')
+        audeer.list_dir_names('not-existent/pattern')
 
 
 @pytest.mark.parametrize(
