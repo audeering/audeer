@@ -419,6 +419,12 @@ def list_file_names(
     Returns:
         list of path(s) to file(s)
 
+    Raises:
+        NotADirectoryError: if ``os.path.dirname(path)``
+            is not a directory
+        FileNotFoundError: if ``os.path.dirname(path)``
+            does not exists
+
     Examples:
         >>> dir_path = mkdir('path')
         >>> _ = touch(os.path.join(dir_path, 'file.wav'))
