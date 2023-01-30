@@ -268,6 +268,24 @@ def test_list_dir_names_errors(tmpdir):
         ([], '.', '', [], True, False),
         ([], '.', 'wav', [], False, False),
         ([], '.', 'wav', [], True, False),
+        # file
+        (
+            ['file.txt'],
+            'file.txt', 
+            '', 
+            ['file.txt'],
+            False,
+            False,
+        ),
+        pytest.param(
+            [],
+            'file',
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
         # folder
         (
             ['t3.ogg', 't2.wav', 't1.wav'],
@@ -310,6 +328,24 @@ def test_list_dir_names_errors(tmpdir):
             ],
             True,
             False,
+        ),
+        pytest.param(
+            [],
+            'does-not-exist',
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
+        pytest.param(
+            [],
+            os.path.join('does', 'not', 'exist'),
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
         ),
         # filetype
         (
@@ -387,6 +423,31 @@ def test_list_dir_names_errors(tmpdir):
             ],
             True,
             False,
+        ),
+        (
+            [],
+            os.path.join('file*'),
+            '',
+            [],
+            False,
+            False,
+        ),
+        (
+            [],
+            os.path.join('?ile'),
+            '',
+            [],
+            False,
+            False,
+        ),
+        pytest.param(
+            [],
+            os.path.join('does', 'not', 'exist', 'file*'),
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
         ),
         # pattern + filetype
         (
@@ -504,18 +565,6 @@ def test_list_file_names(tmpdir, files, path, filetype, expected,
         hidden=hidden,
     )
     assert f == expected
-
-
-def test_list_file_names_errors(tmpdir):
-    with pytest.raises(NotADirectoryError):
-        audeer.list_file_names(str(tmpdir)[:-1])
-    with pytest.raises(NotADirectoryError):
-        file = audeer.touch(audeer.path(tmpdir, 'file'))
-        audeer.list_file_names(audeer.path(file, 'file.txt'))
-    with pytest.raises(NotADirectoryError):
-        audeer.list_file_names('not-existent/file.txt')
-    with pytest.raises(NotADirectoryError):
-        audeer.list_file_names('not-existent/*.txt')
 
 
 def test_mkdir(tmpdir):
