@@ -271,8 +271,8 @@ def test_list_dir_names_errors(tmpdir):
         # file
         (
             ['file.txt'],
-            'file.txt', 
-            '', 
+            'file.txt',
+            '',
             ['file.txt'],
             False,
             False,
