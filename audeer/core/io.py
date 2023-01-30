@@ -483,6 +483,8 @@ def list_file_names(
         if not ('*' in pattern or '?' in pattern):
             raise NotADirectoryError(path)
         path = os.path.dirname(path)
+        if not os.path.isdir(path):
+            raise NotADirectoryError(path)
 
     def helper(p: str, paths: typing.List[str]):
         ps = [os.path.join(p, x) for x in os.listdir(p)]

@@ -514,6 +514,8 @@ def test_list_file_names_errors(tmpdir):
         audeer.list_file_names(audeer.path(file, 'file.txt'))
     with pytest.raises(NotADirectoryError):
         audeer.list_file_names('not-existent/file.txt')
+    with pytest.raises(NotADirectoryError):
+        audeer.list_file_names('not-existent/*.txt')
 
 
 def test_mkdir(tmpdir):
