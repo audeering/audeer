@@ -420,8 +420,8 @@ def list_file_names(
         list of path(s) to file(s)
 
     Raises:
-        NotADirectoryError: if no files are found
-            and ``path`` is not a directory
+        NotADirectoryError: if ``path`` is a directory
+            that does not exist
 
     Examples:
         >>> dir_path = mkdir('path')
@@ -471,16 +471,18 @@ def list_file_names(
         ['sub/file.ogg']
 
     """
-    path_org = safe_path(path)
+    path = safe_path(path)
 
-    if not os.path.isdir(path_org):  # assume pattern
-        pattern = os.path.basename(path_org)
-        path = os.path.dirname(path_org)
-        if not os.path.isdir(path):
-            raise NotADirectoryError(path_org)
-    else:
+    if os.path.isdir(path):
         pattern = None
-        path = path_org
+    elif os.path.exists(path):
+        pattern = os.path.basename(path)
+        path = os.path.dirname(path)
+    else:
+        pattern = os.path.basename(path)
+        if not ('*' in pattern or '?' in pattern):
+            raise NotADirectoryError(path)
+        path = os.path.dirname(path)
 
     def helper(p: str, paths: typing.List[str]):
         ps = [os.path.join(p, x) for x in os.listdir(p)]
@@ -508,12 +510,6 @@ def list_file_names(
 
     paths = []
     helper(path, paths)
-
-    # if no files found
-    # check if input path is a (empty) directory
-    # otherwise raise an error
-    if not paths and not os.path.isdir(path_org):
-        raise NotADirectoryError(path_org)
 
     if basenames:
         paths = [p[len(path) + 1:] for p in paths]
