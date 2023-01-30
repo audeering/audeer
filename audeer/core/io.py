@@ -409,6 +409,9 @@ def list_file_names(
 ) -> typing.List[str]:
     """List of file names inferred from provided path.
 
+    A ``path`` is treated as a pattern
+    if its basename includes ``'*'`` or ``'?'``.
+
     Args:
         path: path to file, directory or pattern
         filetype: optional consider only this filetype
@@ -421,7 +424,9 @@ def list_file_names(
 
     Raises:
         NotADirectoryError: if ``path`` is a directory
-            that does not exist
+            that does not exist,
+            or ``path`` is a pattern
+            and ``os.dirname(path)`` does not exist
 
     Examples:
         >>> dir_path = mkdir('path')
