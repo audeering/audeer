@@ -416,8 +416,8 @@ def list_file_names(
             If ``recursive`` is ``True``
             returns all files named ``file.txt``
             from all sub-folders.
-            Besides the filename `*`, `?`, `[seq]`,
-            and `[!seq]` can be used as pattern,
+            Besides the filename ``*``, ``?``, ``[seq]``,
+            and ``[!seq]`` can be used as pattern,
             compare :mod:`fnmatch`
         filetype: optional consider only this filetype
         basenames: if ``True`` return relative path in respect to ``path``
