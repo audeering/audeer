@@ -286,6 +286,19 @@ def test_list_dir_names_errors(tmpdir):
             False,
             marks=pytest.mark.xfail(raises=NotADirectoryError),
         ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.wav'),
+            ],
+            't1.wav',
+            '',
+            [os.path.join('sub', 't1.wav'), 't1.wav'],
+            True,
+            False,
+        ),
         # folder
         (
             ['t3.ogg', 't2.wav', 't1.wav'],
@@ -394,19 +407,6 @@ def test_list_dir_names_errors(tmpdir):
         (
             [
                 't1.wav',
-                't2.wav',
-                os.path.join('sub', 't1.wav'),
-                os.path.join('sub', 't2.wav'),
-            ],
-            't1.wav',
-            '',
-            [os.path.join('sub', 't1.wav'), 't1.wav'],
-            True,
-            False,
-        ),
-        (
-            [
-                't1.wav',
                 't2.ogg',
                 's3.wav',
                 os.path.join('sub', 't1.wav'),
@@ -422,6 +422,59 @@ def test_list_dir_names_errors(tmpdir):
                 't2.ogg'
             ],
             True,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                's1.wav',
+                's2.wav',
+            ],
+            't?.wav',
+            '',
+            ['t1.wav', 't2.wav'],
+            False,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                's1.wav',
+                's2.wav',
+            ],
+            '[ts]1.wav',
+            '',
+            ['s1.wav', 't1.wav'],
+            False,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                's1.wav',
+                's.wav',
+            ],
+            '[ts]?.wav',
+            '',
+            ['s1.wav', 't1.wav', 't2.wav'],
+            False,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                's1.wav',
+                's.wav',
+                'x.wav',
+            ],
+            '[ts]*.wav',
+            '',
+            ['s.wav', 's1.wav', 't1.wav', 't2.wav'],
+            False,
             False,
         ),
         (
@@ -443,6 +496,15 @@ def test_list_dir_names_errors(tmpdir):
         pytest.param(
             [],
             os.path.join('does', 'not', 'exist', 'file*'),
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
+        pytest.param(
+            [],
+            os.path.join('not!a[pattern'),
             '',
             None,
             False,

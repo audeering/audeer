@@ -489,8 +489,16 @@ def list_file_names(
                 path = os.path.basename(path)
             return [path]
     else:
+
+        def is_pattern(pattern):
+            return (
+                    '*' in pattern or
+                    '?' in pattern or
+                    ('[' in pattern and ']' in pattern)
+            )
+
         pattern = os.path.basename(path)
-        if not ('*' in pattern or '?' in pattern):
+        if not is_pattern(pattern):
             raise NotADirectoryError(path)
         path = os.path.dirname(path)
         if not os.path.isdir(path):
