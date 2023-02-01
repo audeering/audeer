@@ -481,8 +481,13 @@ def list_file_names(
     if os.path.isdir(path):
         pattern = None
     elif os.path.exists(path):
-        pattern = os.path.basename(path)
-        path = os.path.dirname(path)
+        if recursive:
+            pattern = os.path.basename(path)
+            path = os.path.dirname(path)
+        else:
+            if basenames:
+                path = os.path.basename(path)
+            return [path]
     else:
         pattern = os.path.basename(path)
         if not ('*' in pattern or '?' in pattern):
