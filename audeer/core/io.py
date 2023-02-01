@@ -409,11 +409,16 @@ def list_file_names(
 ) -> typing.List[str]:
     """List of file names inferred from provided path.
 
-    A ``path`` is treated as a pattern
-    if its basename includes ``'*'`` or ``'?'``.
-
     Args:
-        path: path to file, directory or pattern
+        path: path to directory,
+            or path to directory plus file matching pattern,
+            e.g. ``'dir/file.txt'``.
+            If ``recursive`` is ``True``
+            returns all files named ``file.txt``
+            from all sub-folders.
+            Besides the filename `*`, `?`, `[seq]`,
+            and `[!seq]` can be used as pattern,
+            compare :mod:`fnmatch`
         filetype: optional consider only this filetype
         basenames: if ``True`` return relative path in respect to ``path``
         recursive: if ``True`` includes subdirectories
@@ -431,6 +436,7 @@ def list_file_names(
     Examples:
         >>> dir_path = mkdir('path')
         >>> _ = touch(os.path.join(dir_path, 'file.wav'))
+        >>> _ = touch(os.path.join(dir_path, 'File.wav'))
         >>> _ = touch(os.path.join(dir_path, '.lock'))
         >>> sub_dir_path = mkdir(os.path.join('path', 'sub'))
         >>> _ = touch(os.path.join(sub_dir_path, 'file.ogg'))
@@ -439,26 +445,26 @@ def list_file_names(
         ...     dir_path,
         ...     basenames=True,
         ... )
-        ['file.wav']
+        ['File.wav', 'file.wav']
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
         ...     hidden=True,
         ... )
-        ['.lock', 'file.wav']
+        ['.lock', 'File.wav', 'file.wav']
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
         ...     recursive=True,
         ... )
-        ['file.wav', 'sub/file.ogg']
+        ['File.wav', 'file.wav', 'sub/file.ogg']
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
         ...     recursive=True,
         ...     hidden=True,
         ... )
-        ['.lock', 'file.wav', 'sub/.lock', 'sub/file.ogg']
+        ['.lock', 'File.wav', 'file.wav', 'sub/.lock', 'sub/file.ogg']
         >>> list_file_names(
         ...     os.path.join(dir_path, 'f*'),
         ...     basenames=True,
@@ -466,6 +472,20 @@ def list_file_names(
         ...     hidden=True,
         ... )
         ['file.wav', 'sub/file.ogg']
+        >>> list_file_names(
+        ...     os.path.join(dir_path, '[fF]*'),
+        ...     basenames=True,
+        ...     recursive=True,
+        ...     hidden=True,
+        ... )
+        ['File.wav', 'file.wav', 'sub/file.ogg']
+        >>> list_file_names(
+        ...     os.path.join(dir_path, '[!f]*'),
+        ...     basenames=True,
+        ...     recursive=True,
+        ...     hidden=True,
+        ... )
+        ['.lock', 'File.wav', 'sub/.lock']
         >>> list_file_names(
         ...     os.path.join(dir_path, 'f*'),
         ...     filetype='ogg',
@@ -689,7 +709,9 @@ def rmdir(
         NotADirectoryError: if path is not a directory
 
     Examples:
-        >>> mkdir('path1/path2/path3')  # doctest: +SKIP
+        >>> _ = mkdir('path1/path2/path3')
+        >>> list_dir_names('path1', basenames=True)
+        ['path2']
         >>> rmdir('path1/path2')
         >>> list_dir_names('path1')
         []
