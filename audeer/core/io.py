@@ -428,7 +428,7 @@ def list_file_names(
         list of path(s) to file(s)
 
     Raises:
-        NotADirectoryError: if ``path`` is a directory
+        NotADirectoryError: if ``path`` is a directory or file
             that does not exist,
             or ``path`` is a pattern
             and ``os.dirname(path)`` does not exist
