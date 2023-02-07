@@ -286,6 +286,14 @@ def test_list_dir_names_errors(tmpdir):
             False,
             marks=pytest.mark.xfail(raises=NotADirectoryError),
         ),
+        (
+            [os.path.join('sub', 'file.txt')],
+            'file.txt',
+            '',
+            [os.path.join('sub', 'file.txt')],
+            True,
+            False,
+        ),
         pytest.param(
             [],
             'file',
@@ -570,6 +578,22 @@ def test_list_dir_names_errors(tmpdir):
             False,
         ),
         # hidden
+        (
+            ['.file.txt'],
+            '.file.txt',
+            '',
+            [],
+            False,
+            False,
+        ),
+        (
+            ['.file.txt'],
+            '.file.txt',
+            '',
+            ['.file.txt'],
+            False,
+            True,
+        ),
         (
             [
                 't1.wav',

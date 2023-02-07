@@ -499,30 +499,25 @@ def list_file_names(
     path = safe_path(path)
 
     if os.path.isdir(path):
+
         pattern = None
-    elif os.path.exists(path):
-        if recursive:
-            pattern = os.path.basename(path)
-            path = os.path.dirname(path)
-        else:
-            if basenames:
-                path = os.path.basename(path)
-            return [path]
+        folder = path
+
+    elif os.path.exists(path) and not recursive:
+
+        if not hidden and os.path.basename(path).startswith('.'):
+            return []
+        if basenames:
+            path = os.path.basename(path)
+        return [path]
+
     else:
 
-        def is_pattern(pattern):
-            return (
-                    '*' in pattern or
-                    '?' in pattern or
-                    ('[' in pattern and ']' in pattern)
-            )
-
         pattern = os.path.basename(path)
-        if not is_pattern(pattern):
-            raise NotADirectoryError(path)
-        path = os.path.dirname(path)
-        if not os.path.isdir(path):
-            raise NotADirectoryError(path)
+        folder = os.path.dirname(path)
+
+        if not os.path.isdir(folder):
+            raise NotADirectoryError(folder)
 
     def helper(p: str, paths: typing.List[str]):
         ps = [os.path.join(p, x) for x in os.listdir(p)]
@@ -549,10 +544,28 @@ def list_file_names(
                 helper(p, paths)
 
     paths = []
-    helper(path, paths)
+    helper(folder, paths)
+
+    def is_pattern(pattern):
+        return (
+                '*' in pattern or
+                '?' in pattern or
+                ('[' in pattern and ']' in pattern)
+        )
+
+    # if we have no match,
+    # raise an error unless
+    # 1. path is a folder (i.e. pattern is None)
+    # 2. or we have a valid pattern
+    if (
+            len(paths) == 0
+            and pattern is not None
+            and not is_pattern(pattern)
+    ):
+        raise NotADirectoryError(path)
 
     if basenames:
-        paths = [p[len(path) + 1:] for p in paths]
+        paths = [p[len(folder) + 1:] for p in paths]
 
     return sorted(paths)
 
