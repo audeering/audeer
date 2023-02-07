@@ -425,7 +425,7 @@ def list_file_names(
         hidden: if ``True`` includes files starting with a dot (``.``)
 
     Returns:
-        list of path(s) to file(s)
+        alphabetically sorted list of path(s) to file(s)
 
     Raises:
         NotADirectoryError: if ``path`` is a directory or file
