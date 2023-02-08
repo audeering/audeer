@@ -268,6 +268,54 @@ def test_list_dir_names_errors(tmpdir):
         ([], '.', '', [], True, False),
         ([], '.', 'wav', [], False, False),
         ([], '.', 'wav', [], True, False),
+        # file
+        (
+            ['file.txt'],
+            'file.txt',
+            '',
+            ['file.txt'],
+            False,
+            False,
+        ),
+        pytest.param(
+            [os.path.join('sub', 'file.txt')],
+            'file.txt',
+            '',
+            [],
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
+        (
+            [os.path.join('sub', 'file.txt')],
+            'file.txt',
+            '',
+            [os.path.join('sub', 'file.txt')],
+            True,
+            False,
+        ),
+        pytest.param(
+            [],
+            'file',
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.wav'),
+            ],
+            't1.wav',
+            '',
+            [os.path.join('sub', 't1.wav'), 't1.wav'],
+            True,
+            False,
+        ),
         # folder
         (
             ['t3.ogg', 't2.wav', 't1.wav'],
@@ -310,6 +358,24 @@ def test_list_dir_names_errors(tmpdir):
             ],
             True,
             False,
+        ),
+        pytest.param(
+            [],
+            'does-not-exist',
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
+        pytest.param(
+            [],
+            os.path.join('does', 'not', 'exist'),
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
         ),
         # filetype
         (
@@ -358,19 +424,6 @@ def test_list_dir_names_errors(tmpdir):
         (
             [
                 't1.wav',
-                't2.wav',
-                os.path.join('sub', 't1.wav'),
-                os.path.join('sub', 't2.wav'),
-            ],
-            't1.wav',
-            '',
-            [os.path.join('sub', 't1.wav'), 't1.wav'],
-            True,
-            False,
-        ),
-        (
-            [
-                't1.wav',
                 't2.ogg',
                 's3.wav',
                 os.path.join('sub', 't1.wav'),
@@ -387,6 +440,123 @@ def test_list_dir_names_errors(tmpdir):
             ],
             True,
             False,
+        ),
+        (
+            [
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.ogg'),
+                os.path.join('sub', 's3.wav'),
+            ],
+            't*',
+            '',
+            [
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.ogg'),
+            ],
+            True,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.ogg',
+                's3.wav',
+                os.path.join('sub', 't1.wav'),
+                os.path.join('sub', 't2.ogg'),
+                os.path.join('sub', 's3.wav'),
+            ],
+            'x*',
+            '',
+            [],
+            True,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                's1.wav',
+                's2.wav',
+            ],
+            't?.wav',
+            '',
+            ['t1.wav', 't2.wav'],
+            False,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                's1.wav',
+                's2.wav',
+            ],
+            '[ts]1.wav',
+            '',
+            ['s1.wav', 't1.wav'],
+            False,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                's1.wav',
+                's.wav',
+            ],
+            '[ts]?.wav',
+            '',
+            ['s1.wav', 't1.wav', 't2.wav'],
+            False,
+            False,
+        ),
+        (
+            [
+                't1.wav',
+                't2.wav',
+                's1.wav',
+                's.wav',
+                'x.wav',
+            ],
+            '[ts]*.wav',
+            '',
+            ['s.wav', 's1.wav', 't1.wav', 't2.wav'],
+            False,
+            False,
+        ),
+        (
+            [],
+            'file*',
+            '',
+            [],
+            False,
+            False,
+        ),
+        (
+            [],
+            '?ile',
+            '',
+            [],
+            False,
+            False,
+        ),
+        pytest.param(
+            [],
+            os.path.join('does', 'not', 'exist', 'file*'),
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
+        pytest.param(
+            [],
+            os.path.join('not!a[pattern'),
+            '',
+            None,
+            False,
+            False,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
         ),
         # pattern + filetype
         (
@@ -408,6 +578,38 @@ def test_list_dir_names_errors(tmpdir):
             False,
         ),
         # hidden
+        (
+            ['.file.txt'],
+            '.file.txt',
+            '',
+            [],
+            False,
+            False,
+        ),
+        (
+            ['.file.txt'],
+            '.file.txt',
+            '',
+            ['.file.txt'],
+            False,
+            True,
+        ),
+        (
+            [os.path.join('sub', '.file.txt')],
+            '.file.txt',
+            '',
+            [],
+            True,
+            False,
+        ),
+        (
+            [os.path.join('sub', '.file.txt')],
+            '.file.txt',
+            '',
+            [os.path.join('sub', '.file.txt')],
+            True,
+            True,
+        ),
         (
             [
                 't1.wav',
@@ -504,14 +706,6 @@ def test_list_file_names(tmpdir, files, path, filetype, expected,
         hidden=hidden,
     )
     assert f == expected
-
-
-def test_list_file_names_errors(tmpdir):
-    with pytest.raises(NotADirectoryError):
-        file = audeer.touch(audeer.path(tmpdir, 'file'))
-        audeer.list_file_names(audeer.path(file, 'file.txt'))
-    with pytest.raises(FileNotFoundError):
-        audeer.list_file_names('not-existent/file.txt')
 
 
 def test_mkdir(tmpdir):

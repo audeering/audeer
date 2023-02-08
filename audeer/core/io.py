@@ -410,24 +410,33 @@ def list_file_names(
     """List of file names inferred from provided path.
 
     Args:
-        path: path to file, directory or pattern
+        path: path to directory,
+            or path to directory plus file matching pattern,
+            e.g. ``'dir/file.txt'``.
+            If ``recursive`` is ``True``
+            returns all files named ``file.txt``
+            from all sub-folders.
+            Besides the filename ``*``, ``?``, ``[seq]``,
+            and ``[!seq]`` can be used as pattern,
+            compare :mod:`fnmatch`
         filetype: optional consider only this filetype
         basenames: if ``True`` return relative path in respect to ``path``
         recursive: if ``True`` includes subdirectories
         hidden: if ``True`` includes files starting with a dot (``.``)
 
     Returns:
-        list of path(s) to file(s)
+        alphabetically sorted list of path(s) to file(s)
 
     Raises:
-        NotADirectoryError: if ``os.path.dirname(path)``
-            is not a directory
-        FileNotFoundError: if ``os.path.dirname(path)``
-            does not exists
+        NotADirectoryError: if ``path`` is a directory or file
+            that does not exist,
+            or ``path`` is a pattern
+            and ``os.dirname(path)`` does not exist
 
     Examples:
         >>> dir_path = mkdir('path')
         >>> _ = touch(os.path.join(dir_path, 'file.wav'))
+        >>> _ = touch(os.path.join(dir_path, 'File.wav'))
         >>> _ = touch(os.path.join(dir_path, '.lock'))
         >>> sub_dir_path = mkdir(os.path.join('path', 'sub'))
         >>> _ = touch(os.path.join(sub_dir_path, 'file.ogg'))
@@ -436,26 +445,26 @@ def list_file_names(
         ...     dir_path,
         ...     basenames=True,
         ... )
-        ['file.wav']
+        ['File.wav', 'file.wav']
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
         ...     hidden=True,
         ... )
-        ['.lock', 'file.wav']
+        ['.lock', 'File.wav', 'file.wav']
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
         ...     recursive=True,
         ... )
-        ['file.wav', 'sub/file.ogg']
+        ['File.wav', 'file.wav', 'sub/file.ogg']
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
         ...     recursive=True,
         ...     hidden=True,
         ... )
-        ['.lock', 'file.wav', 'sub/.lock', 'sub/file.ogg']
+        ['.lock', 'File.wav', 'file.wav', 'sub/.lock', 'sub/file.ogg']
         >>> list_file_names(
         ...     os.path.join(dir_path, 'f*'),
         ...     basenames=True,
@@ -463,6 +472,20 @@ def list_file_names(
         ...     hidden=True,
         ... )
         ['file.wav', 'sub/file.ogg']
+        >>> list_file_names(
+        ...     os.path.join(dir_path, '[fF]*'),
+        ...     basenames=True,
+        ...     recursive=True,
+        ...     hidden=True,
+        ... )
+        ['File.wav', 'file.wav', 'sub/file.ogg']
+        >>> list_file_names(
+        ...     os.path.join(dir_path, '[!f]*'),
+        ...     basenames=True,
+        ...     recursive=True,
+        ...     hidden=True,
+        ... )
+        ['.lock', 'File.wav', 'sub/.lock']
         >>> list_file_names(
         ...     os.path.join(dir_path, 'f*'),
         ...     filetype='ogg',
@@ -474,11 +497,27 @@ def list_file_names(
 
     """
     path = safe_path(path)
-    if not os.path.isdir(path):
-        pattern = os.path.basename(path)
-        path = os.path.dirname(path)
-    else:
+
+    if os.path.isdir(path):
+
         pattern = None
+        folder = path
+
+    elif os.path.exists(path) and not recursive:
+
+        if not hidden and os.path.basename(path).startswith('.'):
+            return []
+        if basenames:
+            path = os.path.basename(path)
+        return [path]
+
+    else:
+
+        pattern = os.path.basename(path)
+        folder = os.path.dirname(path)
+
+        if not os.path.isdir(folder):
+            raise NotADirectoryError(folder)
 
     def helper(p: str, paths: typing.List[str]):
         ps = [os.path.join(p, x) for x in os.listdir(p)]
@@ -494,20 +533,40 @@ def list_file_names(
                 file for file in files
                 if fnmatch.fnmatch(os.path.basename(file), f'*{filetype}')
             ]
-        if not hidden:
-            files = [
-                file for file in files
-                if not os.path.basename(file).startswith('.')
-            ]
         paths.extend(files)
         if len(folders) > 0 and recursive:
             for p in folders:
                 helper(p, paths)
 
     paths = []
-    helper(path, paths)
+    helper(folder, paths)
+
+    def is_pattern(pattern):
+        return (
+                '*' in pattern or
+                '?' in pattern or
+                ('[' in pattern and ']' in pattern)
+        )
+
+    # if we have no match,
+    # raise an error unless
+    # 1. path is a folder (i.e. pattern is None)
+    # 2. or we have a valid pattern
+    if (
+            len(paths) == 0
+            and pattern is not None
+            and not is_pattern(pattern)
+    ):
+        raise NotADirectoryError(path)
+
+    if not hidden:
+        paths = [
+            p for p in paths
+            if not os.path.basename(p).startswith('.')
+        ]
+
     if basenames:
-        paths = [p[len(path) + 1:] for p in paths]
+        paths = [p[len(folder) + 1:] for p in paths]
 
     return sorted(paths)
 
@@ -664,7 +723,9 @@ def rmdir(
         NotADirectoryError: if path is not a directory
 
     Examples:
-        >>> mkdir('path1/path2/path3')  # doctest: +SKIP
+        >>> _ = mkdir('path1/path2/path3')
+        >>> list_dir_names('path1', basenames=True)
+        ['path2']
         >>> rmdir('path1/path2')
         >>> list_dir_names('path1')
         []
