@@ -595,6 +595,22 @@ def test_list_dir_names_errors(tmpdir):
             True,
         ),
         (
+            [os.path.join('sub', '.file.txt')],
+            '.file.txt',
+            '',
+            [],
+            True,
+            False,
+        ),
+        (
+            [os.path.join('sub', '.file.txt')],
+            '.file.txt',
+            '',
+            [os.path.join('sub', '.file.txt')],
+            True,
+            True,
+        ),
+        (
             [
                 't1.wav',
                 '.t2.wav',

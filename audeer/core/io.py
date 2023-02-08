@@ -533,11 +533,6 @@ def list_file_names(
                 file for file in files
                 if fnmatch.fnmatch(os.path.basename(file), f'*{filetype}')
             ]
-        if not hidden:
-            files = [
-                file for file in files
-                if not os.path.basename(file).startswith('.')
-            ]
         paths.extend(files)
         if len(folders) > 0 and recursive:
             for p in folders:
@@ -563,6 +558,12 @@ def list_file_names(
             and not is_pattern(pattern)
     ):
         raise NotADirectoryError(path)
+
+    if not hidden:
+        paths = [
+            p for p in paths
+            if not os.path.basename(p).startswith('.')
+        ]
 
     if basenames:
         paths = [p[len(folder) + 1:] for p in paths]
