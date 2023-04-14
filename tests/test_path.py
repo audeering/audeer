@@ -1,4 +1,5 @@
 import os
+import platform
 
 import pytest
 
@@ -20,6 +21,9 @@ def test_path(path):
         expected_path = os.path.abspath(os.path.expanduser(path))
     else:
         expected_path = ''
+    print(expected_path)
+    if platform.system() == 'Windows':
+        assert False
     if type(expected_path) == bytes:
         expected_path = expected_path.decode('utf8')
     path = audeer.path(path)
