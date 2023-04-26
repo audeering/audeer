@@ -91,6 +91,10 @@ class StrictVersion(Version):
     Args:
         version: version string
 
+    Raises:
+        ValueError: if ``version`` does not match
+            the ``StrictVersion.version_re`` pattern
+
     Examples:
         >>> v1 = StrictVersion('1.17.2a1')
         >>> v1
