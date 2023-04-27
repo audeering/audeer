@@ -254,6 +254,10 @@ def test_archives(tmpdir, tree, root, files, archive_create,
     archive_create = audeer.path(tmpdir, archive_create)
     archive_extract = audeer.path(tmpdir, archive_extract)
 
+    if isinstance(files, str):
+        files = files.replace('/', os.path.sep)
+    elif files is not None:
+        files = [file.replace('/', os.path.sep) for file in files]
     if expected is not None:
         expected = [x.replace('/', os.path.sep) for x in expected]
 
@@ -282,10 +286,13 @@ def test_archives(tmpdir, tree, root, files, archive_create,
     assert result == expected + expected
     assert os.path.exists(archive_extract)
 
-    # absolute path and delete archive
+    # absolute path
 
     if files is not None:
-        files = [audeer.path(root, file) for file in audeer.to_list(files)]
+        if isinstance(files, str):
+            files = audeer.path(root, files)
+        else:
+            files = [audeer.path(root, file) for file in files]
         audeer.create_archive(
             root,
             files,
@@ -294,10 +301,19 @@ def test_archives(tmpdir, tree, root, files, archive_create,
         result = audeer.extract_archive(
             archive_extract,
             destination,
-            keep_archive=False,
+            keep_archive=True,
         )
         assert result == expected
-        assert not os.path.exists(archive_extract)
+        assert os.path.exists(archive_extract)
+
+    # delete archive
+
+    audeer.extract_archive(
+        archive_extract,
+        destination,
+        keep_archive=False,
+    )
+    assert not os.path.exists(archive_extract)
 
 
 @pytest.mark.parametrize('path,ext,basename', [
