@@ -16,6 +16,7 @@ def tree(tmpdir, request):
     paths = []
 
     for path in files:
+        path = path.replace('/', os.path.sep)
         if path.endswith(os.path.sep):
             path = audeer.path(tmpdir, path)
             path = audeer.mkdir(path)
@@ -252,6 +253,9 @@ def test_archives(tmpdir, tree, root, files, archive_create,
     destination = audeer.path(tmpdir, destination)
     archive_create = audeer.path(tmpdir, archive_create)
     archive_extract = audeer.path(tmpdir, archive_extract)
+
+    if expected is not None:
+        expected = [x.replace('/', os.path.sep) for x in expected]
 
     # relative path
 
