@@ -7,6 +7,32 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.20.0 (2023-04-27)
+---------------------------
+
+* Added: ``short`` argument to ``audeer.is_uid()``.
+  If ``True`` it supports short UIDs
+  like ``ad855840``
+* Changed: ``audeer.list_file_names()``
+  raises a ``NotADirectoryError``
+  if the provided ``path`` argument
+  is a non-existing folder
+  or a folder that is part a search pattern
+  does not exists
+* Fixed: ``audeer.replace_file_extension()``
+  now adds the new file extension to the filename
+  if no original file extension was present
+  instead of replacing the filename
+* Fixed: ``audeer.replace_file_extension()``
+  now returns the original filename
+  when an empty new file extension is provided
+  instead of adding ``.`` at the end of the filename
+* Fixed: add raises section
+  to API documentation of ``audeer.list_file_names()``
+* Fixed: add raises section
+  to API documentation of ``audeer.StrictVersion``
+
+
 Version 1.19.0 (2022-12-19)
 ---------------------------
 
