@@ -278,7 +278,7 @@ def extract_archive(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        path of files extracted from archive relative to ``destination``
+        extracted members
 
     Raises:
         FileNotFoundError: if ``archive`` is not found
@@ -384,7 +384,7 @@ def extract_archives(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        path of files extracted from all archives relative to ``destination``
+        extracted members
 
     Raises:
         FileNotFoundError: if an archive is not found

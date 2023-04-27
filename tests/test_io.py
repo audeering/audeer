@@ -254,13 +254,6 @@ def test_archives(tmpdir, tree, root, files, archive_create,
     archive_create = audeer.path(tmpdir, archive_create)
     archive_extract = audeer.path(tmpdir, archive_extract)
 
-    # if isinstance(files, str):
-    #     files = files.replace('/', os.path.sep)
-    # elif files is not None:
-    #     files = [file.replace('/', os.path.sep) for file in files]
-    # if expected is not None:
-    #     expected = [x.replace('/', os.path.sep) for x in expected]
-
     # relative path
 
     audeer.create_archive(
