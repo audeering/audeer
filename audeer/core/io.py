@@ -107,21 +107,24 @@ def create_archive(
 
     Args:
         root: path to root folder of archive.
-            Path names inside the archive
-            will be relative to ``root``
-        files: files to include in archive.
-            Path can be absolute or relative
-            but must be below ``root``.
+            Only files below ``root`` can be included
+            and will be stored relative to ``root``
+        files: files that will be included in the archive.
+            Absolute and relative file paths are possible,
+            as long as the files are below ``root``.
             If set to ``None``
-            will include all files below ``root``
-            (also from sub-folders and hidden files)
+            all files below ``root``
+            will be added to the archive.
+            This includes hidden files
+            and files from sub-folders
         archive: path to archive file.
-            The archive type is determined by the file extension
+            The type of the archive
+            is determined from its file extension
         verbose: if ``True`` a progress bar is shown
 
     Raises:
         FileNotFoundError: if ``root`` or a file in ``files`` is not found
-        NotADirectoryError: if ` root`` is not a directory
+        NotADirectoryError: if ``root`` is not a directory
         RuntimeError: if archive does not end with ``zip`` or ``tar.gz``
         ValueError: if ``file`` is not below ``root``
 
@@ -264,24 +267,25 @@ def extract_archive(
         keep_archive: bool = True,
         verbose: bool = False,
 ) -> typing.List[str]:
-    r"""Extract a ZIP or TAR.GZ file.
+    r"""Extract ZIP or TAR.GZ file.
 
     Args:
         archive: path to ZIP or TAR.GZ file
-        destination: folder where the content should be stored.
-            Will be created if it doesn't exist
+        destination: folder where the files will be extracted.
+            If the folder does not exists,
+            it will be created
         keep_archive: if ``False`` delete archive file after extraction
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        member filenames of archive
+        path of files extracted from archive relative to ``destination``
 
     Raises:
         FileNotFoundError: if ``archive`` is not found
         IsADirectoryError: if ``archive`` is a directory
-        IsNotADirectoryError: if ``destination`` is not a directory
-        RuntimeError: if the provided archive is not a ZIP or TAR.GZ file
-        RuntimeError: if the archive file is malformed
+        NotADirectoryError: if ``destination`` is not a directory
+        RuntimeError: if ``archive`` is not a ZIP or TAR.GZ file
+        RuntimeError: if ``archive`` is malformed
 
     """
     archive = safe_path(archive)
@@ -369,17 +373,25 @@ def extract_archives(
         keep_archive: bool = True,
         verbose: bool = False,
 ) -> typing.List[str]:
-    r"""Extract ZIP or TAR.GZ archives.
+    r"""Extract multiple ZIP or TAR.GZ archives at once.
 
     Args:
         archives: paths of ZIP or TAR.GZ files
-        destination: folder where the content should be stored.
-            Will be created if it doesn't exist
+        destination: folder where the files will be extracted.
+            If the folder does not exists,
+            it will be created
         keep_archive: if ``False`` delete archive files after extraction
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        combined member filenames of archives
+        path of files extracted from all archives relative to ``destination``
+
+    Raises:
+        FileNotFoundError: if an archive is not found
+        IsADirectoryError: if an archive is a directory
+        NotADirectoryError: if ``destination`` is not a directory
+        RuntimeError: if an archive is not a ZIP or TAR.GZ file
+        RuntimeError: if an archive file is malformed
 
     """
     with progress_bar(
