@@ -43,6 +43,15 @@ def tree(tmpdir, request):
             '.',
             [],
         ),
+        (
+            [],
+            '.',
+            None,
+            'archive.zip',
+            'archive.zip',
+            '.',
+            [],
+        ),
         (  # single file
             ['file.txt'],
             '.',
@@ -87,6 +96,15 @@ def tree(tmpdir, request):
             'archive.zip',
             '.',
             ['file.txt'],
+        ),
+        (  # include all files
+            ['file.txt', 'sub/a/b/file.txt', '.hidden'],
+            '.',
+            None,
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['.hidden', 'file.txt', 'sub/a/b/file.txt'],
         ),
         (  # tar.gz
             ['file.txt', 'sub/a/b/file.txt'],
@@ -262,19 +280,20 @@ def test_archives(tmpdir, tree, root, files, archive_create,
 
     # absolute path and delete archive
 
-    files = [audeer.path(root, file) for file in audeer.to_list(files)]
-    audeer.create_archive(
-        root,
-        files,
-        archive_create,
-    )
-    result = audeer.extract_archive(
-        archive_extract,
-        destination,
-        keep_archive=False,
-    )
-    assert result == expected
-    assert not os.path.exists(archive_extract)
+    if files is not None:
+        files = [audeer.path(root, file) for file in audeer.to_list(files)]
+        audeer.create_archive(
+            root,
+            files,
+            archive_create,
+        )
+        result = audeer.extract_archive(
+            archive_extract,
+            destination,
+            keep_archive=False,
+        )
+        assert result == expected
+        assert not os.path.exists(archive_extract)
 
 
 @pytest.mark.parametrize('path,ext,basename', [

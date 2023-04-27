@@ -98,7 +98,7 @@ def common_directory(
 
 def create_archive(
         root: str,
-        files: typing.Union[str, typing.Sequence[str]],
+        files: typing.Optional[typing.Union[str, typing.Sequence[str]]],
         archive: str,
         *,
         verbose: bool = False,
@@ -111,7 +111,10 @@ def create_archive(
             will be relative to ``root``
         files: files to include in archive.
             Path can be absolute or relative
-            but must be below ``root``
+            but must be below ``root``.
+            If set to ``None``
+            will include all files below ``root``
+            (also from sub-folders and hidden files)
         archive: path to archive file.
             The archive type is determined by the file extension
         verbose: if ``True`` a progress bar is shown
@@ -126,7 +129,6 @@ def create_archive(
     root = safe_path(root)
     archive = safe_path(archive)
     mkdir(os.path.dirname(archive))
-    files_org = to_list(files)
 
     if not os.path.exists(root):
         raise FileNotFoundError(
@@ -142,36 +144,48 @@ def create_archive(
             root,
         )
 
-    files = []
+    if files is None:
 
-    for file in files_org:
+        files = list_file_names(
+            root,
+            basenames=True,
+            recursive=True,
+            hidden=True,
+        )
 
-        # convert to absolute path
-        if not os.path.isabs(file):
-            path = safe_path(root, file)
-        else:
-            path = safe_path(file)
+    else:
 
-        # file is below root
-        if not path.startswith(root):
-            raise ValueError(
-                f"Only files below "
-                f"'{root}' "
-                f"can be included. "
-                f"This is not the case with "
-                f"'{file}'"
-            )
+        files_org = to_list(files)
+        files = []
 
-        # file exists
-        if not os.path.exists(path):
-            raise FileNotFoundError(
-                errno.ENOENT,
-                os.strerror(errno.ENOENT),
-                file,
-            )
+        for file in files_org:
 
-        # convert to relative path
-        files.append(path[len(root) + 1:])
+            # convert to absolute path
+            if not os.path.isabs(file):
+                path = safe_path(root, file)
+            else:
+                path = safe_path(file)
+
+            # file is below root
+            if not path.startswith(root):
+                raise ValueError(
+                    f"Only files below "
+                    f"'{root}' "
+                    f"can be included. "
+                    f"This is not the case with "
+                    f"'{file}'"
+                )
+
+            # file exists
+            if not os.path.exists(path):
+                raise FileNotFoundError(
+                    errno.ENOENT,
+                    os.strerror(errno.ENOENT),
+                    file,
+                )
+
+            # convert to relative path
+            files.append(path[len(root) + 1:])
 
     # Progress bar arguments
     desc = format_display_message(
