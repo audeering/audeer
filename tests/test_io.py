@@ -8,86 +8,273 @@ import pytest
 import audeer
 
 
-def test_archives(tmpdir):
+@pytest.fixture(scope='function', autouse=False)
+def tree(tmpdir, request):
+    r"""Create file tree."""
 
-    # Create tmp files to put in archives
-    filenames = ['file1', 'file2']
-    dir_tmp = tmpdir.mkdir('content')
-    for filename in filenames:
-        f = dir_tmp.join(f'{filename}.txt')
-        f.write('')
-    path = str(dir_tmp)
-    src_path = audeer.mkdir(path)
-    # Create destination folder
-    dir_tmp = tmpdir.mkdir('destination')
-    destination = str(dir_tmp)
-    os.rmdir(destination)  # make sure destination does not exists
-    # Create folder holding archive files
-    archive_dir_tmp = tmpdir.mkdir('archives')
-    archive_folder = audeer.mkdir(str(archive_dir_tmp))
+    files = request.param
+    paths = []
 
-    # Create archives
-    zip_files = []
-    tar_files = []
-    for filename in filenames:
+    for path in files:
+        if path.endswith(os.path.sep):
+            path = audeer.path(tmpdir, path)
+            path = audeer.mkdir(path)
+            path = path + os.path.sep
+            paths.append(path)
+        else:
+            path = audeer.path(tmpdir, path)
+            audeer.mkdir(os.path.dirname(path))
+            path = audeer.touch(path)
+            paths.append(path)
 
-        src_file = f'{filename}.txt'
+    yield paths
 
-        zip_file = os.path.join(archive_folder, f'{filename}.zip')
-        audeer.create_archive(src_path, src_file, zip_file)
-        zip_files.append(zip_file)
 
-        tar_file = os.path.join(archive_folder, f'{filename}.tar.gz')
-        audeer.create_archive(src_path, src_file, tar_file)
-        tar_files.append(tar_file)
+@pytest.mark.parametrize(
+    'tree, root, files, archive_create, archive_extract, destination, '
+    'expected',
+    [
+        (  # empty
+            [],
+            '.',
+            [],
+            'archive.zip',
+            'archive.zip',
+            '.',
+            [],
+        ),
+        (  # single file
+            ['file.txt'],
+            '.',
+            'file.txt',
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['file.txt'],
+        ),
+        (  # archive folder does not exist
+            ['file.txt'],
+            '.',
+            'file.txt',
+            'sub/archive.zip',
+            'sub/archive.zip',
+            '.',
+            ['file.txt'],
+        ),
+        (  # file in sub folder
+            ['file.txt', 'sub/a/b/file.txt'],
+            '.',
+            ['sub/a/b/file.txt', 'file.txt'],
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['sub/a/b/file.txt', 'file.txt'],
+        ),
+        (
+            ['file.txt', 'sub/a/b/file.txt'],
+            '.',
+            ['sub/a/b/file.txt'],
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['sub/a/b/file.txt'],
+        ),
+        (
+            ['file.txt', 'sub/a/b/file.txt'],
+            '.',
+            ['file.txt'],
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['file.txt'],
+        ),
+        (  # tar.gz
+            ['file.txt', 'sub/a/b/file.txt'],
+            '.',
+            ['sub/a/b/file.txt', 'file.txt'],
+            'archive.tar.gz',
+            'archive.tar.gz',
+            '.',
+            ['sub/a/b/file.txt', 'file.txt'],
+        ),
+        (  # root is sub folder
+            ['sub/file.txt'],
+            './sub',
+            ['file.txt'],
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['file.txt'],
+        ),
+        (  # destitation is sub folder
+            ['file.txt'],
+            '.',
+            ['file.txt'],
+            'archive.zip',
+            'archive.zip',
+            './sub',
+            ['file.txt'],
+        ),
+        (  # relative path with ../
+            ['sub/file.txt'],
+            './sub',
+            ['../sub/file.txt'],
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['file.txt'],
+        ),
+        pytest.param(  # root does not exit
+            [],
+            './sub',
+            None,
+            'archive.zip',
+            'archive.zip',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=FileNotFoundError),
+        ),
+        pytest.param(  # root is not a directory
+            ['file.txt'],
+            'file.txt',
+            None,
+            'archive.zip',
+            'archive.zip',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
+        pytest.param(  # destination is not a directory
+            ['file.txt'],
+            '.',
+            [],
+            'archive.zip',
+            'archive.zip',
+            'file.txt',
+            [],
+            marks=pytest.mark.xfail(raises=NotADirectoryError),
+        ),
+        pytest.param(  # extracted archive does not exit
+            [],
+            '.',
+            [],
+            'archive.zip',
+            'bad.zip',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=FileNotFoundError),
+        ),
+        pytest.param(  # extracted archive is a directory
+            ['sub/'],
+            '.',
+            [],
+            'archive.zip',
+            'sub',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=IsADirectoryError),
+        ),
+        pytest.param(  # file does not exit
+            [],
+            '.',
+            ['file.txt'],
+            'archive.zip',
+            'archive.zip',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=FileNotFoundError),
+        ),
+        pytest.param(  # file not below root
+            ['file.txt', 'sub/'],
+            './sub',
+            ['../file.txt'],
+            'archive.zip',
+            'archive.zip',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=ValueError),
+        ),
+        pytest.param(  # archive type not supported
+            [],
+            '.',
+            [],
+            'archive.bad',
+            'archive.zip',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=RuntimeError),
+        ),
+        pytest.param(
+            ['archive.bad'],
+            '.',
+            [],
+            'archive.zip',
+            'archive.bad',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=RuntimeError),
+        ),
+        pytest.param(  # broken archive
+            ['archive.zip'],
+            '.',
+            [],
+            'archive.tar.gz',
+            'archive.zip',
+            '.',
+            None,
+            marks=pytest.mark.xfail(raises=RuntimeError),
+        ),
+    ],
+    indirect=['tree'],
+)
+def test_archives(tmpdir, tree, root, files, archive_create,
+                  archive_extract, destination, expected):
 
-    with pytest.raises(RuntimeError):
-        audeer.create_archive(src_path, src_file, f'{filename}.7z')
+    root = audeer.path(tmpdir, root)
+    destination = audeer.path(tmpdir, destination)
+    archive_create = audeer.path(tmpdir, archive_create)
+    archive_extract = audeer.path(tmpdir, archive_extract)
 
-    # Extract archives
-    members = audeer.extract_archives(zip_files, destination)
-    for filename, member in zip(filenames, members):
-        target_file = os.path.join(destination, f'{filename}.txt')
-        assert os.path.exists(target_file)
-        assert os.path.basename(target_file) == member
-        os.remove(target_file)
+    # relative path
 
-    members = audeer.extract_archives(tar_files, destination)
-    for filename, member in zip(filenames, members):
-        target_file = os.path.join(destination, f'{filename}.txt')
-        assert os.path.exists(target_file)
-        assert os.path.basename(target_file) == member
-        os.remove(target_file)
+    audeer.create_archive(
+        root,
+        files,
+        archive_create,
+    )
+    result = audeer.extract_archive(
+        archive_extract,
+        root,
+        keep_archive=True,
+    )
+    assert result == expected
+    assert os.path.exists(archive_extract)
 
-    with pytest.raises(RuntimeError):
-        audeer.extract_archive(os.path.join(src_path, src_file), destination)
+    # list of archives
 
-    audeer.extract_archive(tar_files[0], destination, keep_archive=False)
-    assert not os.path.exists(tar_files[0])
-    assert os.path.exists(tar_files[1])
+    result = audeer.extract_archives(
+        [archive_extract, archive_extract],
+        destination,
+        keep_archive=True,
+    )
+    assert result == expected + expected
+    assert os.path.exists(archive_extract)
 
-    # Create broken archives
-    for ext in ['zip', 'tar.gz']:
-        f = archive_dir_tmp.join(f'broken.{ext}')
-        f.write('')
-        archive_file = os.path.join(archive_folder, f'broken.{ext}')
-        if ext == 'zip':
-            with pytest.raises(RuntimeError):
-                audeer.extract_archive(
-                    archive_file,
-                    destination,
-                    keep_archive=False,
-                )
-        elif ext == 'tar.gz':
-            with pytest.raises(RuntimeError):
-                audeer.extract_archive(
-                    archive_file,
-                    destination,
-                    keep_archive=False,
-                )
+    # absolute path and delete archive
 
-        # File should still be there if extraction failed
-        assert os.path.exists(zip_file)
+    files = [audeer.path(root, file) for file in audeer.to_list(files)]
+    audeer.create_archive(
+        root,
+        files,
+        archive_create,
+    )
+    result = audeer.extract_archive(
+        archive_extract,
+        destination,
+        keep_archive=False,
+    )
+    assert result == expected
+    assert not os.path.exists(archive_extract)
 
 
 @pytest.mark.parametrize('path,ext,basename', [

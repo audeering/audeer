@@ -1,3 +1,4 @@
+import errno
 import fnmatch
 import itertools
 import os
@@ -108,19 +109,69 @@ def create_archive(
         root: path to root folder of archive.
             Path names inside the archive
             will be relative to ``root``
-        files: files to include in archive,
-            relative to ``root``
+        files: files to include in archive.
+            Path can be absolute or relative
+            but must be below ``root``
         archive: path to archive file.
             The archive type is determined by the file extension
         verbose: if ``True`` a progress bar is shown
 
     Raises:
+        FileNotFoundError: if ``root`` or a file in ``files`` is not found
+        NotADirectoryError: if ` root`` is not a directory
         RuntimeError: if archive does not end with ``zip`` or ``tar.gz``
+        ValueError: if ``file`` is not below ``root``
 
     """
+    root = safe_path(root)
     archive = safe_path(archive)
     mkdir(os.path.dirname(archive))
-    files = to_list(files)
+    files_org = to_list(files)
+
+    if not os.path.exists(root):
+        raise FileNotFoundError(
+            errno.ENOENT,
+            os.strerror(errno.ENOENT),
+            root,
+        )
+
+    if not os.path.isdir(root):
+        raise NotADirectoryError(
+            errno.ENOTDIR,
+            os.strerror(errno.ENOTDIR),
+            root,
+        )
+
+    files = []
+
+    for file in files_org:
+
+        # convert to absolute path
+        if not os.path.isabs(file):
+            path = safe_path(root, file)
+        else:
+            path = safe_path(file)
+
+        # file is below root
+        if not path.startswith(root):
+            raise ValueError(
+                f"Only files below "
+                f"'{root}' "
+                f"can be included. "
+                f"This is not the case with "
+                f"'{file}'"
+            )
+
+        # file exists
+        if not os.path.exists(path):
+            raise FileNotFoundError(
+                errno.ENOENT,
+                os.strerror(errno.ENOENT),
+                file,
+            )
+
+        # convert to relative path
+        files.append(path[len(root) + 1:])
 
     # Progress bar arguments
     desc = format_display_message(
@@ -132,12 +183,12 @@ def create_archive(
     if archive.endswith('zip'):
         with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zf:
             for file in progress_bar(files, desc=desc, disable=disable):
-                full_file = os.path.join(root, file)
+                full_file = safe_path(root, file)
                 zf.write(full_file, arcname=file)
     elif archive.endswith('tar.gz'):
-        with tarfile.open(archive, "w:gz") as tf:
+        with tarfile.open(archive, 'w:gz') as tf:
             for file in progress_bar(files, desc=desc, disable=disable):
-                full_file = os.path.join(root, file)
+                full_file = safe_path(root, file)
                 tf.add(full_file, file)
     else:
         raise RuntimeError(
@@ -212,16 +263,42 @@ def extract_archive(
         member filenames of archive
 
     Raises:
+        FileNotFoundError: if ``archive`` is not found
+        IsADirectoryError: if ``archive`` is a directory
+        IsNotADirectoryError: if ``destination`` is not a directory
         RuntimeError: if the provided archive is not a ZIP or TAR.GZ file
         RuntimeError: if the archive file is malformed
 
     """
+    archive = safe_path(archive)
     destination = safe_path(destination)
+
+    if not os.path.exists(archive):
+        raise FileNotFoundError(
+            errno.ENOENT,
+            os.strerror(errno.ENOENT),
+            archive,
+        )
+
+    if os.path.isdir(archive):
+        raise IsADirectoryError(
+            errno.EISDIR,
+            os.strerror(errno.EISDIR),
+            archive,
+        )
+
     if os.path.exists(destination):
         destination_created = False
     else:
         mkdir(destination)
         destination_created = True
+
+    if not os.path.isdir(destination):
+        raise NotADirectoryError(
+            errno.ENOTDIR,
+            os.strerror(errno.ENOTDIR),
+            destination,
+        )
 
     # Progress bar arguments
     desc = format_display_message(
