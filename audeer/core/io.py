@@ -136,6 +136,16 @@ def create_archive(
         RuntimeError: if archive does not end with ``zip`` or ``tar.gz``
             or a file in ``files`` is not below ``root``
 
+    Examples:
+        >>> _ = touch('a.txt')
+        >>> _ = touch('b.txt')
+        >>> _ = create_archive('.', None, 'archive.zip')
+        >>> extract_archive('archive.zip', '.')
+        ['a.txt', 'b.txt']
+        >>> _ = create_archive('.', ['a.txt'], 'archive.tar.gz')
+        >>> extract_archive('archive.tar.gz', '.')
+        ['a.txt']
+
     """
     root = safe_path(root)
     archive = safe_path(archive)
@@ -296,6 +306,14 @@ def extract_archive(
         RuntimeError: if ``archive`` is not a ZIP or TAR.GZ file
         RuntimeError: if ``archive`` is malformed
 
+    Examples:
+        >>> _ = touch('a.txt')
+        >>> _ = create_archive('.', None, 'archive.zip')
+        >>> extract_archive('archive.zip', '.')
+        ['a.txt']
+        >>> extract_archive('archive.zip', 'sub')
+        ['a.txt']
+
     """
     archive = safe_path(archive)
     destination = safe_path(destination)
@@ -406,6 +424,14 @@ def extract_archives(
         NotADirectoryError: if ``destination`` is not a directory
         RuntimeError: if an archive is not a ZIP or TAR.GZ file
         RuntimeError: if an archive file is malformed
+
+    Examples:
+        >>> _ = touch('a.txt')
+        >>> _ = create_archive('.', ['a.txt'], 'archive.zip')
+        >>> _ = touch('b.txt')
+        >>> _ = create_archive('.', ['b.txt'], 'archive.tar.gz')
+        >>> extract_archives(['archive.zip', 'archive.tar.gz'], '.')
+        ['a.txt', 'b.txt']
 
     """
     with progress_bar(
