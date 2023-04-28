@@ -29,6 +29,7 @@ audeer
     list_dir_names
     list_file_names
     LooseVersion
+    md5
     mkdir
     move_file
     path

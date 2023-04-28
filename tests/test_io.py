@@ -960,6 +960,111 @@ def test_list_file_names(tmpdir, files, path, filetype, expected,
     assert f == expected
 
 
+def test_md5_errors():
+    with pytest.raises(FileNotFoundError):
+        audeer.md5('does/not/exist')
+
+@pytest.mark.parametrize(
+    'file, content, expected',
+    [   
+        (  # empty file
+            'file.txt',
+            None,
+            'd41d8cd98f00b204e9800998ecf8427e',
+        ),
+        (  # different content
+            'file.txt',
+            'hello world',
+            '5eb63bbbe01eeed093cb22bb8f5acdc3',
+        ),
+        ( 
+            'file.txt',
+            'Hello World',
+            'b10a8db164e0754105b7a99be72e3fe5',
+        ),
+        (  # different filename
+            'file.TXT',
+            'Hello World',
+            'b10a8db164e0754105b7a99be72e3fe5',
+        ),
+    ],
+)
+def test_md5_file(tmpdir, file, content, expected):
+
+    path = audeer.path(tmpdir, file)
+    with open(path, 'w') as fp:
+        if content is not None:
+            fp.write(content)
+
+    assert audeer.md5(path) == expected
+
+
+@pytest.mark.parametrize(
+    'tree, content, expected',
+    [   
+        (  # empty folder
+            [],
+            None,
+            'd41d8cd98f00b204e9800998ecf8427e',
+        ),
+        (  # folder with different content
+            ['f'],
+            None,
+            '8fa14cdd754f91cc6554c9e71929cce7',
+        ),
+        (
+            ['sub/f'],
+            None,
+            '1af042d5a4ec129583f6093f98f64118',
+        ),
+        (
+            ['f', 'sub/f'],
+            None,
+            'b540f38948f445622adc657a757f4b0d',
+        ),
+        (
+            ['f', 'sub/g'],
+            None,
+            '305107efbb15f9334d22ae4fbeec4de6',
+        ),
+        (
+            ['f', 'sub/g'],
+            'hello world',
+            '47829eb8ef287d0d72e0fed9b96d258d',
+        ),
+        (
+            ['f', 'sub/g'],
+            'Hello World',
+            '442d96d7c43bb18f247888408e5d6977',
+        ),
+        (  # with empty sub folder
+            ['f', 'sub/g', 'sub/'],
+            None,
+            '305107efbb15f9334d22ae4fbeec4de6',
+        ),
+        (  # with hidden file
+            ['f', 'sub/g', '.hidden'],
+            None,
+            '97490b233a7717aec19023e28443a1bf',
+        ),
+        (  # umlaute
+            ['ä', 'ö', 'ü', 'ß'],
+            None,
+            '622165ad36122984c6b2c7ba466aa262',
+        ),
+    ],
+    indirect=['tree'],
+)
+def test_md5_folder(tmpdir, tree, content, expected):
+
+    if content is not None:
+        for path in tree:
+            with open(path, 'w') as fp:
+                fp.write(content)
+
+    assert audeer.md5(tmpdir) == expected
+
+
 def test_mkdir(tmpdir):
     # New dir
     path = str(tmpdir.mkdir('folder1'))
