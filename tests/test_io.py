@@ -294,6 +294,8 @@ def test_archives(tmpdir, tree, root, files, archive_create,
         keep_archive=True,
     )
     assert result == expected
+    for file in result:
+        assert os.path.exists(audeer.path(root, file))
     assert os.path.exists(archive_extract)
 
     # list of archives
@@ -304,6 +306,8 @@ def test_archives(tmpdir, tree, root, files, archive_create,
         keep_archive=True,
     )
     assert result == expected + expected
+    for file in result:
+        assert os.path.exists(audeer.path(root, file))
     assert os.path.exists(archive_extract)
 
     # absolute path
@@ -324,16 +328,17 @@ def test_archives(tmpdir, tree, root, files, archive_create,
             keep_archive=True,
         )
         assert result == expected
+        for file in result:
+            assert os.path.exists(audeer.path(root, file))
         assert os.path.exists(archive_extract)
 
     # delete archive
 
-    result = audeer.extract_archive(
+    audeer.extract_archive(
         archive_extract,
         destination,
         keep_archive=False,
     )
-    assert result == expected
     assert not os.path.exists(archive_extract)
 
 
