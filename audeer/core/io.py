@@ -1,3 +1,4 @@
+import errno
 import fnmatch
 import itertools
 import os
@@ -97,30 +98,105 @@ def common_directory(
 
 def create_archive(
         root: str,
-        files: typing.Union[str, typing.Sequence[str]],
+        files: typing.Optional[typing.Union[str, typing.Sequence[str]]],
         archive: str,
         *,
         verbose: bool = False,
 ):
     r"""Create ZIP or TAR.GZ archive.
 
+    If a list with ``files`` is provided,
+    only those files will be included to the archive.
+    In that case the files are added in the given order,
+    which may have an influence on the checksum of the archive.
+
+    If ``files`` is set to ``None``,
+    all files below ``root`` will be added in sorted order.
+    This includes hidden files and files from sub-folders,
+    but not empty folders.
+
     Args:
         root: path to root folder of archive.
-            Path names inside the archive
-            will be relative to ``root``
-        files: files to include in archive,
-            relative to ``root``
+            Only files below ``root`` can be included
+            and will be stored relative to ``root``
+        files: files that will be included in the archive.
+            Absolute and relative file paths are possible,
+            as long as the files are below ``root``.
+            If set to ``None``
+            all files below ``root``
+            will be added to the archive
         archive: path to archive file.
-            The archive type is determined by the file extension
+            The type of the archive
+            is determined from its file extension
         verbose: if ``True`` a progress bar is shown
 
     Raises:
+        FileNotFoundError: if ``root`` or a file in ``files`` is not found
+        NotADirectoryError: if ``root`` is not a directory
         RuntimeError: if archive does not end with ``zip`` or ``tar.gz``
+            or a file in ``files`` is not below ``root``
 
     """
+    root = safe_path(root)
     archive = safe_path(archive)
     mkdir(os.path.dirname(archive))
-    files = to_list(files)
+
+    if not os.path.exists(root):
+        raise FileNotFoundError(
+            errno.ENOENT,
+            os.strerror(errno.ENOENT),
+            root,
+        )
+
+    if not os.path.isdir(root):
+        raise NotADirectoryError(
+            errno.ENOTDIR,
+            os.strerror(errno.ENOTDIR),
+            root,
+        )
+
+    if files is None:
+
+        files = list_file_names(
+            root,
+            basenames=True,
+            recursive=True,
+            hidden=True,
+        )
+
+    else:
+
+        files_org = to_list(files)
+        files = []
+
+        for file in files_org:
+
+            # convert to absolute path
+            if not os.path.isabs(file):
+                path = safe_path(root, file)
+            else:
+                path = safe_path(file)
+
+            # file is below root
+            if not path.startswith(root):
+                raise RuntimeError(
+                    f"Only files below "
+                    f"'{root}' "
+                    f"can be included. "
+                    f"This is not the case with "
+                    f"'{file}'"
+                )
+
+            # file exists
+            if not os.path.exists(path):
+                raise FileNotFoundError(
+                    errno.ENOENT,
+                    os.strerror(errno.ENOENT),
+                    file,
+                )
+
+            # convert to relative path
+            files.append(path[len(root) + 1:])
 
     # Progress bar arguments
     desc = format_display_message(
@@ -132,12 +208,12 @@ def create_archive(
     if archive.endswith('zip'):
         with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zf:
             for file in progress_bar(files, desc=desc, disable=disable):
-                full_file = os.path.join(root, file)
+                full_file = safe_path(root, file)
                 zf.write(full_file, arcname=file)
     elif archive.endswith('tar.gz'):
-        with tarfile.open(archive, "w:gz") as tf:
+        with tarfile.open(archive, 'w:gz') as tf:
             for file in progress_bar(files, desc=desc, disable=disable):
-                full_file = os.path.join(root, file)
+                full_file = safe_path(root, file)
                 tf.add(full_file, file)
     else:
         raise RuntimeError(
@@ -199,29 +275,57 @@ def extract_archive(
         keep_archive: bool = True,
         verbose: bool = False,
 ) -> typing.List[str]:
-    r"""Extract a ZIP or TAR.GZ file.
+    r"""Extract ZIP or TAR.GZ file.
 
     Args:
         archive: path to ZIP or TAR.GZ file
-        destination: folder where the content should be stored.
-            Will be created if it doesn't exist
+        destination: folder where the files will be extracted.
+            If the folder does not exists,
+            it will be created
         keep_archive: if ``False`` delete archive file after extraction
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        member filenames of archive
+        paths of extracted files relative to ``destintation``
+        in order they were added to the archive
 
     Raises:
-        RuntimeError: if the provided archive is not a ZIP or TAR.GZ file
-        RuntimeError: if the archive file is malformed
+        FileNotFoundError: if ``archive`` is not found
+        IsADirectoryError: if ``archive`` is a directory
+        NotADirectoryError: if ``destination`` is not a directory
+        RuntimeError: if ``archive`` is not a ZIP or TAR.GZ file
+        RuntimeError: if ``archive`` is malformed
 
     """
+    archive = safe_path(archive)
     destination = safe_path(destination)
+
+    if not os.path.exists(archive):
+        raise FileNotFoundError(
+            errno.ENOENT,
+            os.strerror(errno.ENOENT),
+            archive,
+        )
+
+    if os.path.isdir(archive):
+        raise IsADirectoryError(
+            errno.EISDIR,
+            os.strerror(errno.EISDIR),
+            archive,
+        )
+
     if os.path.exists(destination):
         destination_created = False
     else:
         mkdir(destination)
         destination_created = True
+
+    if not os.path.isdir(destination):
+        raise NotADirectoryError(
+            errno.ENOTDIR,
+            os.strerror(errno.ENOTDIR),
+            destination,
+        )
 
     # Progress bar arguments
     desc = format_display_message(
@@ -240,7 +344,7 @@ def extract_archive(
                     disable=disable,
                 ):
                     zf.extract(member, destination)
-                member_names = [m.filename for m in members]
+                files = [m.filename for m in members]
         elif archive.endswith('tar.gz'):
             with tarfile.open(archive, 'r') as tf:
                 members = tf.getmembers()
@@ -250,7 +354,7 @@ def extract_archive(
                     disable=disable,
                 ):
                     tf.extract(member, destination, numeric_owner=True)
-                member_names = [m.name for m in members]
+                files = [m.name for m in members]
         else:
             raise RuntimeError(
                 f'You can only extract ZIP and TAR.GZ files, '
@@ -258,7 +362,7 @@ def extract_archive(
             )
     except (EOFError, zipfile.BadZipFile, tarfile.ReadError):
         raise RuntimeError(f'Broken archive: {archive}')
-    except (KeyboardInterrupt, Exception):  # pragma: nocover
+    except (KeyboardInterrupt, Exception):  # pragma: no cover
         # Clean up broken extraction files
         if destination_created:
             if os.path.exists(destination):
@@ -268,7 +372,11 @@ def extract_archive(
     if not keep_archive:
         os.remove(archive)
 
-    return member_names
+    if os.name == 'nt':  # pragma: no Linux or macOS cover
+        # replace '/' with '\' on Windows
+        files = [file.replace('/', os.path.sep) for file in files]
+
+    return files
 
 
 def extract_archives(
@@ -278,17 +386,26 @@ def extract_archives(
         keep_archive: bool = True,
         verbose: bool = False,
 ) -> typing.List[str]:
-    r"""Extract ZIP or TAR.GZ archives.
+    r"""Extract multiple ZIP or TAR.GZ archives at once.
 
     Args:
         archives: paths of ZIP or TAR.GZ files
-        destination: folder where the content should be stored.
-            Will be created if it doesn't exist
+        destination: folder where the files will be extracted.
+            If the folder does not exists,
+            it will be created
         keep_archive: if ``False`` delete archive files after extraction
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        combined member filenames of archives
+        paths of extracted files relative to ``destintation``
+        in order they were added to the archives
+
+    Raises:
+        FileNotFoundError: if an archive is not found
+        IsADirectoryError: if an archive is a directory
+        NotADirectoryError: if ``destination`` is not a directory
+        RuntimeError: if an archive is not a ZIP or TAR.GZ file
+        RuntimeError: if an archive file is malformed
 
     """
     with progress_bar(
