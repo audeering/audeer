@@ -7,7 +7,7 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
-Version 1.20.0 (2023-04-27)
+Version 1.20.0 (2023-04-28)
 ---------------------------
 
 * Added: ``short`` argument to ``audeer.is_uid()``.
@@ -19,6 +19,25 @@ Version 1.20.0 (2023-04-27)
   is a non-existing folder
   or a folder that is part a search pattern
   does not exists
+* Changed: ``audeer.create_archive()``
+  supports now ``None`` for ``files``
+  and will automatically include all files under ``root``
+* Changed: ``audeer.create_archive()``
+  now raises a ``FileNotFoundError``
+  if ``root`` or a file in ``files`` cannot be found,
+  ``NotADirectoryError``
+  if ``root`` is not a directory,
+  ``RuntimeError``
+  if a file in ``files``
+  is not located below ``root``
+* Changed: ``audeer.extract_archive()``
+  and ``audeer.extract_archives()``
+  now raise a ``FileNotFoundError``
+  if an archive cannot be found,
+  ``IsADirectoryError``
+  if an archive is a directory,
+  ``NotADirectoryError``
+  if ``destination`` is not a directory
 * Fixed: ``audeer.replace_file_extension()``
   now adds the new file extension to the filename
   if no original file extension was present
