@@ -286,7 +286,8 @@ def extract_archive(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        extracted members in order they were added to the archive
+        paths of extracted files relative to ``destintation``
+        in order they were added to the archive
 
     Raises:
         FileNotFoundError: if ``archive`` is not found
@@ -343,7 +344,7 @@ def extract_archive(
                     disable=disable,
                 ):
                     zf.extract(member, destination)
-                member_names = [m.filename for m in members]
+                files = [m.filename for m in members]
         elif archive.endswith('tar.gz'):
             with tarfile.open(archive, 'r') as tf:
                 members = tf.getmembers()
@@ -353,7 +354,7 @@ def extract_archive(
                     disable=disable,
                 ):
                     tf.extract(member, destination, numeric_owner=True)
-                member_names = [m.name for m in members]
+                files = [m.name for m in members]
         else:
             raise RuntimeError(
                 f'You can only extract ZIP and TAR.GZ files, '
@@ -361,7 +362,7 @@ def extract_archive(
             )
     except (EOFError, zipfile.BadZipFile, tarfile.ReadError):
         raise RuntimeError(f'Broken archive: {archive}')
-    except (KeyboardInterrupt, Exception):  # pragma: nocover
+    except (KeyboardInterrupt, Exception):  # pragma: no cover
         # Clean up broken extraction files
         if destination_created:
             if os.path.exists(destination):
@@ -371,7 +372,11 @@ def extract_archive(
     if not keep_archive:
         os.remove(archive)
 
-    return member_names
+    if os.name == 'nt':  # pragma: no Linux or macOS cover
+        # replace '/' with '\' on Windows
+        files = [file.replace('/', os.path.sep) for file in files]
+
+    return files
 
 
 def extract_archives(
@@ -392,7 +397,8 @@ def extract_archives(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        extracted members in order they were added to the archives
+        paths of extracted files relative to ``destintation``
+        in order they were added to the archives
 
     Raises:
         FileNotFoundError: if an archive is not found

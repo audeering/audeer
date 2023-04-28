@@ -270,7 +270,7 @@ def git_repo_tags(
         git = ['git', 'tag']
         tags = subprocess.check_output(git)
         tags = tags.decode().strip().split('\n')
-    except Exception:  # pragma: nocover
+    except Exception:  # pragma: no cover
         tags = []
     if v is None:
         return tags
@@ -308,11 +308,11 @@ def git_repo_version(
         git = ['git', 'describe', '--tags', '--always']
         version = subprocess.check_output(git)
         version = version.decode().strip()
-    except Exception:  # pragma: nocover
+    except Exception:  # pragma: no cover
         version = '<unknown>'
-    if version.startswith('v') and not v:  # pragma: nocover (only local)
+    if version.startswith('v') and not v:  # pragma: no cover (only local)
         version = version[1:]
-    elif not version.startswith('v') and v:  # pragma: nocover (only github)
+    elif not version.startswith('v') and v:  # pragma: no cover (only github)
         version = f'v{version}'
     return version
 
