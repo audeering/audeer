@@ -220,7 +220,7 @@ def tree(tmpdir, request):
             'archive.zip',
             '.',
             None,
-            marks=pytest.mark.xfail(raises=ValueError),
+            marks=pytest.mark.xfail(raises=RuntimeError),
         ),
         pytest.param(  # archive type not supported
             [],
