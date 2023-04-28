@@ -759,7 +759,7 @@ def md5(
         checksum
 
     Raises:
-        FileNotFoundError: if path does not exist
+        FileNotFoundError: if ``path`` does not exist
 
     Examples:
         >>> path = touch('file.txt')
