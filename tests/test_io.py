@@ -125,6 +125,15 @@ def tree(tmpdir, request):
             '.',
             ['file.txt'],
         ),
+        (
+            ['sub/file.txt'],
+            './sub',
+            None,
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['file.txt'],
+        ),
         (  # destitation is sub folder
             ['file.txt'],
             '.',
