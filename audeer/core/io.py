@@ -126,7 +126,7 @@ def create_archive(
         FileNotFoundError: if ``root`` or a file in ``files`` is not found
         NotADirectoryError: if ``root`` is not a directory
         RuntimeError: if archive does not end with ``zip`` or ``tar.gz``
-        ValueError: if ``file`` is not below ``root``
+        ValueError: if a file in ``files`` is not below ``root``
 
     """
     root = safe_path(root)
