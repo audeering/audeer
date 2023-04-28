@@ -105,6 +105,16 @@ def create_archive(
 ):
     r"""Create ZIP or TAR.GZ archive.
 
+    If a list with ``files`` is provided,
+    only those files will be included to the archive.
+    In that case the files are added in the given order,
+    which may have an influence on the checksum of the archive.
+
+    If ``files`` is set to ``None``,
+    all files below ``root`` will be added in sorted order.
+    This includes hidden files and files from sub-folders,
+    but not empty folders.
+
     Args:
         root: path to root folder of archive.
             Only files below ``root`` can be included
@@ -114,9 +124,7 @@ def create_archive(
             as long as the files are below ``root``.
             If set to ``None``
             all files below ``root``
-            will be added to the archive.
-            This includes hidden files
-            and files from sub-folders
+            will be added to the archive
         archive: path to archive file.
             The type of the archive
             is determined from its file extension
@@ -278,7 +286,7 @@ def extract_archive(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        extracted members
+        extracted members in order they were added to the archive
 
     Raises:
         FileNotFoundError: if ``archive`` is not found
@@ -384,7 +392,7 @@ def extract_archives(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        extracted members
+        extracted members in order they were added to the archives
 
     Raises:
         FileNotFoundError: if an archive is not found
