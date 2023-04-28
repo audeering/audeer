@@ -107,6 +107,15 @@ def tree(tmpdir, request):
             '.',
             ['.hidden', 'file.txt', 'sub/a/b/file.txt'],
         ),
+        (  # exclude empty folder
+            ['file.txt', 'sub/a/b/file.txt', '.hidden', 'empty/'],
+            '.',
+            None,
+            'archive.zip',
+            'archive.zip',
+            '.',
+            ['.hidden', 'file.txt', 'sub/a/b/file.txt'],
+        ),
         (  # tar.gz
             ['file.txt', 'sub/a/b/file.txt'],
             '.',
