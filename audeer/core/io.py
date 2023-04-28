@@ -765,8 +765,7 @@ def md5(
         >>> path = touch('file.txt')
         >>> md5(path)
         'd41d8cd98f00b204e9800998ecf8427e'
-        >>> path = touch('.')
-        >>> md5(path)
+        >>> md5('.')
         '3d8e577bddb17db339eae0b3d9bcf180'
 
     """

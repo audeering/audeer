@@ -964,9 +964,10 @@ def test_md5_errors():
     with pytest.raises(FileNotFoundError):
         audeer.md5('does/not/exist')
 
+
 @pytest.mark.parametrize(
     'file, content, expected',
-    [   
+    [
         (  # empty file
             'file.txt',
             None,
@@ -977,7 +978,7 @@ def test_md5_errors():
             'hello world',
             '5eb63bbbe01eeed093cb22bb8f5acdc3',
         ),
-        ( 
+        (
             'file.txt',
             'Hello World',
             'b10a8db164e0754105b7a99be72e3fe5',
@@ -1001,7 +1002,7 @@ def test_md5_file(tmpdir, file, content, expected):
 
 @pytest.mark.parametrize(
     'tree, content, expected',
-    [   
+    [
         (  # empty folder
             [],
             None,
