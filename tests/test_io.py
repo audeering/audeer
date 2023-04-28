@@ -183,7 +183,7 @@ def tree(tmpdir, request):
             None,
             marks=pytest.mark.xfail(raises=FileNotFoundError),
         ),
-        pytest.param(  # extracted archive is a directory
+        pytest.param(  # archive to be extracted is a directory
             ['sub/'],
             '.',
             [],
