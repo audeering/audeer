@@ -173,7 +173,7 @@ def tree(tmpdir, request):
             [],
             marks=pytest.mark.xfail(raises=NotADirectoryError),
         ),
-        pytest.param(  # extracted archive does not exit
+        pytest.param(  # archive to be extracted does not exit
             [],
             '.',
             [],
