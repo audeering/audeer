@@ -1,5 +1,0 @@
-[report]
-exclude_lines =
-    pragma: no cover
-    pragma: no Linux cover
-    pragma: no Linux or macOS cover
