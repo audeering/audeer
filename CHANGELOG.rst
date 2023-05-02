@@ -23,11 +23,12 @@ Version 1.20.0 (2023-05-02)
   raises a ``NotADirectoryError``
   if the provided ``path`` argument
   is a non-existing folder
-  or a folder that is part a search pattern
-  does not exists
+  or a folder that is part
+  of a search pattern
+  that does not exists
 * Changed: ``audeer.create_archive()``
-  supports now ``None`` for ``files``
-  and will automatically include all files under ``root``
+  supports now ``None`` as ``files`` argument,
+  which will automatically include all files under ``root``
 * Changed: ``audeer.create_archive()``
   now raises a ``FileNotFoundError``
   if ``root`` or a file in ``files`` cannot be found,
@@ -51,7 +52,7 @@ Version 1.20.0 (2023-05-02)
 * Fixed: ``audeer.replace_file_extension()``
   now returns the original filename
   when an empty new file extension is provided
-  instead of adding ``.`` at the end of the filename
+  instead of adding ``'.'`` at the end of the filename
 * Fixed: add raises section
   to API documentation of ``audeer.list_file_names()``
 * Fixed: add raises section
