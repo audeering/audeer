@@ -1,5 +1,6 @@
 import errno
 import fnmatch
+import hashlib
 import itertools
 import os
 import platform
@@ -729,6 +730,90 @@ def mkdir(
     if path:
         os.makedirs(path, mode=mode, exist_ok=True)
     return path
+
+
+def md5(
+        path: str,
+        chunk_size: int = 8192,
+) -> str:
+    r"""Calculate MD5 checksum of file or folder.
+
+    If ``path`` is a folder,
+    the checksum is calculated
+    from all files in the folder
+    (including hidden files).
+    The checksum also encodes
+    the (relative) file names,
+    so that renaming files
+    results in a different checksum.
+    However,
+    the calculation is independent of
+    file separator of the operation systems.
+    Empty folders are ignored.
+
+    Args:
+        path: path to file or folder
+        chunk_size: chunk size in number of bytes
+
+    Returns:
+        checksum
+
+    Raises:
+        FileNotFoundError: if ``path`` does not exist
+
+    Examples:
+        >>> path = touch('file.txt')
+        >>> md5(path)
+        'd41d8cd98f00b204e9800998ecf8427e'
+        >>> md5('.')
+        '3d8e577bddb17db339eae0b3d9bcf180'
+
+    """
+    path = safe_path(path)
+    hasher = hashlib.md5()
+
+    if not os.path.exists(path):
+        raise FileNotFoundError(
+            errno.ENOENT,
+            os.strerror(errno.ENOENT),
+            path,
+        )
+
+    if not os.path.isdir(path):
+
+        with open(path, 'rb') as fp:
+            for chunk in md5_read_chunk(fp, chunk_size):
+                hasher.update(chunk)
+
+    else:
+
+        files = list_file_names(
+            path,
+            recursive=True,
+            hidden=True,
+            basenames=True,
+        )
+
+        for file in files:
+            # encode file name that renaming of files
+            # produces different checksum
+            hasher.update(file.replace(os.path.sep, '/').encode())
+            with open(safe_path(path, file), 'rb') as fp:
+                for chunk in md5_read_chunk(fp, chunk_size):
+                    hasher.update(chunk)
+
+    return hasher.hexdigest()
+
+
+def md5_read_chunk(
+        fp: typing.IO,
+        chunk_size: int = 8192,
+):
+    while True:
+        data = fp.read(chunk_size)
+        if not data:
+            break
+        yield data
 
 
 def move_file(

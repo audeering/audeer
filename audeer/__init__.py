@@ -9,6 +9,7 @@ from audeer.core.io import (
     file_extension,
     list_dir_names,
     list_file_names,
+    md5,
     mkdir,
     move_file,
     replace_file_extension,
