@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.19.0
+                v1.20.0
               </div>
             
           
@@ -119,6 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_file_names.html">list_file_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.mkdir.html">mkdir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.move_file.html">move_file()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.path.html">path()</a></li>
@@ -183,23 +184,52 @@
 <dt class="sig sig-object py" id="audeer.create_archive">
 <span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">create_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">archive</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#create_archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.create_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create ZIP or TAR.GZ archive.</p>
+<p>If a list with <code class="docutils literal notranslate"><span class="pre">files</span></code> is provided,
+only those files will be included to the archive.
+In that case the files are added in the given order,
+which may have an influence on the checksum of the archive.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">files</span></code> is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+all files below <code class="docutils literal notranslate"><span class="pre">root</span></code> will be added in sorted order.
+This includes hidden files and files from sub-folders,
+but not empty folders.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – path to root folder of archive.
-Path names inside the archive
-will be relative to <code class="docutils literal notranslate"><span class="pre">root</span></code></p></li>
-<li><p><strong>files</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – files to include in archive,
-relative to <code class="docutils literal notranslate"><span class="pre">root</span></code></p></li>
+Only files below <code class="docutils literal notranslate"><span class="pre">root</span></code> can be included
+and will be stored relative to <code class="docutils literal notranslate"><span class="pre">root</span></code></p></li>
+<li><p><strong>files</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]) – files that will be included in the archive.
+Absolute and relative file paths are possible,
+as long as the files are below <code class="docutils literal notranslate"><span class="pre">root</span></code>.
+If set to <code class="docutils literal notranslate"><span class="pre">None</span></code>
+all files below <code class="docutils literal notranslate"><span class="pre">root</span></code>
+will be added to the archive</p></li>
 <li><p><strong>archive</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – path to archive file.
-The archive type is determined by the file extension</p></li>
+The type of the archive
+is determined from its file extension</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> a progress bar is shown</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.11)"><strong>RuntimeError</strong></a> – if archive does not end with <code class="docutils literal notranslate"><span class="pre">zip</span></code> or <code class="docutils literal notranslate"><span class="pre">tar.gz</span></code></p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.11)"><strong>FileNotFoundError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">root</span></code> or a file in <code class="docutils literal notranslate"><span class="pre">files</span></code> is not found</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotADirectoryError" title="(in Python v3.11)"><strong>NotADirectoryError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">root</span></code> is not a directory</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.11)"><strong>RuntimeError</strong></a> – if archive does not end with <code class="docutils literal notranslate"><span class="pre">zip</span></code> or <code class="docutils literal notranslate"><span class="pre">tar.gz</span></code>
+    or a file in <code class="docutils literal notranslate"><span class="pre">files</span></code> is not below <code class="docutils literal notranslate"><span class="pre">root</span></code></p></li>
+</ul>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="s1">&#39;a.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="s1">&#39;b.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_archive</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;archive.zip&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">extract_archive</span><span class="p">(</span><span class="s1">&#39;archive.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="go">[&#39;a.txt&#39;, &#39;b.txt&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_archive</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;a.txt&#39;</span><span class="p">],</span> <span class="s1">&#39;archive.tar.gz&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">extract_archive</span><span class="p">(</span><span class="s1">&#39;archive.tar.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+<span class="go">[&#39;a.txt&#39;]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -227,7 +257,7 @@ The archive type is determined by the file extension</p></li>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/12/19 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/05/02 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

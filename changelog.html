@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                v1.19.0
+                v1.20.0
               </div>
             
           
@@ -102,6 +102,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-20-0-2023-05-02">Version 1.20.0 (2023-05-02)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-19-0-2022-12-19">Version 1.19.0 (2022-12-19)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-18-0-2022-03-04">Version 1.18.0 (2022-03-04)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-17-2-2022-01-03">Version 1.17.2 (2022-01-03)</a></li>
@@ -205,6 +206,58 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<div class="section" id="version-1-20-0-2023-05-02">
+<h2>Version 1.20.0 (2023-05-02)<a class="headerlink" href="#version-1-20-0-2023-05-02" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Added: <code class="docutils literal notranslate"><span class="pre">audeer.md5()</span></code> to calculate MD5 checksum
+of a file or folder</p></li>
+<li><p>Added: <code class="docutils literal notranslate"><span class="pre">short</span></code> argument to <code class="docutils literal notranslate"><span class="pre">audeer.is_uid()</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">True</span></code> it checks for a short UID
+like <code class="docutils literal notranslate"><span class="pre">ad855840</span></code></p></li>
+<li><p>Added: examples to the API documentation of
+<code class="docutils literal notranslate"><span class="pre">audeer.create_archive()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.extract_archive()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.extract_archives()</span></code></p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.list_file_names()</span></code>
+raises a <code class="docutils literal notranslate"><span class="pre">NotADirectoryError</span></code>
+if the provided <code class="docutils literal notranslate"><span class="pre">path</span></code> argument
+is a non-existing folder
+or a folder that is part
+of a search pattern
+that does not exists</p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.create_archive()</span></code>
+supports now <code class="docutils literal notranslate"><span class="pre">None</span></code> as <code class="docutils literal notranslate"><span class="pre">files</span></code> argument,
+which will automatically include all files under <code class="docutils literal notranslate"><span class="pre">root</span></code></p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.create_archive()</span></code>
+now raises a <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>
+if <code class="docutils literal notranslate"><span class="pre">root</span></code> or a file in <code class="docutils literal notranslate"><span class="pre">files</span></code> cannot be found,
+<code class="docutils literal notranslate"><span class="pre">NotADirectoryError</span></code>
+if <code class="docutils literal notranslate"><span class="pre">root</span></code> is not a directory,
+<code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>
+if a file in <code class="docutils literal notranslate"><span class="pre">files</span></code>
+is not located below <code class="docutils literal notranslate"><span class="pre">root</span></code></p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.extract_archive()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">audeer.extract_archives()</span></code>
+now raise a <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>
+if an archive cannot be found,
+<code class="docutils literal notranslate"><span class="pre">IsADirectoryError</span></code>
+if an archive is a directory,
+<code class="docutils literal notranslate"><span class="pre">NotADirectoryError</span></code>
+if <code class="docutils literal notranslate"><span class="pre">destination</span></code> is not a directory</p></li>
+<li><p>Fixed: <code class="docutils literal notranslate"><span class="pre">audeer.replace_file_extension()</span></code>
+now adds the new file extension to the filename
+if no original file extension was present
+instead of replacing the filename</p></li>
+<li><p>Fixed: <code class="docutils literal notranslate"><span class="pre">audeer.replace_file_extension()</span></code>
+now returns the original filename
+when an empty new file extension is provided
+instead of adding <code class="docutils literal notranslate"><span class="pre">'.'</span></code> at the end of the filename</p></li>
+<li><p>Fixed: add raises section
+to API documentation of <code class="docutils literal notranslate"><span class="pre">audeer.list_file_names()</span></code></p></li>
+<li><p>Fixed: add raises section
+to API documentation of <code class="docutils literal notranslate"><span class="pre">audeer.StrictVersion</span></code></p></li>
+</ul>
+</div>
 <div class="section" id="version-1-19-0-2022-12-19">
 <h2>Version 1.19.0 (2022-12-19)<a class="headerlink" href="#version-1-19-0-2022-12-19" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
@@ -670,7 +723,7 @@ by using <a class="reference external" href="https://docs.python.org/3/library/o
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/12/19 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/05/02 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

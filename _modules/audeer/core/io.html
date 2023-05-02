@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v1.19.0
+                v1.20.0
               </div>
             
           
@@ -138,7 +138,9 @@
            <div itemprop="articleBody">
             
   <h1>Source code for audeer.core.io</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">fnmatch</span>
+<span></span><span class="kn">import</span> <span class="nn">errno</span>
+<span class="kn">import</span> <span class="nn">fnmatch</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">platform</span>
@@ -173,7 +175,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;File basename without file extension.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;File basename without file extension.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: file or directory name</span>
@@ -206,7 +208,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">sep</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find common directory path.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find common directory path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        dirs: list of directories</span>
@@ -237,30 +239,115 @@
 
 <div class="viewcode-block" id="create_archive"><a class="viewcode-back" href="../../../api/audeer.create_archive.html#audeer.create_archive">[docs]</a><span class="k">def</span> <span class="nf">create_archive</span><span class="p">(</span>
         <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">files</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">files</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Optional</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
         <span class="n">archive</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create ZIP or TAR.GZ archive.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create ZIP or TAR.GZ archive.</span>
+
+<span class="sd">    If a list with ``files`` is provided,</span>
+<span class="sd">    only those files will be included to the archive.</span>
+<span class="sd">    In that case the files are added in the given order,</span>
+<span class="sd">    which may have an influence on the checksum of the archive.</span>
+
+<span class="sd">    If ``files`` is set to ``None``,</span>
+<span class="sd">    all files below ``root`` will be added in sorted order.</span>
+<span class="sd">    This includes hidden files and files from sub-folders,</span>
+<span class="sd">    but not empty folders.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        root: path to root folder of archive.</span>
-<span class="sd">            Path names inside the archive</span>
-<span class="sd">            will be relative to ``root``</span>
-<span class="sd">        files: files to include in archive,</span>
-<span class="sd">            relative to ``root``</span>
+<span class="sd">            Only files below ``root`` can be included</span>
+<span class="sd">            and will be stored relative to ``root``</span>
+<span class="sd">        files: files that will be included in the archive.</span>
+<span class="sd">            Absolute and relative file paths are possible,</span>
+<span class="sd">            as long as the files are below ``root``.</span>
+<span class="sd">            If set to ``None``</span>
+<span class="sd">            all files below ``root``</span>
+<span class="sd">            will be added to the archive</span>
 <span class="sd">        archive: path to archive file.</span>
-<span class="sd">            The archive type is determined by the file extension</span>
+<span class="sd">            The type of the archive</span>
+<span class="sd">            is determined from its file extension</span>
 <span class="sd">        verbose: if ``True`` a progress bar is shown</span>
 
 <span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: if ``root`` or a file in ``files`` is not found</span>
+<span class="sd">        NotADirectoryError: if ``root`` is not a directory</span>
 <span class="sd">        RuntimeError: if archive does not end with ``zip`` or ``tar.gz``</span>
+<span class="sd">            or a file in ``files`` is not below ``root``</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; _ = touch(&#39;a.txt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; _ = touch(&#39;b.txt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; create_archive(&#39;.&#39;, None, &#39;archive.zip&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; extract_archive(&#39;archive.zip&#39;, &#39;.&#39;)</span>
+<span class="sd">        [&#39;a.txt&#39;, &#39;b.txt&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; create_archive(&#39;.&#39;, [&#39;a.txt&#39;], &#39;archive.tar.gz&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; extract_archive(&#39;archive.tar.gz&#39;, &#39;.&#39;)</span>
+<span class="sd">        [&#39;a.txt&#39;]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
     <span class="n">archive</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">archive</span><span class="p">)</span>
     <span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">archive</span><span class="p">))</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="n">to_list</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">),</span>
+            <span class="n">root</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotADirectoryError</span><span class="p">(</span>
+            <span class="n">errno</span><span class="o">.</span><span class="n">ENOTDIR</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOTDIR</span><span class="p">),</span>
+            <span class="n">root</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">files</span> <span class="o">=</span> <span class="n">list_file_names</span><span class="p">(</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">files_org</span> <span class="o">=</span> <span class="n">to_list</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files_org</span><span class="p">:</span>
+
+            <span class="c1"># convert to absolute path</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+            <span class="c1"># file is below root</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Only files below &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;can be included. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;This is not the case with &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># file exists</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                    <span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">,</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">),</span>
+                    <span class="n">file</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="c1"># convert to relative path</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
 
     <span class="c1"># Progress bar arguments</span>
     <span class="n">desc</span> <span class="o">=</span> <span class="n">format_display_message</span><span class="p">(</span>
@@ -272,12 +359,12 @@
     <span class="k">if</span> <span class="n">archive</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;zip&#39;</span><span class="p">):</span>
         <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">)</span> <span class="k">as</span> <span class="n">zf</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="n">disable</span><span class="p">):</span>
-                <span class="n">full_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+                <span class="n">full_file</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
                 <span class="n">zf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">full_file</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">archive</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;tar.gz&#39;</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="s2">&quot;w:gz&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tf</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="s1">&#39;w:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tf</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">disable</span><span class="o">=</span><span class="n">disable</span><span class="p">):</span>
-                <span class="n">full_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+                <span class="n">full_file</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
                 <span class="n">tf</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">full_file</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -293,7 +380,7 @@
         <span class="n">force_download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Download URL to destination.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Download URL to destination.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        url: URL of file to download</span>
@@ -339,29 +426,65 @@
         <span class="n">keep_archive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract a ZIP or TAR.GZ file.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract ZIP or TAR.GZ file.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        archive: path to ZIP or TAR.GZ file</span>
-<span class="sd">        destination: folder where the content should be stored.</span>
-<span class="sd">            Will be created if it doesn&#39;t exist</span>
+<span class="sd">        destination: folder where the files will be extracted.</span>
+<span class="sd">            If the folder does not exists,</span>
+<span class="sd">            it will be created</span>
 <span class="sd">        keep_archive: if ``False`` delete archive file after extraction</span>
 <span class="sd">        verbose: if ``True`` a progress bar is shown</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        member filenames of archive</span>
+<span class="sd">        paths of extracted files relative to ``destintation``</span>
+<span class="sd">        in order they were added to the archive</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        RuntimeError: if the provided archive is not a ZIP or TAR.GZ file</span>
-<span class="sd">        RuntimeError: if the archive file is malformed</span>
+<span class="sd">        FileNotFoundError: if ``archive`` is not found</span>
+<span class="sd">        IsADirectoryError: if ``archive`` is a directory</span>
+<span class="sd">        NotADirectoryError: if ``destination`` is not a directory</span>
+<span class="sd">        RuntimeError: if ``archive`` is not a ZIP or TAR.GZ file</span>
+<span class="sd">        RuntimeError: if ``archive`` is malformed</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; _ = touch(&#39;a.txt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; create_archive(&#39;.&#39;, None, &#39;archive.zip&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; extract_archive(&#39;archive.zip&#39;, &#39;.&#39;)</span>
+<span class="sd">        [&#39;a.txt&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; extract_archive(&#39;archive.zip&#39;, &#39;sub&#39;)</span>
+<span class="sd">        [&#39;a.txt&#39;]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">archive</span><span class="p">)</span>
     <span class="n">destination</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">archive</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">),</span>
+            <span class="n">archive</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">archive</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">IsADirectoryError</span><span class="p">(</span>
+            <span class="n">errno</span><span class="o">.</span><span class="n">EISDIR</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EISDIR</span><span class="p">),</span>
+            <span class="n">archive</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
         <span class="n">destination_created</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">mkdir</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
         <span class="n">destination_created</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotADirectoryError</span><span class="p">(</span>
+            <span class="n">errno</span><span class="o">.</span><span class="n">ENOTDIR</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOTDIR</span><span class="p">),</span>
+            <span class="n">destination</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># Progress bar arguments</span>
     <span class="n">desc</span> <span class="o">=</span> <span class="n">format_display_message</span><span class="p">(</span>
@@ -380,7 +503,7 @@
                     <span class="n">disable</span><span class="o">=</span><span class="n">disable</span><span class="p">,</span>
                 <span class="p">):</span>
                     <span class="n">zf</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
-                <span class="n">member_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">]</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">filename</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">archive</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;tar.gz&#39;</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">archive</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tf</span><span class="p">:</span>
                 <span class="n">members</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">getmembers</span><span class="p">()</span>
@@ -390,7 +513,7 @@
                     <span class="n">disable</span><span class="o">=</span><span class="n">disable</span><span class="p">,</span>
                 <span class="p">):</span>
                     <span class="n">tf</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">numeric_owner</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">member_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">]</span>
+                <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;You can only extract ZIP and TAR.GZ files, &#39;</span>
@@ -398,7 +521,7 @@
             <span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">EOFError</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">BadZipFile</span><span class="p">,</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">ReadError</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Broken archive: </span><span class="si">{</span><span class="n">archive</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>  <span class="c1"># pragma: nocover</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="c1"># Clean up broken extraction files</span>
         <span class="k">if</span> <span class="n">destination_created</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">destination</span><span class="p">):</span>
@@ -408,7 +531,11 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">keep_archive</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">archive</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">member_names</span></div>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="c1"># replace &#39;/&#39; with &#39;\&#39; on Windows</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">files</span></div>
 
 
 <div class="viewcode-block" id="extract_archives"><a class="viewcode-back" href="../../../api/audeer.extract_archives.html#audeer.extract_archives">[docs]</a><span class="k">def</span> <span class="nf">extract_archives</span><span class="p">(</span>
@@ -418,17 +545,34 @@
         <span class="n">keep_archive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract ZIP or TAR.GZ archives.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract multiple ZIP or TAR.GZ archives at once.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        archives: paths of ZIP or TAR.GZ files</span>
-<span class="sd">        destination: folder where the content should be stored.</span>
-<span class="sd">            Will be created if it doesn&#39;t exist</span>
+<span class="sd">        destination: folder where the files will be extracted.</span>
+<span class="sd">            If the folder does not exists,</span>
+<span class="sd">            it will be created</span>
 <span class="sd">        keep_archive: if ``False`` delete archive files after extraction</span>
 <span class="sd">        verbose: if ``True`` a progress bar is shown</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        combined member filenames of archives</span>
+<span class="sd">        paths of extracted files relative to ``destintation``</span>
+<span class="sd">        in order they were added to the archives</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: if an archive is not found</span>
+<span class="sd">        IsADirectoryError: if an archive is a directory</span>
+<span class="sd">        NotADirectoryError: if ``destination`` is not a directory</span>
+<span class="sd">        RuntimeError: if an archive is not a ZIP or TAR.GZ file</span>
+<span class="sd">        RuntimeError: if an archive file is malformed</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; _ = touch(&#39;a.txt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; create_archive(&#39;.&#39;, [&#39;a.txt&#39;], &#39;archive.zip&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; _ = touch(&#39;b.txt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; create_archive(&#39;.&#39;, [&#39;b.txt&#39;], &#39;archive.tar.gz&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; extract_archives([&#39;archive.zip&#39;, &#39;archive.tar.gz&#39;], &#39;.&#39;)</span>
+<span class="sd">        [&#39;a.txt&#39;, &#39;b.txt&#39;]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">progress_bar</span><span class="p">(</span>
@@ -457,7 +601,7 @@
 <div class="viewcode-block" id="file_extension"><a class="viewcode-back" href="../../../api/audeer.file_extension.html#audeer.file_extension">[docs]</a><span class="k">def</span> <span class="nf">file_extension</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;File extension.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;File extension.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to file</span>
@@ -482,7 +626,7 @@
         <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">hidden</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;List of folder names located inside provided path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of folder names located inside provided path.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to directory</span>
@@ -547,21 +691,36 @@
         <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">hidden</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;List of file names inferred from provided path.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;List of file names inferred from provided path.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        path: path to file, directory or pattern</span>
+<span class="sd">        path: path to directory,</span>
+<span class="sd">            or path to directory plus file matching pattern,</span>
+<span class="sd">            e.g. ``&#39;dir/file.txt&#39;``.</span>
+<span class="sd">            If ``recursive`` is ``True``</span>
+<span class="sd">            returns all files named ``file.txt``</span>
+<span class="sd">            from all sub-folders.</span>
+<span class="sd">            Besides the filename ``*``, ``?``, ``[seq]``,</span>
+<span class="sd">            and ``[!seq]`` can be used as pattern,</span>
+<span class="sd">            compare :mod:`fnmatch`</span>
 <span class="sd">        filetype: optional consider only this filetype</span>
 <span class="sd">        basenames: if ``True`` return relative path in respect to ``path``</span>
 <span class="sd">        recursive: if ``True`` includes subdirectories</span>
 <span class="sd">        hidden: if ``True`` includes files starting with a dot (``.``)</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        list of path(s) to file(s)</span>
+<span class="sd">        alphabetically sorted list of path(s) to file(s)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NotADirectoryError: if ``path`` is a directory or file</span>
+<span class="sd">            that does not exist,</span>
+<span class="sd">            or ``path`` is a pattern</span>
+<span class="sd">            and ``os.dirname(path)`` does not exist</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; dir_path = mkdir(&#39;path&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _ = touch(os.path.join(dir_path, &#39;file.wav&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; _ = touch(os.path.join(dir_path, &#39;File.wav&#39;))</span>
 <span class="sd">        &gt;&gt;&gt; _ = touch(os.path.join(dir_path, &#39;.lock&#39;))</span>
 <span class="sd">        &gt;&gt;&gt; sub_dir_path = mkdir(os.path.join(&#39;path&#39;, &#39;sub&#39;))</span>
 <span class="sd">        &gt;&gt;&gt; _ = touch(os.path.join(sub_dir_path, &#39;file.ogg&#39;))</span>
@@ -570,26 +729,26 @@
 <span class="sd">        ...     dir_path,</span>
 <span class="sd">        ...     basenames=True,</span>
 <span class="sd">        ... )</span>
-<span class="sd">        [&#39;file.wav&#39;]</span>
+<span class="sd">        [&#39;File.wav&#39;, &#39;file.wav&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; list_file_names(</span>
 <span class="sd">        ...     dir_path,</span>
 <span class="sd">        ...     basenames=True,</span>
 <span class="sd">        ...     hidden=True,</span>
 <span class="sd">        ... )</span>
-<span class="sd">        [&#39;.lock&#39;, &#39;file.wav&#39;]</span>
+<span class="sd">        [&#39;.lock&#39;, &#39;File.wav&#39;, &#39;file.wav&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; list_file_names(</span>
 <span class="sd">        ...     dir_path,</span>
 <span class="sd">        ...     basenames=True,</span>
 <span class="sd">        ...     recursive=True,</span>
 <span class="sd">        ... )</span>
-<span class="sd">        [&#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
+<span class="sd">        [&#39;File.wav&#39;, &#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; list_file_names(</span>
 <span class="sd">        ...     dir_path,</span>
 <span class="sd">        ...     basenames=True,</span>
 <span class="sd">        ...     recursive=True,</span>
 <span class="sd">        ...     hidden=True,</span>
 <span class="sd">        ... )</span>
-<span class="sd">        [&#39;.lock&#39;, &#39;file.wav&#39;, &#39;sub/.lock&#39;, &#39;sub/file.ogg&#39;]</span>
+<span class="sd">        [&#39;.lock&#39;, &#39;File.wav&#39;, &#39;file.wav&#39;, &#39;sub/.lock&#39;, &#39;sub/file.ogg&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; list_file_names(</span>
 <span class="sd">        ...     os.path.join(dir_path, &#39;f*&#39;),</span>
 <span class="sd">        ...     basenames=True,</span>
@@ -597,6 +756,20 @@
 <span class="sd">        ...     hidden=True,</span>
 <span class="sd">        ... )</span>
 <span class="sd">        [&#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; list_file_names(</span>
+<span class="sd">        ...     os.path.join(dir_path, &#39;[fF]*&#39;),</span>
+<span class="sd">        ...     basenames=True,</span>
+<span class="sd">        ...     recursive=True,</span>
+<span class="sd">        ...     hidden=True,</span>
+<span class="sd">        ... )</span>
+<span class="sd">        [&#39;File.wav&#39;, &#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; list_file_names(</span>
+<span class="sd">        ...     os.path.join(dir_path, &#39;[!f]*&#39;),</span>
+<span class="sd">        ...     basenames=True,</span>
+<span class="sd">        ...     recursive=True,</span>
+<span class="sd">        ...     hidden=True,</span>
+<span class="sd">        ... )</span>
+<span class="sd">        [&#39;.lock&#39;, &#39;File.wav&#39;, &#39;sub/.lock&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; list_file_names(</span>
 <span class="sd">        ...     os.path.join(dir_path, &#39;f*&#39;),</span>
 <span class="sd">        ...     filetype=&#39;ogg&#39;,</span>
@@ -608,11 +781,27 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="n">pattern</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+
         <span class="n">pattern</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">folder</span> <span class="o">=</span> <span class="n">path</span>
+
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recursive</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">hidden</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">basenames</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">path</span><span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotADirectoryError</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">helper</span><span class="p">(</span><span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">paths</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="n">ps</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
@@ -628,20 +817,40 @@
                 <span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span>
                 <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="sa">f</span><span class="s1">&#39;*</span><span class="si">{</span><span class="n">filetype</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">hidden</span><span class="p">:</span>
-            <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-            <span class="p">]</span>
         <span class="n">paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">folders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">recursive</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
                 <span class="n">helper</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
 
     <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">helper</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
+    <span class="n">helper</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">is_pattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+                <span class="s1">&#39;*&#39;</span> <span class="ow">in</span> <span class="n">pattern</span> <span class="ow">or</span>
+                <span class="s1">&#39;?&#39;</span> <span class="ow">in</span> <span class="n">pattern</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="s1">&#39;[&#39;</span> <span class="ow">in</span> <span class="n">pattern</span> <span class="ow">and</span> <span class="s1">&#39;]&#39;</span> <span class="ow">in</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># if we have no match,</span>
+    <span class="c1"># raise an error unless</span>
+    <span class="c1"># 1. path is a folder (i.e. pattern is None)</span>
+    <span class="c1"># 2. or we have a valid pattern</span>
+    <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="ow">and</span> <span class="n">pattern</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_pattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotADirectoryError</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hidden</span><span class="p">:</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="p">]</span>
+
     <span class="k">if</span> <span class="n">basenames</span><span class="p">:</span>
-        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span></div>
 
@@ -651,7 +860,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mo">0o777</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create directory.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create directory.</span>
 
 <span class="sd">    Create a directory at the provided path</span>
 <span class="sd">    and return the absolute path to the generated directory.</span>
@@ -689,11 +898,95 @@
     <span class="k">return</span> <span class="n">path</span></div>
 
 
+<div class="viewcode-block" id="md5"><a class="viewcode-back" href="../../../api/audeer.md5.html#audeer.md5">[docs]</a><span class="k">def</span> <span class="nf">md5</span><span class="p">(</span>
+        <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8192</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate MD5 checksum of file or folder.</span>
+
+<span class="sd">    If ``path`` is a folder,</span>
+<span class="sd">    the checksum is calculated</span>
+<span class="sd">    from all files in the folder</span>
+<span class="sd">    (including hidden files).</span>
+<span class="sd">    The checksum also encodes</span>
+<span class="sd">    the (relative) file names,</span>
+<span class="sd">    so that renaming files</span>
+<span class="sd">    results in a different checksum.</span>
+<span class="sd">    However,</span>
+<span class="sd">    the calculation is independent of</span>
+<span class="sd">    file separator of the operation systems.</span>
+<span class="sd">    Empty folders are ignored.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path: path to file or folder</span>
+<span class="sd">        chunk_size: chunk size in number of bytes</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        checksum</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: if ``path`` does not exist</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; path = touch(&#39;file.txt&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; md5(path)</span>
+<span class="sd">        &#39;d41d8cd98f00b204e9800998ecf8427e&#39;</span>
+<span class="sd">        &gt;&gt;&gt; md5(&#39;.&#39;)</span>
+<span class="sd">        &#39;3d8e577bddb17db339eae0b3d9bcf180&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">hasher</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">),</span>
+            <span class="n">path</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">md5_read_chunk</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+                <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="n">files</span> <span class="o">=</span> <span class="n">list_file_names</span><span class="p">(</span>
+            <span class="n">path</span><span class="p">,</span>
+            <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="c1"># encode file name that renaming of files</span>
+            <span class="c1"># produces different checksum</span>
+            <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">safe_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">md5_read_chunk</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+                    <span class="n">hasher</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hasher</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">md5_read_chunk</span><span class="p">(</span>
+        <span class="n">fp</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">IO</span><span class="p">,</span>
+        <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8192</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">yield</span> <span class="n">data</span>
+
+
 <div class="viewcode-block" id="move_file"><a class="viewcode-back" href="../../../api/audeer.move_file.html#audeer.move_file">[docs]</a><span class="k">def</span> <span class="nf">move_file</span><span class="p">(</span>
         <span class="n">src_path</span><span class="p">,</span>
         <span class="n">dst_path</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Move a file independent of operating system.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Move a file independent of operating system.</span>
 
 <span class="sd">    As :func:`os.rename` works differently</span>
 <span class="sd">    under Unix and Windows</span>
@@ -723,41 +1016,69 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Replace file extension.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Replace file extension.</span>
 
 <span class="sd">    If ``ext`` is ``None``</span>
 <span class="sd">    it uses :func:`audeer.file_extension`</span>
 <span class="sd">    to identify the current extension</span>
 <span class="sd">    and replaces it with ``new_extension``.</span>
 
+<span class="sd">    If ``ext`` is not ``None``</span>
+<span class="sd">    but ``path`` ends on a different extension,</span>
+<span class="sd">    the original path is returned.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to file</span>
 <span class="sd">        new_extension: new file extension</span>
-<span class="sd">            without leading ``.``</span>
 <span class="sd">        ext: explicit extension to be removed</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        path to file with new extension</span>
+<span class="sd">        path to file with a possibly new extension</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; path = &#39;file.txt&#39;</span>
-<span class="sd">        &gt;&gt;&gt; replace_file_extension(path, &#39;rst&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; replace_file_extension(&#39;file.txt&#39;, &#39;rst&#39;)</span>
 <span class="sd">        &#39;file.rst&#39;</span>
+<span class="sd">        &gt;&gt;&gt; replace_file_extension(&#39;file&#39;, &#39;rst&#39;)</span>
+<span class="sd">        &#39;file.rst&#39;</span>
+<span class="sd">        &gt;&gt;&gt; replace_file_extension(&#39;file.txt&#39;, &#39;&#39;)</span>
+<span class="sd">        &#39;file&#39;</span>
 <span class="sd">        &gt;&gt;&gt; replace_file_extension(&#39;file.tar.gz&#39;, &#39;zip&#39;, ext=&#39;tar.gz&#39;)</span>
+<span class="sd">        &#39;file.zip&#39;</span>
+<span class="sd">        &gt;&gt;&gt; replace_file_extension(&#39;file.zip&#39;, &#39;rst&#39;, ext=&#39;txt&#39;)</span>
 <span class="sd">        &#39;file.zip&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ext</span> <span class="o">=</span> <span class="n">file_extension</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">ext</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># &#39;.mp3&#39; =&gt; &#39;mp3&#39;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">ext</span><span class="p">)]</span><span class="si">}{</span><span class="n">new_extension</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+    <span class="c1"># &#39;.mp3&#39; =&gt; &#39;mp3&#39;</span>
+    <span class="k">if</span> <span class="n">ext</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="n">new_extension</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+        <span class="n">new_extension</span> <span class="o">=</span> <span class="n">new_extension</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;.</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ext</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">new_extension</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">ext</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">new_extension</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">new_extension</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">path</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">ext</span><span class="p">)]</span><span class="si">}{</span><span class="n">new_extension</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="k">return</span> <span class="n">path</span></div>
 
 
 <div class="viewcode-block" id="rmdir"><a class="viewcode-back" href="../../../api/audeer.rmdir.html#audeer.rmdir">[docs]</a><span class="k">def</span> <span class="nf">rmdir</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Remove directory.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove directory.</span>
 
 <span class="sd">    Remove the directory</span>
 <span class="sd">    and all its content</span>
@@ -770,7 +1091,9 @@
 <span class="sd">        NotADirectoryError: if path is not a directory</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; mkdir(&#39;path1/path2/path3&#39;)  # doctest: +SKIP</span>
+<span class="sd">        &gt;&gt;&gt; _ = mkdir(&#39;path1/path2/path3&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; list_dir_names(&#39;path1&#39;, basenames=True)</span>
+<span class="sd">        [&#39;path2&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; rmdir(&#39;path1/path2&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; list_dir_names(&#39;path1&#39;)</span>
 <span class="sd">        []</span>
@@ -784,7 +1107,7 @@
 <div class="viewcode-block" id="touch"><a class="viewcode-back" href="../../../api/audeer.touch.html#audeer.touch">[docs]</a><span class="k">def</span> <span class="nf">touch</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create an empty file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an empty file.</span>
 
 <span class="sd">    If the file exists already</span>
 <span class="sd">    it&#39;s access and modification times</span>
@@ -823,7 +1146,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/12/19 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/05/02 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

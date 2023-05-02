@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.19.0
+                v1.20.0
               </div>
             
           
@@ -119,6 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_file_names.html">list_file_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.mkdir.html">mkdir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.move_file.html">move_file()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.path.html">path()</a></li>
@@ -187,12 +188,14 @@
 it uses <a class="reference internal" href="audeer.file_extension.html#audeer.file_extension" title="audeer.file_extension"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.file_extension()</span></code></a>
 to identify the current extension
 and replaces it with <code class="docutils literal notranslate"><span class="pre">new_extension</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">ext</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>
+but <code class="docutils literal notranslate"><span class="pre">path</span></code> ends on a different extension,
+the original path is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to file</p></li>
-<li><p><strong>new_extension</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – new file extension
-without leading <code class="docutils literal notranslate"><span class="pre">.</span></code></p></li>
+<li><p><strong>new_extension</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – new file extension</p></li>
 <li><p><strong>ext</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – explicit extension to be removed</p></li>
 </ul>
 </dd>
@@ -200,14 +203,19 @@ without leading <code class="docutils literal notranslate"><span class="pre">.</
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>path to file with new extension</p>
+<dd class="field-odd"><p>path to file with a possibly new extension</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;file.txt&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">replace_file_extension</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rst&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">replace_file_extension</span><span class="p">(</span><span class="s1">&#39;file.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;rst&#39;</span><span class="p">)</span>
 <span class="go">&#39;file.rst&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">replace_file_extension</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="s1">&#39;rst&#39;</span><span class="p">)</span>
+<span class="go">&#39;file.rst&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">replace_file_extension</span><span class="p">(</span><span class="s1">&#39;file.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="go">&#39;file&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">replace_file_extension</span><span class="p">(</span><span class="s1">&#39;file.tar.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;zip&#39;</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;tar.gz&#39;</span><span class="p">)</span>
+<span class="go">&#39;file.zip&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">replace_file_extension</span><span class="p">(</span><span class="s1">&#39;file.zip&#39;</span><span class="p">,</span> <span class="s1">&#39;rst&#39;</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;txt&#39;</span><span class="p">)</span>
 <span class="go">&#39;file.zip&#39;</span>
 </pre></div>
 </div>
@@ -238,7 +246,7 @@ without leading <code class="docutils literal notranslate"><span class="pre">.</
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2022/12/19 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/05/02 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
