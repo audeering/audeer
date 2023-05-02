@@ -11,11 +11,11 @@ Version 1.20.0 (2023-05-02)
 ---------------------------
 
 * Added: ``audeer.md5()`` to calculate MD5 sum
-  for files and folders
+  of a file or folder
 * Added: ``short`` argument to ``audeer.is_uid()``.
   If ``True`` it supports short UIDs
   like ``ad855840``
-* Added: example section to the API documentations of
+* Added: examples to the API documentation of
   ``audeer.create_archive()``,
   ``audeer.extract_archive()``,
   ``audeer.extract_archives()``
