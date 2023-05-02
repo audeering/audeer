@@ -139,10 +139,10 @@ def create_archive(
     Examples:
         >>> _ = touch('a.txt')
         >>> _ = touch('b.txt')
-        >>> _ = create_archive('.', None, 'archive.zip')
+        >>> create_archive('.', None, 'archive.zip')
         >>> extract_archive('archive.zip', '.')
         ['a.txt', 'b.txt']
-        >>> _ = create_archive('.', ['a.txt'], 'archive.tar.gz')
+        >>> create_archive('.', ['a.txt'], 'archive.tar.gz')
         >>> extract_archive('archive.tar.gz', '.')
         ['a.txt']
 
