@@ -308,7 +308,7 @@ def extract_archive(
 
     Examples:
         >>> _ = touch('a.txt')
-        >>> _ = create_archive('.', None, 'archive.zip')
+        >>> create_archive('.', None, 'archive.zip')
         >>> extract_archive('archive.zip', '.')
         ['a.txt']
         >>> extract_archive('archive.zip', 'sub')
