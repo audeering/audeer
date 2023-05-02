@@ -7,6 +7,58 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.20.0 (2023-05-02)
+---------------------------
+
+* Added: ``audeer.md5()`` to calculate MD5 checksum
+  of a file or folder
+* Added: ``short`` argument to ``audeer.is_uid()``.
+  If ``True`` it checks for a short UID
+  like ``ad855840``
+* Added: examples to the API documentation of
+  ``audeer.create_archive()``,
+  ``audeer.extract_archive()``,
+  ``audeer.extract_archives()``
+* Changed: ``audeer.list_file_names()``
+  raises a ``NotADirectoryError``
+  if the provided ``path`` argument
+  is a non-existing folder
+  or a folder that is part
+  of a search pattern
+  that does not exists
+* Changed: ``audeer.create_archive()``
+  supports now ``None`` as ``files`` argument,
+  which will automatically include all files under ``root``
+* Changed: ``audeer.create_archive()``
+  now raises a ``FileNotFoundError``
+  if ``root`` or a file in ``files`` cannot be found,
+  ``NotADirectoryError``
+  if ``root`` is not a directory,
+  ``RuntimeError``
+  if a file in ``files``
+  is not located below ``root``
+* Changed: ``audeer.extract_archive()``
+  and ``audeer.extract_archives()``
+  now raise a ``FileNotFoundError``
+  if an archive cannot be found,
+  ``IsADirectoryError``
+  if an archive is a directory,
+  ``NotADirectoryError``
+  if ``destination`` is not a directory
+* Fixed: ``audeer.replace_file_extension()``
+  now adds the new file extension to the filename
+  if no original file extension was present
+  instead of replacing the filename
+* Fixed: ``audeer.replace_file_extension()``
+  now returns the original filename
+  when an empty new file extension is provided
+  instead of adding ``'.'`` at the end of the filename
+* Fixed: add raises section
+  to API documentation of ``audeer.list_file_names()``
+* Fixed: add raises section
+  to API documentation of ``audeer.StrictVersion``
+
+
 Version 1.19.0 (2022-12-19)
 ---------------------------
 
