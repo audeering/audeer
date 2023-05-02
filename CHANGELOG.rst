@@ -10,10 +10,10 @@ and this project adheres to `Semantic Versioning`_.
 Version 1.20.0 (2023-05-02)
 ---------------------------
 
-* Added: ``audeer.md5()`` to calculate MD5 sum
+* Added: ``audeer.md5()`` to calculate MD5 checksum
   of a file or folder
 * Added: ``short`` argument to ``audeer.is_uid()``.
-  If ``True`` it supports short UIDs
+  If ``True`` it checks for a short UID
   like ``ad855840``
 * Added: examples to the API documentation of
   ``audeer.create_archive()``,
