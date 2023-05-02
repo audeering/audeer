@@ -429,7 +429,7 @@ def extract_archives(
         >>> _ = touch('a.txt')
         >>> create_archive('.', ['a.txt'], 'archive.zip')
         >>> _ = touch('b.txt')
-        >>> _ = create_archive('.', ['b.txt'], 'archive.tar.gz')
+        >>> create_archive('.', ['b.txt'], 'archive.tar.gz')
         >>> extract_archives(['archive.zip', 'archive.tar.gz'], '.')
         ['a.txt', 'b.txt']
 
