@@ -372,7 +372,7 @@ def extract_archive(
     if not keep_archive:
         os.remove(archive)
 
-    if os.name == 'nt':  # pragma: no Linux or macOS cover
+    if os.name == 'nt':  # pragma: no cover
         # replace '/' with '\' on Windows
         files = [file.replace('/', os.path.sep) for file in files]
 
