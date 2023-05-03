@@ -56,7 +56,7 @@ Version 1.20.0 (2023-05-02)
 * Fixed: ``audeer.extract_archive()``
   and ``audeer.extract_archives()``
   now return normalized relative paths
-  under Windows
+  also under Windows
 * Fixed: add raises section
   to API documentation of ``audeer.list_file_names()``
 * Fixed: add raises section
