@@ -53,6 +53,10 @@ Version 1.20.0 (2023-05-02)
   now returns the original filename
   when an empty new file extension is provided
   instead of adding ``'.'`` at the end of the filename
+* Fixed: ``audeer.extract_archive()``
+  and ``audeer.extract_archives()``
+  no return normalized relative paths
+  under Windows
 * Fixed: add raises section
   to API documentation of ``audeer.list_file_names()``
 * Fixed: add raises section
