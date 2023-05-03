@@ -55,7 +55,7 @@ Version 1.20.0 (2023-05-02)
   instead of adding ``'.'`` at the end of the filename
 * Fixed: ``audeer.extract_archive()``
   and ``audeer.extract_archives()``
-  no return normalized relative paths
+  now return normalized relative paths
   under Windows
 * Fixed: add raises section
   to API documentation of ``audeer.list_file_names()``
