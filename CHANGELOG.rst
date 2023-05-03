@@ -16,6 +16,7 @@ Version 1.20.1 (2023-05-03)
   ``audeer.extract_archive()``
   and ``audeer.extract_archive()``
   have changed under Windows
+  due to a bug fix
 
 
 Version 1.20.0 (2023-05-02)
