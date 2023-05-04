@@ -14,7 +14,7 @@ Version 1.20.1 (2023-05-04)
   for version 1.20.0
   stating that the return values of
   ``audeer.extract_archive()``
-  and ``audeer.extract_archive()``
+  and ``audeer.extract_archives()``
   have changed under Windows
   due to a bug fix
 
