@@ -7,6 +7,18 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.20.1 (2023-05-04)
+---------------------------
+
+* Fixed: add missing changelog entry
+  for version 1.20.0
+  stating that the return values of
+  ``audeer.extract_archive()``
+  and ``audeer.extract_archive()``
+  have changed under Windows
+  due to a bug fix
+
+
 Version 1.20.0 (2023-05-02)
 ---------------------------
 
