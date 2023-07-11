@@ -1,4 +1,5 @@
 import operator
+
 import pytest
 
 import audeer

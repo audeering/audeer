@@ -193,7 +193,7 @@ def test_deprecated_keyword_argument():
         new_argument='bar',
         removal_version='1.0.0',
     )
-    class class_with_deprecated_keyword_argument(object):
+    class ClassWithDeprecatedKeywordArgument(object):
 
         def __init__(self, *, bar):
             self.bar = bar
@@ -204,12 +204,12 @@ def test_deprecated_keyword_argument():
         " Use 'bar' instead."
     )
     value = 1
-    assert class_with_deprecated_keyword_argument(bar=value).bar == value
+    assert ClassWithDeprecatedKeywordArgument(bar=value).bar == value
     with warnings.catch_warnings(record=True) as w:
         # Cause all warnings to always be triggered.
         warnings.simplefilter("always")
         # Raise warning
-        r = class_with_deprecated_keyword_argument(foo=value)
+        r = ClassWithDeprecatedKeywordArgument(foo=value)
         assert issubclass(w[-1].category, UserWarning)
         assert expected_message == str(w[-1].message)
         assert r.bar == value

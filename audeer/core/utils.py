@@ -1,5 +1,5 @@
-import concurrent.futures
 from collections.abc import Iterable
+import concurrent.futures
 import copy
 import functools
 import hashlib
@@ -7,7 +7,6 @@ import importlib
 import inspect
 import multiprocessing
 import operator
-import pkg_resources
 import queue
 import subprocess
 import sys
@@ -15,6 +14,8 @@ import threading
 import typing
 import uuid
 import warnings
+
+import pkg_resources
 
 from audeer.core import tqdm
 from audeer.core.version import LooseVersion

@@ -11,10 +11,8 @@ import urllib.request
 import zipfile
 
 from audeer.core.path import path as safe_path
-from audeer.core.tqdm import (
-    format_display_message,
-    progress_bar,
-)
+from audeer.core.tqdm import format_display_message
+from audeer.core.tqdm import progress_bar
 from audeer.core.utils import to_list
 
 
@@ -45,7 +43,6 @@ def basename_wo_ext(
         basename of directory or file without extension
 
     Examples:
-
         >>> path = '/test/file.wav'
         >>> basename_wo_ext(path)
         'file'
@@ -855,7 +852,7 @@ def move_file(
     to move the file.
 
     Args:
-        scr_path: source file path
+        src_path: source file path
         dst_path: destination file path
 
     Examples:

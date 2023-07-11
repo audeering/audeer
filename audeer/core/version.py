@@ -10,25 +10,31 @@ class Version:
     """Abstract base class for version numbering classes."""
 
     def __repr__(self):
+        r"""Python code to recreate instance."""
         return f"{self.__class__.__name__} ('{str(self)}')"
 
     def __eq__(self, other):
+        r"""Check if version equals another version."""
         c = self._cmp(other)
         return c == 0
 
     def __lt__(self, other):
+        r"""Check if version is less than another version."""
         c = self._cmp(other)
         return c < 0
 
     def __le__(self, other):
+        r"""Check if version is less or equal another version."""
         c = self._cmp(other)
         return c <= 0
 
     def __gt__(self, other):
+        r"""Check if version is greater than another version."""
         c = self._cmp(other)
         return c > 0
 
     def __ge__(self, other):
+        r"""Check if version is greater or equal another version."""
         c = self._cmp(other)
         return c >= 0
 
@@ -161,7 +167,7 @@ class StrictVersion(Version):
             self.prerelease = None
 
     def __str__(self):
-
+        r"""String representation of version."""
         if self.version[2] == 0:
             vstring = '.'.join(map(str, self.version[0:2]))
         else:
@@ -302,27 +308,28 @@ class LooseVersion(Version):
         if version:
             self.parse(version)
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # noqa: D105 (inherited)
         c = self._cmp(other)
         return c == 0
 
-    def __lt__(self, other):
+    def __lt__(self, other):  # noqa: D105 (inherited)
         c = self._cmp(other)
         return c < 0
 
-    def __le__(self, other):
+    def __le__(self, other):  # noqa: D105 (inherited)
         c = self._cmp(other)
         return c <= 0
 
-    def __gt__(self, other):
+    def __gt__(self, other):  # noqa: D105 (inherited)
         c = self._cmp(other)
         return c > 0
 
-    def __ge__(self, other):
+    def __ge__(self, other):  # noqa: D105 (inherited)
         c = self._cmp(other)
         return c >= 0
 
     def __str__(self):
+        r"""String representation of version."""
         return self.vstring
 
     def parse(self, version):
