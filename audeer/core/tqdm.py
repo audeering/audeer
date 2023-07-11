@@ -63,7 +63,7 @@ def progress_bar(
             copy(file)
 
     When the text should be updated as well,
-    you have to explicetly do that in each step:
+    you have to explicitly do that in each step:
 
     .. code-block:: python
 
