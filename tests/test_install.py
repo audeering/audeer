@@ -58,7 +58,7 @@ def test():
         version='<=5.3',
     )
 
-    # installed version satisfies requiested version
+    # installed version satisfies requested version
     audeer.install_package(
         PACKAGE,
         version='>=5.3',
