@@ -488,7 +488,7 @@ Version 0.4.0 (2019-01-07)
 
 * Added: MP3 support (not for writing)
 * Changed: make ``[channels, samples]`` default audio shape
-* Changed: switch to sox_ for audio file info
+* Changed: switch to ``sox`` for audio file info
 
 
 Version 0.3.0 (2018-11-16)
