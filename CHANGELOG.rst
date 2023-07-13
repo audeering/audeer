@@ -196,14 +196,14 @@ Version 1.9.0 (2021-01-21)
 Version 1.8.0 (2020-12-03)
 --------------------------
 
-* Added: :func:`audeer.is_uid`
+* Added: ``audeer.is_uid()``
 
 
 Version 1.7.0 (2020-12-02)
 --------------------------
 
-* Added: :func:`audeer.deprecated_keyword_argument` decorator
-* Changed: :func:`audeer.deprecated` raises now a ``UserWarning``
+* Added: ``audeer.deprecated_keyword_argument()`` decorator
+* Changed: ``audeer.deprecated()`` raises now a ``UserWarning``
   instead of ``DeprecationWarning``
 
 
@@ -211,14 +211,14 @@ Version 1.6.7 (2020-11-18)
 --------------------------
 
 * Changed: return member filenames of archives in
-  :func:`audeer.extract_archive`
-  and :func:`audeer.extract_archives`
+  ``audeer.extract_archive()``
+  and ``audeer.extract_archives()``
 
 
 Version 1.6.6 (2020-10-27)
 --------------------------
 
-* Fixed: multi-line statements in Github releases
+* Fixed: multi-line statements in GitHub releases
 
 
 Version 1.6.5 (2020-10-27)
@@ -226,28 +226,28 @@ Version 1.6.5 (2020-10-27)
 
 * Fixed: long description in ``setup.cfg``,
   which is included on pypi.org
-* Fixed: multi-line statements in Github releases
+* Fixed: multi-line statements in GitHub releases
 
 
 Version 1.6.4 (2020-10-23)
 --------------------------
 
 * Added: run tests on Windows
-* Removed: deprecated :func:`audb.run_worker_threads` from docs
-  and code coverage
+* Removed: deprecated ``audb.run_worker_threads()``
+  from docs and code coverage
 * Fixed: "Edit on Github" link in docs
 
 
 Version 1.6.3 (2020-10-22)
 --------------------------
 
-* Fixed: release instructions for Github
+* Fixed: release instructions for GitHub
 
 
 Version 1.6.2 (2020-10-21)
 --------------------------
 
-* Changed: host documentation on Github pages
+* Changed: host documentation on GitHub pages
 
 
 Version 1.6.1 (2020-10-20)
@@ -259,39 +259,42 @@ Version 1.6.1 (2020-10-20)
 Version 1.6.0 (2020-10-20)
 --------------------------
 
-* Added: first public release on Github
+* Added: first public release on GitHub
 
 
 Version 1.5.1 (2020-09-28)
 --------------------------
 
-* Fixed: return actual path for symbolic links with :func:`audeer.safe_path`
-  by using :func:`os.path.realpath` instead of :func:`os.path.abspath`
-* Fixed: clean up test scripts and remove obsolete :file:`tests/test_audeer.py`
+* Fixed: return actual path
+  for symbolic links with ``audeer.safe_path()``
+  by using ``os.path.realpath()``
+  instead of ``os.path.abspath()``
+* Fixed: clean up test scripts
+  and remove obsolete ``tests/test_audeer.py``
 
 
 Version 1.5.0 (2020-09-22)
 --------------------------
 
-* Added: :func:`audeer.common_directory`
+* Added: ``audeer.common_directory()``
 
 
 Version 1.4.0 (2020-09-21)
 --------------------------
 
-* Added: :func:`audeer.run_tasks`
+* Added: ``audeer.run_tasks()``
 
 
 Version 1.3.0 (2020-09-08)
 --------------------------
 
-* Added: :func:`audeer.uid`
+* Added: ``audeer.uid()``
 
 
 Version 1.2.3 (2020-09-01)
 --------------------------
 
-* Changed: use ``url`` and ``project_urls`` in :file:`setup.cfg`
+* Changed: use ``url`` and ``project_urls`` in ``setup.cfg``
 
 
 Version 1.2.2 (2020-08-28)
@@ -303,15 +306,15 @@ Version 1.2.2 (2020-08-28)
 Version 1.2.1 (2020-08-18)
 --------------------------
 
-* Changed: :func:`audb.extract_archive` raises ``RuntimeError`` for broken
-    archives
+* Changed: ``audb.extract_archive()``
+    raises ``RuntimeError`` for broken archives
 
 
 Version 1.2.0 (2020-08-14)
 --------------------------
 
-* Added: :func:`audb.extract_archive`
-* Added: :func:`audb.extract_archives`
+* Added: ``audb.extract_archive()``
+* Added: ``audb.extract_archives()``
 * Added: Python 3.8 support
 * Removed: Python 3.5 support
 
@@ -319,22 +322,22 @@ Version 1.2.0 (2020-08-14)
 Version 1.1.2 (2020-06-12)
 --------------------------
 
-* Fixed: wrong homepage link in :file:`setup.cfg`
+* Fixed: wrong homepage link in ``setup.cfg``
 
 
 Version 1.1.1 (2020-05-20)
 --------------------------
 
-* Added: ``mode`` argument to :func:`audeer.mkdir`
+* Added: ``mode`` argument to ``audeer.mkdir()``
 
 
 Version 1.1.0 (2020-04-08)
 --------------------------
 
-* Added: :func:`audeer.to_list`
+* Added: ``audeer.to_list()``
 * Added: code coverage
-* Removed: deprecated :func:`audeer.generate_dir`
-* Removed: deprecated :func:`audeer.basename`
+* Removed: deprecated ``audeer.generate_dir()``
+* Removed: deprecated ``audeer.basename()``
 
 
 Version 1.0.7 (2020-02-19)
@@ -352,7 +355,7 @@ Version 1.0.6 (2020-02-19)
 Version 1.0.5 (2020-02-19)
 --------------------------
 
-* Fixed: make :func:`audeer.mkdir` multiprocessing safe
+* Fixed: make ``audeer.mkdir()`` multiprocessing safe
 
 
 Version 1.0.4 (2020-02-07)
@@ -372,27 +375,27 @@ Version 1.0.2 (2020-02-07)
 --------------------------
 
 * Added: automatic Python package publishing
-* Fixed: another link to `audeer.configfile`_
+* Fixed: another link to ``audeer.configfile``
 
 
 Version 1.0.1 (2020-02-06)
 --------------------------
 
-* Fixed: link to `audeer.configfile`_
+* Fixed: link to ``audeer.configfile``
 
 
 Version 1.0.0 (2020-02-06)
 --------------------------
 
-* Added: :func:`audeer.format_display_message`
-* Added: :func:`audeer.progress_bar`
-* Added: :func:`audeer.deprecated`
-* Added: :func:`audeer.run_worker_threads`
-* Added: :func:`audeer.safe_path`
-* Changed: introduce `audeer.core` structure
-* Changed: rename :func:`audeer.generate_dir` to :func:`audeer.mkdir`
-* Changed: rename :func:`basename` to :func:`basename_wo_ext`
-* Removed: all config related code is moved to `audeer.configfile`_
+* Added: ``audeer.format_display_message()``
+* Added: ``audeer.progress_bar()``
+* Added: ``audeer.deprecated()``
+* Added: ``audeer.run_worker_threads()``
+* Added: ``audeer.safe_path``
+* Changed: introduce ``audeer.core`` structure
+* Changed: rename ``audeer.generate_dir()`` to ``audeer.mkdir()``
+* Changed: rename ``audeer.basename`` to ``audeer.basename_wo_ext``
+* Removed: all config related code is moved to ``audeer.configfile``
 * Removed: Python 2.7 support
 
 
@@ -485,7 +488,7 @@ Version 0.4.0 (2019-01-07)
 
 * Added: MP3 support (not for writing)
 * Changed: make ``[channels, samples]`` default audio shape
-* Changed: switch to sox_ for audio file info
+* Changed: switch to ``sox`` for audio file info
 
 
 Version 0.3.0 (2018-11-16)
@@ -517,5 +520,3 @@ Version 0.1.0 (2018-10-29)
 .. _Keep a Changelog: https://keepachangelog.com/en/1.0.0/
 .. _Semantic Versioning: https://semver.org/spec/v2.0.0.html
 .. _audiofile: https://github.com/audeering/audiofile
-.. _sox: https://github.com/rabitt/pysox
-.. _audeer.configfile: http://tools.pp.audeering.com/pyaudeer-configfile
