@@ -6,6 +6,34 @@
 .. autoclass:: LooseVersion
 
 
+\_\_eq\_\_\(\)
+--------------
+.. automethod:: LooseVersion.__eq__
+    
+\_\_ge\_\_\(\)
+--------------
+.. automethod:: LooseVersion.__ge__
+    
+\_\_gt\_\_\(\)
+--------------
+.. automethod:: LooseVersion.__gt__
+    
+\_\_le\_\_\(\)
+--------------
+.. automethod:: LooseVersion.__le__
+    
+\_\_lt\_\_\(\)
+--------------
+.. automethod:: LooseVersion.__lt__
+    
+\_\_repr\_\_\(\)
+----------------
+.. automethod:: LooseVersion.__repr__
+    
+\_\_str\_\_\(\)
+---------------
+.. automethod:: LooseVersion.__str__
+    
 parse\(\)
 ---------
 .. automethod:: LooseVersion.parse

@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.20.1
+                v1.20.2
               </div>
             
           
@@ -187,16 +187,16 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>archives</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – paths of ZIP or TAR.GZ files</p></li>
-<li><p><strong>destination</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – folder where the files will be extracted.
+<li><p><strong>archives</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – paths of ZIP or TAR.GZ files</p></li>
+<li><p><strong>destination</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – folder where the files will be extracted.
 If the folder does not exists,
 it will be created</p></li>
-<li><p><strong>keep_archive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">False</span></code> delete archive files after extraction</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> a progress bar is shown</p></li>
+<li><p><strong>keep_archive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">False</span></code> delete archive files after extraction</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> a progress bar is shown</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>paths of extracted files relative to <code class="docutils literal notranslate"><span class="pre">destintation</span></code>
@@ -204,11 +204,11 @@ in order they were added to the archives</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.11)"><strong>FileNotFoundError</strong></a> – if an archive is not found</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IsADirectoryError" title="(in Python v3.11)"><strong>IsADirectoryError</strong></a> – if an archive is a directory</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotADirectoryError" title="(in Python v3.11)"><strong>NotADirectoryError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">destination</span></code> is not a directory</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.11)"><strong>RuntimeError</strong></a> – if an archive is not a ZIP or TAR.GZ file</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.11)"><strong>RuntimeError</strong></a> – if an archive file is malformed</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.12)"><strong>FileNotFoundError</strong></a> – if an archive is not found</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IsADirectoryError" title="(in Python v3.12)"><strong>IsADirectoryError</strong></a> – if an archive is a directory</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotADirectoryError" title="(in Python v3.12)"><strong>NotADirectoryError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">destination</span></code> is not a directory</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.12)"><strong>RuntimeError</strong></a> – if an archive is not a ZIP or TAR.GZ file</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.12)"><strong>RuntimeError</strong></a> – if an archive file is malformed</p></li>
 </ul>
 </dd>
 </dl>
@@ -248,7 +248,7 @@ in order they were added to the archives</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/05/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/11/28 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

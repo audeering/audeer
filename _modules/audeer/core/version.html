@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v1.20.1
+                v1.20.2
               </div>
             
           
@@ -150,25 +150,31 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for version numbering classes.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Python code to recreate instance.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> (&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if version equals another version.&quot;&quot;&quot;</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if version is less than another version.&quot;&quot;&quot;</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if version is less or equal another version.&quot;&quot;&quot;</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if version is greater than another version.&quot;&quot;&quot;</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if version is greater or equal another version.&quot;&quot;&quot;</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">c</span> <span class="o">&gt;=</span> <span class="mi">0</span>
 
@@ -300,8 +306,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
+<div class="viewcode-block" id="StrictVersion.__str__"><a class="viewcode-back" href="../../../api/audeer.StrictVersion.html#audeer.StrictVersion.__str__">[docs]</a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;String representation of version.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">vstring</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -310,7 +316,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span><span class="p">:</span>
             <span class="n">vstring</span> <span class="o">=</span> <span class="n">vstring</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">vstring</span>
+        <span class="k">return</span> <span class="n">vstring</span></div>
 
     <span class="k">def</span> <span class="nf">_cmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -442,28 +448,29 @@
         <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="LooseVersion.__eq__"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion.__eq__">[docs]</a>    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># noqa: D105 (inherited)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">c</span> <span class="o">==</span> <span class="mi">0</span></div>
 
-    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="LooseVersion.__lt__"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion.__lt__">[docs]</a>    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># noqa: D105 (inherited)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">0</span></div>
 
-    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="LooseVersion.__le__"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion.__le__">[docs]</a>    <span class="k">def</span> <span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># noqa: D105 (inherited)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="mi">0</span></div>
 
-    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="LooseVersion.__gt__"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion.__gt__">[docs]</a>    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># noqa: D105 (inherited)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
-    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<div class="viewcode-block" id="LooseVersion.__ge__"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion.__ge__">[docs]</a>    <span class="k">def</span> <span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>  <span class="c1"># noqa: D105 (inherited)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmp</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">c</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">c</span> <span class="o">&gt;=</span> <span class="mi">0</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vstring</span>
+<div class="viewcode-block" id="LooseVersion.__str__"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion.__str__">[docs]</a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;String representation of version.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vstring</span></div>
 
 <div class="viewcode-block" id="LooseVersion.parse"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse a version string.</span>
@@ -518,7 +525,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/05/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/11/28 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

@@ -6,6 +6,34 @@
 .. autoclass:: config
 
 
+\_\_eq\_\_\(\)
+--------------
+.. automethod:: config.__eq__
+    
+\_\_ge\_\_\(\)
+--------------
+.. automethod:: config.__ge__
+    
+\_\_gt\_\_\(\)
+--------------
+.. automethod:: config.__gt__
+    
+\_\_le\_\_\(\)
+--------------
+.. automethod:: config.__le__
+    
+\_\_lt\_\_\(\)
+--------------
+.. automethod:: config.__lt__
+    
+\_\_repr\_\_\(\)
+----------------
+.. automethod:: config.__repr__
+    
+\_\_str\_\_\(\)
+---------------
+.. automethod:: config.__str__
+    
 TQDM\_COLUMNS
 -------------
 .. autoattribute:: config.TQDM_COLUMNS

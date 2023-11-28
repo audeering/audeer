@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v1.20.1
+                v1.20.2
               </div>
             
           
@@ -138,16 +138,16 @@
            <div itemprop="articleBody">
             
   <h1>Source code for audeer.core.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span></span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">import</span> <span class="nn">concurrent.futures</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">hashlib</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">importlib.metadata</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">import</span> <span class="nn">pkg_resources</span>
 <span class="kn">import</span> <span class="nn">queue</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -513,8 +513,8 @@
     <span class="c1"># raise error if package is already installed</span>
     <span class="c1"># and does not satisfy requested version</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">current_version</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">version</span>
-    <span class="k">except</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">DistributionNotFound</span><span class="p">:</span>
+        <span class="n">current_version</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">version</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">importlib</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">PackageNotFoundError</span><span class="p">:</span>
         <span class="n">current_version</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">current_version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -604,7 +604,7 @@
 
     <span class="n">z</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">version_parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
     <span class="c1"># For Z, &#39;-&#39; and &#39;+&#39; are also allowed as separators,</span>
-    <span class="c1"># but you are not allowed to have an additonal &#39;.&#39; before</span>
+    <span class="c1"># but you are not allowed to have an additional &#39;.&#39; before</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -976,7 +976,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/05/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/11/28 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
