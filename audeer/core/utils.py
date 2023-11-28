@@ -4,6 +4,7 @@ import copy
 import functools
 import hashlib
 import importlib
+import importlib.metadata
 import inspect
 import multiprocessing
 import operator
@@ -14,8 +15,6 @@ import threading
 import typing
 import uuid
 import warnings
-
-import pkg_resources
 
 from audeer.core import tqdm
 from audeer.core.version import LooseVersion
@@ -374,8 +373,8 @@ def install_package(
     # raise error if package is already installed
     # and does not satisfy requested version
     try:
-        current_version = pkg_resources.get_distribution(name).version
-    except pkg_resources.DistributionNotFound:
+        current_version = importlib.metadata.version(name)
+    except importlib.metadata.PackageNotFoundError:
         current_version = None
 
     if current_version is not None:
