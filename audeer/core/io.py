@@ -486,7 +486,7 @@ def list_dir_names(
     """List of folder names located inside provided path.
 
     Args:
-        path: path to directory
+        path: path to directory or pattern
         basenames: if ``True`` return relative path in respect to ``path``
         recursive: if ``True`` includes subdirectories
         hidden: if ``True`` includes directories starting with a dot (``.``)
@@ -495,8 +495,10 @@ def list_dir_names(
         list of paths to directories
 
     Raises:
-        NotADirectoryError: if path is not a directory
-        FileNotFoundError: if path does not exists
+        NotADirectoryError: if ``os.path.dirname(path)``
+            is not a directory
+        FileNotFoundError: if ``os.path.dirname(path)``
+            does not exists
 
     Examples:
         >>> _ = mkdir('path/a/.b/c')
@@ -521,16 +523,30 @@ def list_dir_names(
 
     """
     path = safe_path(path)
+    if not os.path.isdir(path):
+        pattern = os.path.basename(path)
+        path = os.path.dirname(path)
+    else:
+        pattern = None
 
     def helper(p: str, paths: typing.List[str]):
         ps = [os.path.join(p, x) for x in os.listdir(p)]
-        ps = [x for x in ps if os.path.isdir(x)]
+        folders = [x for x in ps if os.path.isdir(x)]
+        if pattern:
+            folders = [
+                folder for folder in folders
+                if fnmatch.fnmatch(os.path.basename(folder), f'{pattern}')
+            ]
+
         if not hidden:
-            ps = [x for x in ps if not os.path.basename(x).startswith('.')]
-        paths.extend(ps)
-        if len(ps) > 0 and recursive:
-            for p in ps:
-                helper(p, paths)
+            folders = [
+                folder for folder in folders
+                if not os.path.basename(folder).startswith('.')
+            ]
+        paths.extend(folders)
+        if len(folders) > 0 and recursive:
+            for folder in folders:
+                helper(folder, paths)
 
     paths = []
     helper(path, paths)
