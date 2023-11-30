@@ -1093,7 +1093,7 @@ def test_mkdir(tmpdir):
     assert p == os.path.join(path, 'folder4')
     # Subdirectories
     os.chdir(path)
-    p = audeer.mkdir('folder5/folder6')
+    p = audeer.mkdir('folder5', 'folder6')
     os.chdir(current_path)
     assert os.path.isdir(p) is True
     assert p == os.path.join(path, 'folder5', 'folder6')
@@ -1109,27 +1109,24 @@ def test_mkdir(tmpdir):
     assert p == path
     # Mode, see https://stackoverflow.com/a/705088
     # Default mode
-    path = os.path.join(str(tmpdir.mkdir('folder8')), 'sub-folder')
     os.umask(0)
-    p = audeer.mkdir(path)
+    p = audeer.mkdir(tmpdir, 'folder8', 'sub-folder')
     mode = stat.S_IMODE(os.stat(p).st_mode)
     expected_mode = int('777', 8)
     assert mode == expected_mode
     # Non-default modes
     # Under Windows, changing permissions does not work,
     # there we always expect 777
-    path = os.path.join(str(tmpdir.mkdir('folder9')), 'sub-folder')
     os.umask(0)
-    p = audeer.mkdir(path, mode=0o775)
+    p = audeer.mkdir(tmpdir, 'folder9', 'sub-folder', mode=0o775)
     expected_mode = '775'
     if platform.system() == 'Windows':
         expected_mode = '777'
     mode = stat.S_IMODE(os.stat(p).st_mode)
     assert mode == int(expected_mode, 8)
     assert mode != int('755', 8)
-    path = os.path.join(str(tmpdir.mkdir('folder10')), 'sub-folder')
     os.umask(0)
-    p = audeer.mkdir(path, mode=0o755)
+    p = audeer.mkdir(tmpdir, 'folder10', 'sub-folder', mode=0o755)
     expected_mode = '755'
     if platform.system() == 'Windows':
         expected_mode = '777'
@@ -1208,9 +1205,8 @@ def test_rmdir(tmpdir):
     audeer.rmdir(p)
     assert not os.path.exists(p)
     # Folder with folder content
-    path = str(tmpdir.mkdir('folder'))
-    p = audeer.mkdir(os.path.join(path, 'sub-folder'))
-    audeer.rmdir(os.path.dirname(p))
+    p = audeer.mkdir(tmpdir, 'folder', 'sub-folder')
+    audeer.rmdir(tmpdir, 'folder')
     assert not os.path.exists(p)
     assert not os.path.exists(os.path.dirname(p))
     # Relative path

@@ -499,7 +499,7 @@ def list_dir_names(
         FileNotFoundError: if path does not exists
 
     Examples:
-        >>> _ = mkdir('path/a/.b/c')
+        >>> _ = mkdir('path', 'a', '.b', 'c')
         >>> list_dir_names(
         ...     'path',
         ...     basenames=True,
@@ -579,7 +579,7 @@ def list_file_names(
         >>> _ = touch(os.path.join(dir_path, 'file.wav'))
         >>> _ = touch(os.path.join(dir_path, 'File.wav'))
         >>> _ = touch(os.path.join(dir_path, '.lock'))
-        >>> sub_dir_path = mkdir(os.path.join('path', 'sub'))
+        >>> sub_dir_path = mkdir('path', 'sub')
         >>> _ = touch(os.path.join(sub_dir_path, 'file.ogg'))
         >>> _ = touch(os.path.join(sub_dir_path, '.lock'))
         >>> list_file_names(
@@ -714,7 +714,7 @@ def list_file_names(
 
 def mkdir(
         path: typing.Union[str, bytes],
-        *,
+        *paths: typing.Sequence[typing.Union[str, bytes]],
         mode: int = 0o777
 ) -> str:
     """Create directory.
@@ -738,18 +738,21 @@ def mkdir(
 
     Args:
         path: absolute or relative path of directory to create
+        *paths: additional arguments
+            to be joined with ``path``
+            by :func:`os.path.join`
         mode: set permissions of created folders
 
     Returns:
         absolute path to the created directory
 
     Examples:
-        >>> p = mkdir('path1/path2/path3')
+        >>> p = mkdir('path1', 'path2', 'path3')
         >>> os.path.basename(p)
         'path3'
 
     """
-    path = safe_path(path)
+    path = safe_path(path, *paths)
     if path:
         os.makedirs(path, mode=mode, exist_ok=True)
     return path
@@ -934,6 +937,7 @@ def replace_file_extension(
 
 def rmdir(
         path: typing.Union[str, bytes],
+        *paths: typing.Sequence[typing.Union[str, bytes]],
 ):
     """Remove directory.
 
@@ -943,20 +947,23 @@ def rmdir(
 
     Args:
         path: absolute or relative path of directory to remove
+        *paths: additional arguments
+            to be joined with ``path``
+            by :func:`os.path.join`
 
     Raises:
         NotADirectoryError: if path is not a directory
 
     Examples:
-        >>> _ = mkdir('path1/path2/path3')
+        >>> _ = mkdir('path1', 'path2', 'path3')
         >>> list_dir_names('path1', basenames=True)
         ['path2']
-        >>> rmdir('path1/path2')
+        >>> rmdir('path1', 'path2')
         >>> list_dir_names('path1')
         []
 
     """
-    path = safe_path(path)
+    path = safe_path(path, *paths)
     if os.path.exists(path):
         shutil.rmtree(path)
 
