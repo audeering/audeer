@@ -1181,7 +1181,12 @@ def test_move(tmpdir, src_path, dst_path):
     audeer.mkdir(tmp_dir, src_path)
     audeer.touch(tmp_dir, src_path, 'file.txt')
     if src_path != dst_path:
-        with pytest.raises(OSError, match='Directory not empty'):
+        system = platform.system()
+        if system == 'Windows':
+            error_msg = 'Access is denied'
+        else:
+            error_msg = 'Directory not empty'
+        with pytest.raises(OSError, match=error_msg):
             audeer.move_file(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
