@@ -31,6 +31,7 @@ audeer
     LooseVersion
     md5
     mkdir
+    move
     move_file
     path
     progress_bar
