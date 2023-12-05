@@ -1148,6 +1148,34 @@ def test_mkdir(tmpdir):
         ),
     ]
 )
+def test_move(tmpdir, src_file, dst_file):
+
+    tmp_path = str(tmpdir.mkdir('folder'))
+    tmp_path = audeer.mkdir(tmpdir, 'folder')
+
+    src_path = audeer.touch(os.path.join(tmp_path, src_file))
+    dst_path = os.path.join(tmp_path, dst_file)
+
+    audeer.move_file(src_path, dst_path)
+
+    if src_file != dst_file:
+        assert not os.path.exists(src_path)
+    assert os.path.exists(dst_path)
+
+
+@pytest.mark.parametrize(
+    'src_file, dst_file',
+    [
+        (
+            'file1',
+            'file1',
+        ),
+        (
+            'file1',
+            'file2',
+        ),
+    ]
+)
 def test_move_file(tmpdir, src_file, dst_file):
 
     tmp_path = str(tmpdir.mkdir('folder'))

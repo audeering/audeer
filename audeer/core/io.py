@@ -842,6 +842,39 @@ def md5_read_chunk(
         yield data
 
 
+def move(
+        src_path,
+        dst_path,
+):
+    """Move a file or folder independent of operating system.
+
+    As :func:`os.rename` works differently
+    under Unix and Windows
+    and :func:`shutil.move` can be slow,
+    we use :func:`os.replace`
+    to move the file.
+
+    Args:
+        src_path: source file path
+        dst_path: destination file path
+
+    Raises:
+        PermissionError: if a folder should be moved
+            to an already existing folder
+            under Windows
+
+    Examples:
+        >>> path = mkdir('folder')
+        >>> src_path = touch(os.path.join(path, 'file1'))
+        >>> dst_path = os.path.join(path, 'file2')
+        >>> move(src_path, dst_path)
+        >>> list_file_names(path, basenames=True)
+        ['file2']
+
+    """
+    os.replace(src_path, dst_path)
+
+
 def move_file(
         src_path,
         dst_path,
@@ -867,7 +900,7 @@ def move_file(
         ['file2']
 
     """
-    os.replace(src_path, dst_path)
+    move(src_path, dst_path)
 
 
 def replace_file_extension(
