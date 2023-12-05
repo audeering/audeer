@@ -866,9 +866,9 @@ def move(
             and different from ``src_path``
             and ``src_path`` is also a folder
             (raised only under Windows)
-        IsADirectoryError: if ``src_path`` is a file
+        OSError: if ``src_path`` is a file
             and ``dst_path`` is an existing folder
-        NotADirectoryError: if ``src_path`` is a folder
+        OSError: if ``src_path`` is a folder
             and ``dst_path`` is an existing file
 
     Examples:

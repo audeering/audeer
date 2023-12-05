@@ -1151,7 +1151,7 @@ def test_mkdir(tmpdir):
 def test_move(tmpdir, src_path, dst_path):
 
     system = platform.system()
-    tmp_dir = audeer.mkdir(tmpdir, 'files')
+    tmp_dir = audeer.mkdir(tmpdir, 'folder')
 
     # src: file
     # dst: new file
@@ -1314,7 +1314,11 @@ def test_move(tmpdir, src_path, dst_path):
         audeer.touch(tmp_dir, src_path)
         audeer.mkdir(tmp_dir, dst_path)
         audeer.touch(tmp_dir, dst_path, 'file.txt')
-        with pytest.raises(IsADirectoryError, match='Is a directory'):
+        if system == 'Windows':
+            error_msg = 'Access denied'
+        else:
+            error_msg = 'Is a directory'
+        with pytest.raises(OSError, match=error_msg):
             audeer.move_file(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
@@ -1322,7 +1326,7 @@ def test_move(tmpdir, src_path, dst_path):
         # src: file
         # dst: empty folder
         os.remove(os.path.join(tmp_dir, dst_path, 'file.txt'))
-        with pytest.raises(IsADirectoryError, match='Is a directory'):
+        with pytest.raises(OSError, match=error_msg):
             audeer.move_file(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
@@ -1334,7 +1338,11 @@ def test_move(tmpdir, src_path, dst_path):
         audeer.mkdir(tmp_dir, src_path)
         audeer.touch(tmp_dir, src_path, 'file.txt')
         audeer.touch(tmp_dir, dst_path)
-        with pytest.raises(NotADirectoryError, match='Not a directory'):
+        if system == 'Windows':
+            error_msg = 'Access denied'
+        else:
+            error_msg = 'Not a directory'
+        with pytest.raises(OSError, match=error_msg):
             audeer.move_file(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
@@ -1342,7 +1350,7 @@ def test_move(tmpdir, src_path, dst_path):
         # src: empty folder
         # dst: file
         os.remove(os.path.join(tmp_dir, src_path, 'file.txt'))
-        with pytest.raises(NotADirectoryError, match='Not a directory'):
+        with pytest.raises(OSError, match=error_msg):
             audeer.move_file(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
