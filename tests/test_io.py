@@ -1362,8 +1362,9 @@ def test_move(tmpdir, src_path, dst_path):
 
         # src: empty folder
         # dst: file
-        if os.path.exists(os.path.join(tmp_dir, src_path, 'file.txt')):
-            os.remove(os.path.join(tmp_dir, src_path, 'file.txt'))
+        audeer.rmdir(tmp_dir)
+        audeer.mkdir(tmp_dir, src_path)
+        audeer.touch(tmp_dir, dst_path)
         if system != 'Windows':
             error_msg = 'Not a directory'
             with pytest.raises(OSError, match=error_msg):
