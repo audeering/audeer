@@ -1192,16 +1192,19 @@ def test_move(tmpdir, src_path, dst_path):
                 os.path.join(tmp_dir, dst_path),
             )
         os.remove(os.path.join(tmp_dir, dst_path, 'file.txt'))
-    if system == 'Windows':
-        # Only under Windows
-        # we get an error
-        # if destination is an empty folder
-        with pytest.raises(OSError, match='Access is denied'):
-            audeer.move_file(
-                os.path.join(tmp_dir, src_path),
-                os.path.join(tmp_dir, dst_path),
-            )
-    else:
+        if system == 'Windows':
+            # Only under Windows
+            # we get an error
+            # if destination is an empty folder
+            with pytest.raises(OSError, match='Access is denied'):
+                audeer.move_file(
+                    os.path.join(tmp_dir, src_path),
+                    os.path.join(tmp_dir, dst_path),
+                )
+    if (
+            (src_path != dst_path and system != 'Windows')
+            or src_path == dst_path
+    ):
         audeer.move_file(
             os.path.join(tmp_dir, src_path),
             os.path.join(tmp_dir, dst_path),

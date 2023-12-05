@@ -859,8 +859,10 @@ def move(
         dst_path: destination file/folder path
 
     Raises:
-        OSError: if the destination is a non-empty folder
-        OSError: if the destination is an empty folder
+        OSError: if ``dst_path`` is a non-empty folder
+            and different from ``src_path``
+        OSError: if ``dst_path`` is an empty folder
+            and different from ``src_path``
             (raised only under Windows)
 
     Examples:
