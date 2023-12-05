@@ -1362,7 +1362,8 @@ def test_move(tmpdir, src_path, dst_path):
 
         # src: empty folder
         # dst: file
-        os.remove(os.path.join(tmp_dir, src_path, 'file.txt'))
+        if os.path.exists(os.path.join(tmp_dir, src_path, 'file.txt')):
+            os.remove(os.path.join(tmp_dir, src_path, 'file.txt'))
         if system != 'Windows':
             error_msg = 'Not a directory'
             with pytest.raises(OSError, match=error_msg):
