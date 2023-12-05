@@ -860,9 +860,8 @@ def move(
 
     Raises:
         OSError: if the destination is a non-empty folder
-        PermissionError: if a folder should be moved
-            to an already existing folder
-            under Windows
+        OSError: if the destination is an empty folder
+            (raised only under Windows)
 
     Examples:
         >>> path = mkdir('folder')
