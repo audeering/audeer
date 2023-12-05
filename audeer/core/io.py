@@ -576,12 +576,12 @@ def list_file_names(
 
     Examples:
         >>> dir_path = mkdir('path')
-        >>> _ = touch(os.path.join(dir_path, 'file.wav'))
-        >>> _ = touch(os.path.join(dir_path, 'File.wav'))
-        >>> _ = touch(os.path.join(dir_path, '.lock'))
+        >>> _ = touch(dir_path, 'file.wav')
+        >>> _ = touch(dir_path, 'File.wav')
+        >>> _ = touch(dir_path, '.lock')
         >>> sub_dir_path = mkdir('path', 'sub')
-        >>> _ = touch(os.path.join(sub_dir_path, 'file.ogg'))
-        >>> _ = touch(os.path.join(sub_dir_path, '.lock'))
+        >>> _ = touch(sub_dir_path, 'file.ogg')
+        >>> _ = touch(sub_dir_path, '.lock')
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
