@@ -1136,31 +1136,67 @@ def test_mkdir(tmpdir):
 
 
 @pytest.mark.parametrize(
-    'src_file, dst_file',
+    'src_path, dst_path',
     [
         (
-            'file1',
-            'file1',
+            'path1',
+            'path1',
         ),
         (
-            'file1',
-            'file2',
+            'path1',
+            'path2',
         ),
     ]
 )
-def test_move(tmpdir, src_file, dst_file):
+def test_move(tmpdir, src_path, dst_path):
 
-    tmp_path = str(tmpdir.mkdir('folder'))
-    tmp_path = audeer.mkdir(tmpdir, 'folder')
+    # Move file
+    tmp_dir = audeer.mkdir(tmpdir, 'files')
+    audeer.touch(tmp_dir, src_path)
+    audeer.move_file(
+        os.path.join(tmp_dir, src_path),
+        os.path.join(tmp_dir, dst_path),
+    )
 
-    src_path = audeer.touch(os.path.join(tmp_path, src_file))
-    dst_path = os.path.join(tmp_path, dst_file)
+    if src_path != dst_path:
+        assert not os.path.exists(os.path.join(tmp_dir, src_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path))
 
-    audeer.move_file(src_path, dst_path)
+    # Move folder
+    tmp_dir = audeer.mkdir(tmpdir, 'folder')
+    audeer.mkdir(tmp_dir, src_path)
+    audeer.touch(tmp_dir, src_path, 'file.txt')
+    audeer.move_file(
+        os.path.join(tmp_dir, src_path),
+        os.path.join(tmp_dir, dst_path),
+    )
 
-    if src_file != dst_file:
-        assert not os.path.exists(src_path)
-    assert os.path.exists(dst_path)
+    if src_path != dst_path:
+        assert not os.path.exists(os.path.join(tmp_dir, src_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path, 'file.txt'))
+    assert os.path.isdir(os.path.join(tmp_dir, dst_path))
+
+    # Already existing folder
+    audeer.mkdir(tmp_dir, src_path)
+    audeer.touch(tmp_dir, src_path, 'file.txt')
+    if src_path != dst_path:
+        with pytest.raises(OSError, match='Directory not empty'):
+            audeer.move_file(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+        os.remove(os.path.join(tmp_dir, dst_path, 'file.txt'))
+    audeer.move_file(
+        os.path.join(tmp_dir, src_path),
+        os.path.join(tmp_dir, dst_path),
+    )
+
+    if src_path != dst_path:
+        assert not os.path.exists(os.path.join(tmp_dir, src_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path, 'file.txt'))
+    assert os.path.isdir(os.path.join(tmp_dir, dst_path))
 
 
 @pytest.mark.parametrize(
@@ -1178,8 +1214,7 @@ def test_move(tmpdir, src_file, dst_file):
 )
 def test_move_file(tmpdir, src_file, dst_file):
 
-    tmp_path = str(tmpdir.mkdir('folder'))
-    tmp_path = audeer.mkdir(tmp_path)
+    tmp_path = audeer.mkdir(tmpdir, 'folder')
 
     src_path = audeer.touch(tmp_path, src_file)
     dst_path = os.path.join(tmp_path, dst_file)

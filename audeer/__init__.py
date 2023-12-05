@@ -10,6 +10,7 @@ from audeer.core.io import list_dir_names
 from audeer.core.io import list_file_names
 from audeer.core.io import md5
 from audeer.core.io import mkdir
+from audeer.core.io import move
 from audeer.core.io import move_file
 from audeer.core.io import replace_file_extension
 from audeer.core.io import rmdir
