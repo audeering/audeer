@@ -1178,10 +1178,10 @@ def test_move(tmpdir, src_path, dst_path):
     assert os.path.isdir(os.path.join(tmp_dir, dst_path))
 
     # Already existing folder
+    system = platform.system()
     audeer.mkdir(tmp_dir, src_path)
     audeer.touch(tmp_dir, src_path, 'file.txt')
     if src_path != dst_path:
-        system = platform.system()
         if system == 'Windows':
             error_msg = 'Access is denied'
         else:
@@ -1192,10 +1192,20 @@ def test_move(tmpdir, src_path, dst_path):
                 os.path.join(tmp_dir, dst_path),
             )
         os.remove(os.path.join(tmp_dir, dst_path, 'file.txt'))
-    audeer.move_file(
-        os.path.join(tmp_dir, src_path),
-        os.path.join(tmp_dir, dst_path),
-    )
+    if system == 'Windows':
+        # Only under Windows
+        # we get an error
+        # if destination is an empty folder
+        with pytest.raises(OSError, match='Access is denied'):
+            audeer.move_file(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+    else:
+        audeer.move_file(
+            os.path.join(tmp_dir, src_path),
+            os.path.join(tmp_dir, dst_path),
+        )
 
     if src_path != dst_path:
         assert not os.path.exists(os.path.join(tmp_dir, src_path))
