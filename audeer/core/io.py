@@ -969,7 +969,8 @@ def rmdir(
 
 
 def touch(
-        path: typing.Union[str, bytes]
+        path: typing.Union[str, bytes],
+        *paths: typing.Sequence[typing.Union[str, bytes]],
 ) -> str:
     """Create an empty file.
 
@@ -979,6 +980,9 @@ def touch(
 
     Args:
         path: path to file
+        *paths: additional arguments
+            to be joined with ``path``
+            by :func:`os.path.join`
 
     Returns:
         expanded path to file
@@ -989,7 +993,7 @@ def touch(
         'file.txt'
 
     """
-    path = safe_path(path)
+    path = safe_path(path, *paths)
     if os.path.exists(path):
         os.utime(path, None)
     else:
