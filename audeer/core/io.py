@@ -852,11 +852,11 @@ def move(
     under Unix and Windows
     and :func:`shutil.move` can be slow,
     we use :func:`os.replace`
-    to move the file.
+    to move the file/folder.
 
     Args:
-        src_path: source file path
-        dst_path: destination file path
+        src_path: source file/folder path
+        dst_path: destination file/folder path
 
     Raises:
         OSError: if the destination is a non-empty folder
@@ -887,6 +887,10 @@ def move_file(
     and :func:`shutil.move` can be slow,
     we use :func:`os.replace`
     to move the file.
+
+    Warning:
+        :func:`audeer.move_file` is deprecated,
+        please use :func:`audeer.move` instead.
 
     Args:
         src_path: source file path
