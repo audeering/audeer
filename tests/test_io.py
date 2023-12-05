@@ -1315,7 +1315,7 @@ def test_move(tmpdir, src_path, dst_path):
         audeer.mkdir(tmp_dir, dst_path)
         audeer.touch(tmp_dir, dst_path, 'file.txt')
         if system == 'Windows':
-            error_msg = 'Access denied'
+            error_msg = 'Access is denied'
         else:
             error_msg = 'Is a directory'
         with pytest.raises(OSError, match=error_msg):
@@ -1339,7 +1339,7 @@ def test_move(tmpdir, src_path, dst_path):
         audeer.touch(tmp_dir, src_path, 'file.txt')
         audeer.touch(tmp_dir, dst_path)
         if system == 'Windows':
-            error_msg = 'Access denied'
+            error_msg = 'Access is denied'
         else:
             error_msg = 'Not a directory'
         with pytest.raises(OSError, match=error_msg):
