@@ -505,7 +505,7 @@ def test_list_dir_names(tmpdir, dir_list, expected, recursive, hidden):
 
 def test_list_dir_names_errors(tmpdir):
     with pytest.raises(NotADirectoryError):
-        file = audeer.touch(audeer.path(tmpdir, 'file.txt'))
+        file = audeer.touch(tmpdir, 'file.txt')
         audeer.list_dir_names(file)
     with pytest.raises(FileNotFoundError):
         audeer.list_dir_names('not-existent')
@@ -1153,7 +1153,7 @@ def test_move_file(tmpdir, src_file, dst_file):
     tmp_path = str(tmpdir.mkdir('folder'))
     tmp_path = audeer.mkdir(tmp_path)
 
-    src_path = audeer.touch(os.path.join(tmp_path, src_file))
+    src_path = audeer.touch(tmp_path, src_file)
     dst_path = os.path.join(tmp_path, dst_file)
 
     audeer.move_file(src_path, dst_path)
@@ -1220,8 +1220,7 @@ def test_rmdir(tmpdir):
 
 
 def test_touch(tmpdir):
-    path = str(tmpdir.mkdir('folder1'))
-    path = audeer.mkdir(path)
+    path = audeer.mkdir(tmpdir, 'folder1')
     path = os.path.join(path, 'file')
     assert not os.path.exists(path)
     audeer.touch(path)

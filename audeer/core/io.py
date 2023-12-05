@@ -576,12 +576,12 @@ def list_file_names(
 
     Examples:
         >>> dir_path = mkdir('path')
-        >>> _ = touch(os.path.join(dir_path, 'file.wav'))
-        >>> _ = touch(os.path.join(dir_path, 'File.wav'))
-        >>> _ = touch(os.path.join(dir_path, '.lock'))
+        >>> _ = touch(dir_path, 'file.wav')
+        >>> _ = touch(dir_path, 'File.wav')
+        >>> _ = touch(dir_path, '.lock')
         >>> sub_dir_path = mkdir('path', 'sub')
-        >>> _ = touch(os.path.join(sub_dir_path, 'file.ogg'))
-        >>> _ = touch(os.path.join(sub_dir_path, '.lock'))
+        >>> _ = touch(sub_dir_path, 'file.ogg')
+        >>> _ = touch(sub_dir_path, '.lock')
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
@@ -860,7 +860,7 @@ def move_file(
 
     Examples:
         >>> path = mkdir('folder')
-        >>> src_path = touch(os.path.join(path, 'file1'))
+        >>> src_path = touch(path, 'file1')
         >>> dst_path = os.path.join(path, 'file2')
         >>> move_file(src_path, dst_path)
         >>> list_file_names(path, basenames=True)
@@ -969,7 +969,8 @@ def rmdir(
 
 
 def touch(
-        path: typing.Union[str, bytes]
+        path: typing.Union[str, bytes],
+        *paths: typing.Sequence[typing.Union[str, bytes]],
 ) -> str:
     """Create an empty file.
 
@@ -979,6 +980,9 @@ def touch(
 
     Args:
         path: path to file
+        *paths: additional arguments
+            to be joined with ``path``
+            by :func:`os.path.join`
 
     Returns:
         expanded path to file
@@ -989,7 +993,7 @@ def touch(
         'file.txt'
 
     """
-    path = safe_path(path)
+    path = safe_path(path, *paths)
     if os.path.exists(path):
         os.utime(path, None)
     else:
