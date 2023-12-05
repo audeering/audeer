@@ -859,11 +859,17 @@ def move(
         dst_path: destination file/folder path
 
     Raises:
-        OSError: if ``dst_path`` is a non-empty folder
+        OSError: if ``dst_path`` is a non-empty folder,
             and different from ``src_path``
+            and ``src_path`` is also a folder
         OSError: if ``dst_path`` is an empty folder
             and different from ``src_path``
+            and ``src_path`` is also a folder
             (raised only under Windows)
+        IsADirectoryError: if ``src_path`` is a file
+            and ``dst_path`` is an existing folder
+        NotADirectory: if ``src_path`` is a folder
+            and ``dst_path`` is an existing file
 
     Examples:
         >>> path = mkdir('folder')
