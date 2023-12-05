@@ -863,6 +863,7 @@ def move(
             and ``dst_path`` is an existing folder
         OSError: if ``src_path`` is a folder
             and ``dst_path`` is an existing file
+            (not raised under Windows)
         OSError: if ``dst_path`` is a non-empty folder,
             different from ``src_path``,
             and ``src_path`` is also a folder
