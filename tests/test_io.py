@@ -1136,6 +1136,256 @@ def test_mkdir(tmpdir):
 
 
 @pytest.mark.parametrize(
+    'src_path, dst_path',
+    [
+        (
+            'path1',
+            'path1',
+        ),
+        (
+            'path1',
+            'path2',
+        ),
+    ]
+)
+def test_move(tmpdir, src_path, dst_path):
+
+    system = platform.system()
+    tmp_dir = audeer.mkdir(tmpdir, 'folder')
+
+    # src: file
+    # dst: new file
+    audeer.touch(tmp_dir, src_path)
+    audeer.move(
+        os.path.join(tmp_dir, src_path),
+        os.path.join(tmp_dir, dst_path),
+    )
+    if src_path != dst_path:
+        assert not os.path.exists(os.path.join(tmp_dir, src_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path))
+
+    # src: file
+    # dst: existing file
+    audeer.rmdir(tmp_dir)
+    audeer.mkdir(tmp_dir)
+    audeer.touch(tmp_dir, src_path)
+    audeer.touch(tmp_dir, dst_path)
+    audeer.move(
+        os.path.join(tmp_dir, src_path),
+        os.path.join(tmp_dir, dst_path),
+    )
+    if src_path != dst_path:
+        assert not os.path.exists(os.path.join(tmp_dir, src_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path))
+
+    # src: folder
+    # dst: new folder
+    audeer.rmdir(tmp_dir)
+    audeer.mkdir(tmp_dir, src_path)
+    audeer.touch(tmp_dir, src_path, 'file.txt')
+    audeer.move(
+        os.path.join(tmp_dir, src_path),
+        os.path.join(tmp_dir, dst_path),
+    )
+    if src_path != dst_path:
+        assert not os.path.exists(os.path.join(tmp_dir, src_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path))
+    assert os.path.exists(os.path.join(tmp_dir, dst_path, 'file.txt'))
+    assert os.path.isdir(os.path.join(tmp_dir, dst_path))
+
+    # src: non-empty folder
+    # dst: existing non-empty folder
+    audeer.rmdir(tmp_dir)
+    audeer.mkdir(tmp_dir, src_path)
+    audeer.touch(tmp_dir, src_path, 'file.txt')
+    if src_path != dst_path:
+        audeer.mkdir(tmp_dir, dst_path)
+        audeer.touch(tmp_dir, dst_path, 'file.txt')
+    if src_path != dst_path:
+        if system == 'Windows':
+            error_msg = 'Access is denied'
+        else:
+            error_msg = 'Directory not empty'
+        with pytest.raises(OSError, match=error_msg):
+            audeer.move(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+
+        # src: non-empty folder
+        # dst: existing empty folder
+        os.remove(os.path.join(tmp_dir, dst_path, 'file.txt'))
+        if system == 'Windows':
+            # Only under Windows
+            # we get an error
+            # if destination is an empty folder
+            with pytest.raises(OSError, match='Access is denied'):
+                audeer.move(
+                    os.path.join(tmp_dir, src_path),
+                    os.path.join(tmp_dir, dst_path),
+                )
+        else:
+            audeer.move(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+
+            if src_path != dst_path:
+                assert not os.path.exists(os.path.join(tmp_dir, src_path))
+            assert os.path.exists(os.path.join(tmp_dir, dst_path))
+            assert os.path.exists(os.path.join(tmp_dir, dst_path, 'file.txt'))
+            assert os.path.isdir(os.path.join(tmp_dir, dst_path))
+
+    # src: non-empty folder
+    # dst: identical to src
+    if src_path == dst_path:
+        audeer.move(
+            os.path.join(tmp_dir, src_path),
+            os.path.join(tmp_dir, dst_path),
+        )
+
+        if src_path != dst_path:
+            assert not os.path.exists(os.path.join(tmp_dir, src_path))
+        assert os.path.exists(os.path.join(tmp_dir, dst_path))
+        assert os.path.exists(os.path.join(tmp_dir, dst_path, 'file.txt'))
+        assert os.path.isdir(os.path.join(tmp_dir, dst_path))
+
+    # src: empty folder
+    # dst: existing non-empty folder
+    audeer.rmdir(tmp_dir)
+    audeer.mkdir(tmp_dir, src_path)
+    if src_path != dst_path:
+        audeer.mkdir(tmp_dir, dst_path)
+        audeer.touch(tmp_dir, dst_path, 'file.txt')
+    if src_path != dst_path:
+        if system == 'Windows':
+            error_msg = 'Access is denied'
+        else:
+            error_msg = 'Directory not empty'
+        with pytest.raises(OSError, match=error_msg):
+            audeer.move(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+
+        # src: empty folder
+        # dst: existing empty folder
+        os.remove(os.path.join(tmp_dir, dst_path, 'file.txt'))
+        if system == 'Windows':
+            # Only under Windows
+            # we get an error
+            # if destination is an empty folder
+            with pytest.raises(OSError, match='Access is denied'):
+                audeer.move(
+                    os.path.join(tmp_dir, src_path),
+                    os.path.join(tmp_dir, dst_path),
+                )
+        else:
+            audeer.move(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+
+            if src_path != dst_path:
+                assert not os.path.exists(os.path.join(tmp_dir, src_path))
+            assert os.path.exists(os.path.join(tmp_dir, dst_path))
+            assert not os.path.exists(
+                os.path.join(tmp_dir, dst_path, 'file.txt')
+            )
+            assert os.path.isdir(os.path.join(tmp_dir, dst_path))
+
+    # src: empty folder
+    # dst: identical to src
+    if src_path == dst_path:
+        audeer.move(
+            os.path.join(tmp_dir, src_path),
+            os.path.join(tmp_dir, dst_path),
+        )
+
+        if src_path != dst_path:
+            assert not os.path.exists(os.path.join(tmp_dir, src_path))
+        assert os.path.exists(os.path.join(tmp_dir, dst_path))
+        assert not os.path.exists(os.path.join(tmp_dir, dst_path, 'file.txt'))
+        assert os.path.isdir(os.path.join(tmp_dir, dst_path))
+
+    if src_path != dst_path:
+
+        # src: file
+        # dst: non-empty folder
+        audeer.rmdir(tmp_dir)
+        audeer.mkdir(tmp_dir)
+        audeer.touch(tmp_dir, src_path)
+        audeer.mkdir(tmp_dir, dst_path)
+        audeer.touch(tmp_dir, dst_path, 'file.txt')
+        if system == 'Windows':
+            error_msg = 'Access is denied'
+        else:
+            error_msg = 'Is a directory'
+        with pytest.raises(OSError, match=error_msg):
+            audeer.move(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+
+        # src: file
+        # dst: empty folder
+        os.remove(os.path.join(tmp_dir, dst_path, 'file.txt'))
+        with pytest.raises(OSError, match=error_msg):
+            audeer.move(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+
+        # src: non-empty folder
+        # dst: file
+        audeer.rmdir(tmp_dir)
+        audeer.mkdir(tmp_dir)
+        audeer.mkdir(tmp_dir, src_path)
+        audeer.touch(tmp_dir, src_path, 'file.txt')
+        audeer.touch(tmp_dir, dst_path)
+        if system != 'Windows':
+            error_msg = 'Not a directory'
+            with pytest.raises(OSError, match=error_msg):
+                audeer.move(
+                    os.path.join(tmp_dir, src_path),
+                    os.path.join(tmp_dir, dst_path),
+                )
+        else:
+            audeer.move(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+            assert not os.path.exists(os.path.join(tmp_dir, src_path))
+            assert os.path.exists(os.path.join(tmp_dir, dst_path))
+            assert os.path.exists(os.path.join(tmp_dir, dst_path, 'file.txt'))
+            assert os.path.isdir(os.path.join(tmp_dir, dst_path))
+
+        # src: empty folder
+        # dst: file
+        audeer.rmdir(tmp_dir)
+        audeer.mkdir(tmp_dir, src_path)
+        audeer.touch(tmp_dir, dst_path)
+        if system != 'Windows':
+            error_msg = 'Not a directory'
+            with pytest.raises(OSError, match=error_msg):
+                audeer.move(
+                    os.path.join(tmp_dir, src_path),
+                    os.path.join(tmp_dir, dst_path),
+                )
+        else:
+            audeer.move(
+                os.path.join(tmp_dir, src_path),
+                os.path.join(tmp_dir, dst_path),
+            )
+            assert not os.path.exists(os.path.join(tmp_dir, src_path))
+            assert os.path.exists(os.path.join(tmp_dir, dst_path))
+            assert not os.path.exists(
+                os.path.join(tmp_dir, dst_path, 'file.txt')
+            )
+            assert os.path.isdir(os.path.join(tmp_dir, dst_path))
+
+
+@pytest.mark.parametrize(
     'src_file, dst_file',
     [
         (
@@ -1150,8 +1400,7 @@ def test_mkdir(tmpdir):
 )
 def test_move_file(tmpdir, src_file, dst_file):
 
-    tmp_path = str(tmpdir.mkdir('folder'))
-    tmp_path = audeer.mkdir(tmp_path)
+    tmp_path = audeer.mkdir(tmpdir, 'folder')
 
     src_path = audeer.touch(tmp_path, src_file)
     dst_path = os.path.join(tmp_path, dst_file)

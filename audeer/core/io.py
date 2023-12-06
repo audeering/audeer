@@ -842,6 +842,48 @@ def md5_read_chunk(
         yield data
 
 
+def move(
+        src_path,
+        dst_path,
+):
+    """Move a file or folder independent of operating system.
+
+    As :func:`os.rename` works differently
+    under Unix and Windows
+    and :func:`shutil.move` can be slow,
+    we use :func:`os.replace`
+    to move the file/folder.
+
+    Args:
+        src_path: source file/folder path
+        dst_path: destination file/folder path
+
+    Raises:
+        OSError: if ``src_path`` is a file
+            and ``dst_path`` is an existing folder
+        OSError: if ``src_path`` is a folder
+            and ``dst_path`` is an existing file
+            (not raised under Windows)
+        OSError: if ``dst_path`` is a non-empty folder,
+            different from ``src_path``,
+            and ``src_path`` is also a folder
+        OSError: if ``dst_path`` is an empty folder,
+            different from ``src_path``
+            and ``src_path`` is also a folder
+            (raised only under Windows)
+
+    Examples:
+        >>> path = mkdir('folder')
+        >>> src_path = touch(path, 'file1')
+        >>> dst_path = os.path.join(path, 'file2')
+        >>> move(src_path, dst_path)
+        >>> list_file_names(path, basenames=True)
+        ['file2']
+
+    """
+    os.replace(src_path, dst_path)
+
+
 def move_file(
         src_path,
         dst_path,
@@ -853,6 +895,10 @@ def move_file(
     and :func:`shutil.move` can be slow,
     we use :func:`os.replace`
     to move the file.
+
+    Warning:
+        :func:`audeer.move_file` is deprecated,
+        please use :func:`audeer.move` instead.
 
     Args:
         src_path: source file path
@@ -867,7 +913,7 @@ def move_file(
         ['file2']
 
     """
-    os.replace(src_path, dst_path)
+    move(src_path, dst_path)
 
 
 def replace_file_extension(
