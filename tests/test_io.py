@@ -1156,7 +1156,7 @@ def test_move(tmpdir, src_path, dst_path):
     # src: file
     # dst: new file
     audeer.touch(tmp_dir, src_path)
-    audeer.move_file(
+    audeer.move(
         os.path.join(tmp_dir, src_path),
         os.path.join(tmp_dir, dst_path),
     )
@@ -1170,7 +1170,7 @@ def test_move(tmpdir, src_path, dst_path):
     audeer.mkdir(tmp_dir)
     audeer.touch(tmp_dir, src_path)
     audeer.touch(tmp_dir, dst_path)
-    audeer.move_file(
+    audeer.move(
         os.path.join(tmp_dir, src_path),
         os.path.join(tmp_dir, dst_path),
     )
@@ -1183,7 +1183,7 @@ def test_move(tmpdir, src_path, dst_path):
     audeer.rmdir(tmp_dir)
     audeer.mkdir(tmp_dir, src_path)
     audeer.touch(tmp_dir, src_path, 'file.txt')
-    audeer.move_file(
+    audeer.move(
         os.path.join(tmp_dir, src_path),
         os.path.join(tmp_dir, dst_path),
     )
@@ -1207,7 +1207,7 @@ def test_move(tmpdir, src_path, dst_path):
         else:
             error_msg = 'Directory not empty'
         with pytest.raises(OSError, match=error_msg):
-            audeer.move_file(
+            audeer.move(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
             )
@@ -1220,12 +1220,12 @@ def test_move(tmpdir, src_path, dst_path):
             # we get an error
             # if destination is an empty folder
             with pytest.raises(OSError, match='Access is denied'):
-                audeer.move_file(
+                audeer.move(
                     os.path.join(tmp_dir, src_path),
                     os.path.join(tmp_dir, dst_path),
                 )
         else:
-            audeer.move_file(
+            audeer.move(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
             )
@@ -1239,7 +1239,7 @@ def test_move(tmpdir, src_path, dst_path):
     # src: non-empty folder
     # dst: identical to src
     if src_path == dst_path:
-        audeer.move_file(
+        audeer.move(
             os.path.join(tmp_dir, src_path),
             os.path.join(tmp_dir, dst_path),
         )
@@ -1263,7 +1263,7 @@ def test_move(tmpdir, src_path, dst_path):
         else:
             error_msg = 'Directory not empty'
         with pytest.raises(OSError, match=error_msg):
-            audeer.move_file(
+            audeer.move(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
             )
@@ -1276,12 +1276,12 @@ def test_move(tmpdir, src_path, dst_path):
             # we get an error
             # if destination is an empty folder
             with pytest.raises(OSError, match='Access is denied'):
-                audeer.move_file(
+                audeer.move(
                     os.path.join(tmp_dir, src_path),
                     os.path.join(tmp_dir, dst_path),
                 )
         else:
-            audeer.move_file(
+            audeer.move(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
             )
@@ -1297,7 +1297,7 @@ def test_move(tmpdir, src_path, dst_path):
     # src: empty folder
     # dst: identical to src
     if src_path == dst_path:
-        audeer.move_file(
+        audeer.move(
             os.path.join(tmp_dir, src_path),
             os.path.join(tmp_dir, dst_path),
         )
@@ -1322,7 +1322,7 @@ def test_move(tmpdir, src_path, dst_path):
         else:
             error_msg = 'Is a directory'
         with pytest.raises(OSError, match=error_msg):
-            audeer.move_file(
+            audeer.move(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
             )
@@ -1331,7 +1331,7 @@ def test_move(tmpdir, src_path, dst_path):
         # dst: empty folder
         os.remove(os.path.join(tmp_dir, dst_path, 'file.txt'))
         with pytest.raises(OSError, match=error_msg):
-            audeer.move_file(
+            audeer.move(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
             )
@@ -1346,12 +1346,12 @@ def test_move(tmpdir, src_path, dst_path):
         if system != 'Windows':
             error_msg = 'Not a directory'
             with pytest.raises(OSError, match=error_msg):
-                audeer.move_file(
+                audeer.move(
                     os.path.join(tmp_dir, src_path),
                     os.path.join(tmp_dir, dst_path),
                 )
         else:
-            audeer.move_file(
+            audeer.move(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
             )
@@ -1368,12 +1368,12 @@ def test_move(tmpdir, src_path, dst_path):
         if system != 'Windows':
             error_msg = 'Not a directory'
             with pytest.raises(OSError, match=error_msg):
-                audeer.move_file(
+                audeer.move(
                     os.path.join(tmp_dir, src_path),
                     os.path.join(tmp_dir, dst_path),
                 )
         else:
-            audeer.move_file(
+            audeer.move(
                 os.path.join(tmp_dir, src_path),
                 os.path.join(tmp_dir, dst_path),
             )
