@@ -7,6 +7,20 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 1.21.0 (2023-12-06)
+---------------------------
+
+* Added: ``audeer.move()``
+  which can move files and folders
+  and should be used instead of ``audeer.move_file()``
+* Added: ``*paths`` argument to
+  ``audeer.mkdir()``,
+  ``audeer.rmdir()``,
+  and ``audeer.touch()``.
+  Instead of writing ``audeer.mkdir(os.path.join('a', 'b'))``,
+  you can now write ``audeer.mkdir('a', 'b')``
+
+
 Version 1.20.2 (2023-11-28)
 ---------------------------
 
