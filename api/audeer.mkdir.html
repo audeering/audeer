@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="move_file()" href="audeer.move_file.html" />
+    <link rel="next" title="move()" href="audeer.move.html" />
     <link rel="prev" title="md5()" href="audeer.md5.html" />
     
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.20.2
+                v1.21.0
               </div>
             
           
@@ -121,6 +121,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mkdir()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.move.html">move()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.move_file.html">move_file()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.path.html">path()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.progress_bar.html">progress_bar()</a></li>
@@ -182,7 +183,7 @@
 <h1>mkdir()<a class="headerlink" href="#mkdir" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.mkdir">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">mkdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">511</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#mkdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.mkdir" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">mkdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">511</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#mkdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create directory.</p>
 <p>Create a directory at the provided path
 and return the absolute path to the generated directory.
@@ -203,6 +204,9 @@ explicitly to set them.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – absolute or relative path of directory to create</p></li>
+<li><p><strong>*paths</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]]) – additional arguments
+to be joined with <code class="docutils literal notranslate"><span class="pre">path</span></code>
+by <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.join" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.join()</span></code></a></p></li>
 <li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – set permissions of created folders</p></li>
 </ul>
 </dd>
@@ -214,7 +218,7 @@ explicitly to set them.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1/path2/path3&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">,</span> <span class="s1">&#39;path2&#39;</span><span class="p">,</span> <span class="s1">&#39;path3&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 <span class="go">&#39;path3&#39;</span>
 </pre></div>
@@ -231,7 +235,7 @@ explicitly to set them.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="audeer.move_file.html" class="btn btn-neutral float-right" title="move_file()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="audeer.move.html" class="btn btn-neutral float-right" title="move()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="audeer.md5.html" class="btn btn-neutral float-left" title="md5()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -246,7 +250,7 @@ explicitly to set them.</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/11/28 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

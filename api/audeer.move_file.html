@@ -32,7 +32,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="path()" href="audeer.path.html" />
-    <link rel="prev" title="mkdir()" href="audeer.mkdir.html" />
+    <link rel="prev" title="move()" href="audeer.move.html" />
     
   
 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.20.2
+                v1.21.0
               </div>
             
           
@@ -121,6 +121,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.mkdir.html">mkdir()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.move.html">move()</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">move_file()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.path.html">path()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.progress_bar.html">progress_bar()</a></li>
@@ -189,6 +190,11 @@ under Unix and Windows
 and <a class="reference external" href="https://docs.python.org/3/library/shutil.html#shutil.move" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">shutil.move()</span></code></a> can be slow,
 we use <a class="reference external" href="https://docs.python.org/3/library/os.html#os.replace" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.replace()</span></code></a>
 to move the file.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a class="reference internal" href="#audeer.move_file" title="audeer.move_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.move_file()</span></code></a> is deprecated,
+please use <a class="reference internal" href="audeer.move.html#audeer.move" title="audeer.move"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.move()</span></code></a> instead.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -199,7 +205,7 @@ to move the file.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;folder&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">src_path</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file1&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_path</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file1&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dst_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">move_file</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -221,7 +227,7 @@ to move the file.</p>
         <a href="audeer.path.html" class="btn btn-neutral float-right" title="path()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="audeer.mkdir.html" class="btn btn-neutral float-left" title="mkdir()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="audeer.move.html" class="btn btn-neutral float-left" title="move()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -233,7 +239,7 @@ to move the file.</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/11/28 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

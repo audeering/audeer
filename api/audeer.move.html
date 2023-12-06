@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>md5() &mdash; audeer Documentation</title>
+  <title>move() &mdash; audeer Documentation</title>
   
 
   
@@ -31,8 +31,8 @@
   <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mkdir()" href="audeer.mkdir.html" />
-    <link rel="prev" title="LooseVersion" href="audeer.LooseVersion.html" />
+    <link rel="next" title="move_file()" href="audeer.move_file.html" />
+    <link rel="prev" title="mkdir()" href="audeer.mkdir.html" />
     
   
 
@@ -119,9 +119,9 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_file_names.html">list_file_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">md5()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.mkdir.html">mkdir()</a></li>
-<li class="toctree-l2"><a class="reference internal" href="audeer.move.html">move()</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">move()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.move_file.html">move_file()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.path.html">path()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.progress_bar.html">progress_bar()</a></li>
@@ -169,7 +169,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="audeer.html">audeer</a> &raquo;</li>
-      <li>md5()</li>
+      <li>move()</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/audeering/audeer/" class="fa fa-github"> GitHub</a>
       </li>
@@ -179,47 +179,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="md5">
-<h1>md5()<a class="headerlink" href="#md5" title="Permalink to this heading">¶</a></h1>
+  <div class="section" id="move">
+<h1>move()<a class="headerlink" href="#move" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="audeer.md5">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">md5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8192</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#md5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.md5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate MD5 checksum of file or folder.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">path</span></code> is a folder,
-the checksum is calculated
-from all files in the folder
-(including hidden files).
-The checksum also encodes
-the (relative) file names,
-so that renaming files
-results in a different checksum.
-However,
-the calculation is independent of
-file separator of the operation systems.
-Empty folders are ignored.</p>
+<dt class="sig sig-object py" id="audeer.move">
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move a file or folder independent of operating system.</p>
+<p>As <a class="reference external" href="https://docs.python.org/3/library/os.html#os.rename" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.rename()</span></code></a> works differently
+under Unix and Windows
+and <a class="reference external" href="https://docs.python.org/3/library/shutil.html#shutil.move" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">shutil.move()</span></code></a> can be slow,
+we use <a class="reference external" href="https://docs.python.org/3/library/os.html#os.replace" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.replace()</span></code></a>
+to move the file/folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – path to file or folder</p></li>
-<li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – chunk size in number of bytes</p></li>
+<li><p><strong>src_path</strong> – source file/folder path</p></li>
+<li><p><strong>dst_path</strong> – destination file/folder path</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>checksum</p>
-</dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.12)"><strong>FileNotFoundError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">path</span></code> does not exist</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is a file
+    and <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is an existing folder</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is a folder
+    and <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is an existing file
+    (not raised under Windows)</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is a non-empty folder,
+    different from <code class="docutils literal notranslate"><span class="pre">src_path</span></code>,
+    and <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is also a folder</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is an empty folder,
+    different from <code class="docutils literal notranslate"><span class="pre">src_path</span></code>
+    and <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is also a folder
+    (raised only under Windows)</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="s1">&#39;file.txt&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">md5</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-<span class="go">&#39;d41d8cd98f00b204e9800998ecf8427e&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">md5</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-<span class="go">&#39;3d8e577bddb17db339eae0b3d9bcf180&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;folder&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_path</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dst_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;file2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">move</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;file2&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -234,10 +235,10 @@ Empty folders are ignored.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="audeer.mkdir.html" class="btn btn-neutral float-right" title="mkdir()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="audeer.move_file.html" class="btn btn-neutral float-right" title="move_file()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="audeer.LooseVersion.html" class="btn btn-neutral float-left" title="LooseVersion" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="audeer.mkdir.html" class="btn btn-neutral float-left" title="mkdir()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

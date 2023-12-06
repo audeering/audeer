@@ -1,0 +1,6 @@
+﻿move\(\)
+========
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.move
