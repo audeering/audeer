@@ -874,7 +874,7 @@ def move(
 
     Examples:
         >>> path = mkdir('folder')
-        >>> src_path = touch(os.path.join(path, 'file1'))
+        >>> src_path = touch(path, 'file1')
         >>> dst_path = os.path.join(path, 'file2')
         >>> move(src_path, dst_path)
         >>> list_file_names(path, basenames=True)
