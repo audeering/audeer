@@ -1,5 +1,5 @@
 sphinx >=3.0.0
-sphinx-apipages
+sphinx-apipages >=0.1.2
 sphinx-audeering-theme >=1.1.4
 sphinx_autodoc_typehints
 sphinx-copybutton
