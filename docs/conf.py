@@ -39,6 +39,17 @@ copybutton_prompt_is_regexp = True
 autodoc_default_options = {
     'undoc-members': False,
 }
+apipages_hidden_methods = [
+    '__call__',
+    '__eq__',
+    '__lt__',
+    '__le__',
+    '__gt__',
+    '__ge__',
+    '__repr__',
+    '__str__',
+]
+
 
 # HTML --------------------------------------------------------------------
 html_theme = 'sphinx_audeering_theme'
