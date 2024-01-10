@@ -1,6 +1,3 @@
-import os
-import shutil
-
 import audeer
 
 
@@ -21,16 +18,14 @@ exclude_patterns = [
     '.DS_Store',
     'api-src',
 ]
-templates_path = ['_templates']
 pygments_style = None
 extensions = [
-    'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',  # support for Google-style docstrings
-    'sphinx.ext.autosummary',
     'sphinx_autodoc_typehints',
     'sphinx_copybutton',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
+    'sphinx_apipages',
 ]
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
@@ -44,10 +39,16 @@ copybutton_prompt_is_regexp = True
 autodoc_default_options = {
     'undoc-members': False,
 }
-
-# Disable auto-generation of TOC entries in the API
-# https://github.com/sphinx-doc/sphinx/issues/6316
-toc_object_entries = False
+apipages_hidden_methods = [
+    '__call__',
+    '__eq__',
+    '__lt__',
+    '__le__',
+    '__gt__',
+    '__ge__',
+    '__repr__',
+    '__str__',
+]
 
 
 # HTML --------------------------------------------------------------------
@@ -61,15 +62,3 @@ html_context = {
     'display_github': True,
 }
 html_title = title
-
-
-# Copy API (sub-)module RST files to docs/api/ folder ---------------------
-audeer.rmdir('api')
-audeer.mkdir('api')
-api_src_files = audeer.list_file_names('api-src')
-api_dst_files = [
-    audeer.path('api', os.path.basename(src_file))
-    for src_file in api_src_files
-]
-for src_file, dst_file in zip(api_src_files, api_dst_files):
-    shutil.copyfile(src_file, dst_file)
