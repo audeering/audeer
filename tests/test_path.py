@@ -60,8 +60,12 @@ def test_path_symlinks(tmpdir):
     file = os.path.join(folder, filename)
     link = os.path.join(folder, linkname)
     os.symlink(file, link)
-    expected_path = os.path.realpath(os.path.expanduser(link))
-    path = audeer.path(link)
+    for follow_symlink in [True, False]:
+        if follow_symlink:
+            expected_path = os.path.realpath(os.path.expanduser(link))
+        else:
+            expected_path = os.path.abspath(os.path.expanduser(link))
+        path = audeer.path(link, follow_symlink=follow_symlink)
     _, path = os.path.splitdrive(path)
     _, expected_path = os.path.splitdrive(expected_path)
     assert path == expected_path

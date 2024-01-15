@@ -17,6 +17,7 @@ if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
 def path(
         path: typing.Union[str, bytes],
         *paths: typing.Sequence[typing.Union[str, bytes]],
+        follow_symlink: bool = True,
 ) -> str:
     """Expand and normalize to absolute path.
 
@@ -26,12 +27,19 @@ def path(
     without ``..`` or ``~``,
     and independent of the path separator
     of the operating system.
+    If ``follow_symlink`` is ``False``,
+    the faster :func:`os.path.abspath` is used
+    instead of :func:`os.path.realpath`.
 
     Args:
         path: path to file, directory
         *paths: additional arguments
             to be joined with ``path``
             by :func:`os.path.join`
+        follow_symlink: if ``True``
+            symlinks are followed
+            and the path of the original file
+            is returned
 
     Returns:
         (joined and) expanded path
@@ -44,12 +52,25 @@ def path(
         >>> file = path('~/path/.././path', './file.txt')
         >>> file[len(home) + 1:]
         'path/file.txt'
+        >>> file = audeer.touch('file.txt')
+        >>> link = path('link.txt')
+        >>> os.symlink(file, link)
+        >>> file = path(link)
+        >>> os.path.basename(file)
+        'file.txt'
+        >>> file = path(link, follow_symlink=False)
+        >>> os.path.basename(file)
+        'link.txt'
 
     """
     if paths:
         path = os.path.join(path, *paths)
     if path:
-        path = os.path.realpath(os.path.expanduser(path))
+        path = os.path.expanduser(path)
+        if follow_symlink:
+            path = os.path.realpath(path)
+        else:
+            path = os.path.abspath(path)
         # Convert bytes to str, see https://stackoverflow.com/a/606199
         if type(path) == bytes:
             path = path.decode('utf-8').strip('\x00')
