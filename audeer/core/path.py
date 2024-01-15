@@ -85,6 +85,7 @@ _path = path
 def safe_path(
         path: typing.Union[str, bytes],
         *paths: typing.Sequence[typing.Union[str, bytes]],
+        follow_symlink: bool = True,
 ) -> str:
     """Expand and normalize to absolute path.
 
@@ -94,6 +95,9 @@ def safe_path(
     without ``..`` or ``~``,
     and independent of the path separator
     of the operating system.
+    If ``follow_symlink`` is ``False``,
+    the faster :func:`os.path.abspath` is used
+    instead of :func:`os.path.realpath`.
 
     Warning:
         :func:`audeer.safe_path` is deprecated,
@@ -104,6 +108,10 @@ def safe_path(
         *paths: additional arguments
             to be joined with ``path``
             by :func:`os.path.join`
+        follow_symlink: if ``True``
+            symlinks are followed
+            and the path of the original file
+            is returned
 
     Returns:
         (joined and) expanded path
@@ -116,6 +124,15 @@ def safe_path(
         >>> file = safe_path('~/path/.././path', './file.txt')
         >>> file[len(home) + 1:]
         'path/file.txt'
+        >>> file = audeer.touch('file.txt')
+        >>> link = path('link.txt')
+        >>> os.symlink(file, link)
+        >>> file = path(link)
+        >>> os.path.basename(file)
+        'file.txt'
+        >>> file = path(link, follow_symlink=False)
+        >>> os.path.basename(file)
+        'link.txt'
 
     """
     return _path(path, *paths)
