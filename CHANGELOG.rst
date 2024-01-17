@@ -17,8 +17,8 @@ Version 1.21.0 (2023-12-06)
   ``audeer.mkdir()``,
   ``audeer.rmdir()``,
   and ``audeer.touch()``.
-  Instead of writing ``audeer.mkdir(os.path.join('a', 'b'))``,
-  you can now write ``audeer.mkdir('a', 'b')``
+  Instead of writing ``audeer.mkdir(os.path.join("a", "b"))``,
+  you can now write ``audeer.mkdir("a", "b")``
 
 
 Version 1.20.2 (2023-11-28)
@@ -90,7 +90,7 @@ Version 1.20.0 (2023-05-02)
 * Fixed: ``audeer.replace_file_extension()``
   now returns the original filename
   when an empty new file extension is provided
-  instead of adding ``'.'`` at the end of the filename
+  instead of adding ``"."`` at the end of the filename
 * Fixed: ``audeer.extract_archive()``
   and ``audeer.extract_archives()``
   now return normalized relative paths
