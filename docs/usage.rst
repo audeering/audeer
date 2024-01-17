@@ -31,8 +31,8 @@ to estimate Pi with a Monte Carlo method.
             progress_bar=True,
         )
         pi = 4.0 * sum(inside_samples) / NUM_SAMPLES
-        print(f'Pi is roughly {pi}')
+        print(f"Pi is roughly {pi}")
 
 
-    if __name__ == '__main__':
+    if __name__ == "__main__":
         main()

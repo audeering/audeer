@@ -102,21 +102,22 @@ class StrictVersion(Version):
             the ``StrictVersion.version_re`` pattern
 
     Examples:
-        >>> v1 = StrictVersion('1.17.2a1')
+        >>> v1 = StrictVersion("1.17.2a1")
         >>> v1
         StrictVersion ('1.17.2a1')
         >>> v1.version
         (1, 17, 2)
         >>> v1.prerelease
         ('a', 1)
-        >>> v2 = StrictVersion('1.17.2')
+        >>> v2 = StrictVersion("1.17.2")
         >>> v1 < v2
         True
 
     """
 
-    version_re = re.compile(r'^(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?$',
-                            re.VERBOSE | re.ASCII)
+    version_re = re.compile(
+        r"^(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?$", re.VERBOSE | re.ASCII
+    )
     """Version regexp pattern.
 
     The regexp pattern is used to split the version
@@ -153,8 +154,7 @@ class StrictVersion(Version):
         if not match:
             raise ValueError(f"invalid version number '{version}'")
 
-        (major, minor, patch, prerelease, prerelease_num) = \
-            match.group(1, 2, 4, 5, 6)
+        (major, minor, patch, prerelease, prerelease_num) = match.group(1, 2, 4, 5, 6)
 
         if patch:
             self.version = tuple(map(int, [major, minor, patch]))
@@ -169,9 +169,9 @@ class StrictVersion(Version):
     def __str__(self):
         r"""String representation of version."""
         if self.version[2] == 0:
-            vstring = '.'.join(map(str, self.version[0:2]))
+            vstring = ".".join(map(str, self.version[0:2]))
         else:
-            vstring = '.'.join(map(str, self.version))
+            vstring = ".".join(map(str, self.version))
 
         if self.prerelease:
             vstring = vstring + self.prerelease[0] + str(self.prerelease[1])
@@ -198,13 +198,13 @@ class StrictVersion(Version):
         # case 3: self doesn't have prerelease, other does: self is greater
         # case 4: both have prerelease: must compare them!
 
-        if (not self.prerelease and not other.prerelease):
+        if not self.prerelease and not other.prerelease:
             return 0
-        elif (self.prerelease and not other.prerelease):
+        elif self.prerelease and not other.prerelease:
             return -1
-        elif (not self.prerelease and other.prerelease):
+        elif not self.prerelease and other.prerelease:
             return 1
-        elif (self.prerelease and other.prerelease):
+        elif self.prerelease and other.prerelease:
             if self.prerelease == other.prerelease:
                 return 0
             elif self.prerelease < other.prerelease:
@@ -248,6 +248,7 @@ class StrictVersion(Version):
 # "1.5.1" < "1.5.2a2" < "1.5.2", but under the tuple/lexical comparison
 # implemented here, this just isn't so.
 
+
 class LooseVersion(Version):
     r"""Version numbering for anarchists and software realists.
 
@@ -282,17 +283,18 @@ class LooseVersion(Version):
         version: version string
 
     Examples:
-        >>> v1 = LooseVersion('1.17.2')
+        >>> v1 = LooseVersion("1.17.2")
         >>> v1
         LooseVersion ('1.17.2')
         >>> v1.version
         [1, 17, 2]
-        >>> v2 = LooseVersion('1.17.2-3-g70b71bd')
+        >>> v2 = LooseVersion("1.17.2-3-g70b71bd")
         >>> v1 < v2
         True
 
     """
-    version_re = re.compile(r'(\d+ | [a-z]+ | \.)', re.VERBOSE)
+
+    version_re = re.compile(r"(\d+ | [a-z]+ | \.)", re.VERBOSE)
     """Version regexp pattern.
 
     The regexp pattern is used to split the version
@@ -346,10 +348,7 @@ class LooseVersion(Version):
         # from the parsed tuple -- so I just store the string here for
         # use by __str__
         self.vstring = version
-        components = [
-            x for x in self.version_re.split(version)
-            if x and x != '.'
-        ]
+        components = [x for x in self.version_re.split(version) if x and x != "."]
         for i, obj in enumerate(components):
             try:
                 components[i] = int(obj)

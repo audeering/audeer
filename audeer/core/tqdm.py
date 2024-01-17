@@ -5,10 +5,7 @@ from tqdm import tqdm
 from audeer.core.config import config
 
 
-def format_display_message(
-        text: str,
-        pbar: bool = False
-) -> str:
+def format_display_message(text: str, pbar: bool = False) -> str:
     """Ensure a fixed length of text printed to screen.
 
     The length of the text message is the same as the overall
@@ -25,7 +22,7 @@ def format_display_message(
 
     Examples:
         >>> config.TQDM_COLUMNS = 20
-        >>> format_display_message('Long text that will be shorten to fit')
+        >>> format_display_message("Long text that will be shorten to fit")
         'Long te...n to fit'
 
     """
@@ -41,15 +38,15 @@ def format_display_message(
         return text.ljust(n)
     else:
         m = (n - 3) // 2
-        return f'{text[:m]}...{text[len(text) - (n - m - 3):]}'
+        return f"{text[:m]}...{text[len(text) - (n - m - 3):]}"
 
 
 def progress_bar(
-        iterable: Sequence = None,
-        *,
-        total: int = None,
-        desc: str = None,
-        disable: bool = False
+    iterable: Sequence = None,
+    *,
+    total: int = None,
+    desc: str = None,
+    disable: bool = False,
 ) -> tqdm:
     r"""Progress bar with optional text on the right.
 
@@ -59,7 +56,7 @@ def progress_bar(
 
     .. code-block:: python
 
-        for file in progress_bar(files, desc='Copying'):
+        for file in progress_bar(files, desc="Copying"):
             copy(file)
 
     When the text should be updated as well,
@@ -70,7 +67,7 @@ def progress_bar(
         with progress_bar(files) as pbar:
             for file in pbar:
                 desc = format_display_message(
-                    f'Copying {file}',
+                    f"Copying {file}",
                     pbar=True,
                 )
                 pbar.set_description_str(desc)
@@ -89,7 +86,7 @@ def progress_bar(
 
     """
     if desc is None:
-        desc = ''
+        desc = ""
     return tqdm(
         iterable=iterable,
         ncols=config.TQDM_COLUMNS,

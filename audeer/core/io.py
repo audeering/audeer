@@ -20,18 +20,18 @@ from audeer.core.utils import to_list
 # on Windows and MacOS
 # (which adds /System/Volumes/Data in front in the Github runner)
 # as it outputs a path in Linux syntax in the example
-if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
+if platform.system() in ["Darwin", "Windows"]:  # pragma: no cover
     __doctest_skip__ = [
-        'common_directory',
-        'list_dir_names',
-        'list_file_names',
+        "common_directory",
+        "list_dir_names",
+        "list_file_names",
     ]
 
 
 def basename_wo_ext(
-        path: typing.Union[str, bytes],
-        *,
-        ext: str = None
+    path: typing.Union[str, bytes],
+    *,
+    ext: str = None,
 ) -> str:
     """File basename without file extension.
 
@@ -43,7 +43,7 @@ def basename_wo_ext(
         basename of directory or file without extension
 
     Examples:
-        >>> path = '/test/file.wav'
+        >>> path = "/test/file.wav"
         >>> basename_wo_ext(path)
         'file'
 
@@ -51,10 +51,10 @@ def basename_wo_ext(
     path = safe_path(path)
     path = os.path.basename(path)
     if ext is not None:
-        if not ext.startswith('.'):
-            ext = '.' + ext  # 'mp3' => '.mp3'
+        if not ext.startswith("."):
+            ext = "." + ext  # 'mp3' => '.mp3'
         if path.endswith(ext):
-            path = path[:-len(ext)]
+            path = path[: -len(ext)]
     else:
         path = os.path.splitext(path)[0]
     return path
@@ -76,30 +76,35 @@ def common_directory(
 
     Examples:
         >>> paths = [
-        ...     '/home/user1/tmp/coverage/test',
-        ...     '/home/user1/tmp/covert/operator',
-        ...     '/home/user1/tmp/coven/members',
+        ...     "/home/user1/tmp/coverage/test",
+        ...     "/home/user1/tmp/covert/operator",
+        ...     "/home/user1/tmp/coven/members",
         ... ]
         >>> common_directory(paths)
         '/home/user1/tmp'
 
     """
+
     def all_names_equal(name):
         return all(n == name[0] for n in name[1:])
 
     dirs = [safe_path(path) for path in dirs]
     by_directory_levels = zip(*[p.split(sep) for p in dirs])
-    return sep.join(x[0] for x in itertools.takewhile(
-        all_names_equal, by_directory_levels,
-    ))
+    return sep.join(
+        x[0]
+        for x in itertools.takewhile(
+            all_names_equal,
+            by_directory_levels,
+        )
+    )
 
 
 def create_archive(
-        root: str,
-        files: typing.Optional[typing.Union[str, typing.Sequence[str]]],
-        archive: str,
-        *,
-        verbose: bool = False,
+    root: str,
+    files: typing.Optional[typing.Union[str, typing.Sequence[str]]],
+    archive: str,
+    *,
+    verbose: bool = False,
 ):
     r"""Create ZIP or TAR.GZ archive.
 
@@ -135,13 +140,13 @@ def create_archive(
             or a file in ``files`` is not below ``root``
 
     Examples:
-        >>> _ = touch('a.txt')
-        >>> _ = touch('b.txt')
-        >>> create_archive('.', None, 'archive.zip')
-        >>> extract_archive('archive.zip', '.')
+        >>> _ = touch("a.txt")
+        >>> _ = touch("b.txt")
+        >>> create_archive(".", None, "archive.zip")
+        >>> extract_archive("archive.zip", ".")
         ['a.txt', 'b.txt']
-        >>> create_archive('.', ['a.txt'], 'archive.tar.gz')
-        >>> extract_archive('archive.tar.gz', '.')
+        >>> create_archive(".", ["a.txt"], "archive.tar.gz")
+        >>> extract_archive("archive.tar.gz", ".")
         ['a.txt']
 
     """
@@ -164,7 +169,6 @@ def create_archive(
         )
 
     if files is None:
-
         files = list_file_names(
             root,
             basenames=True,
@@ -173,12 +177,10 @@ def create_archive(
         )
 
     else:
-
         files_org = to_list(files)
         files = []
 
         for file in files_org:
-
             # convert to absolute path
             if not os.path.isabs(file):
                 path = safe_path(root, file)
@@ -204,38 +206,37 @@ def create_archive(
                 )
 
             # convert to relative path
-            files.append(path[len(root) + 1:])
+            files.append(path[len(root) + 1 :])
 
     # Progress bar arguments
     desc = format_display_message(
-        f'Create {os.path.basename(archive)}',
+        f"Create {os.path.basename(archive)}",
         pbar=True,
     )
     disable = not verbose
 
-    if archive.endswith('zip'):
-        with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zf:
+    if archive.endswith("zip"):
+        with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
             for file in progress_bar(files, desc=desc, disable=disable):
                 full_file = safe_path(root, file)
                 zf.write(full_file, arcname=file)
-    elif archive.endswith('tar.gz'):
-        with tarfile.open(archive, 'w:gz') as tf:
+    elif archive.endswith("tar.gz"):
+        with tarfile.open(archive, "w:gz") as tf:
             for file in progress_bar(files, desc=desc, disable=disable):
                 full_file = safe_path(root, file)
                 tf.add(full_file, file)
     else:
         raise RuntimeError(
-            f'You can only create a ZIP or TAR.GZ archive, '
-            f'not {archive}'
+            f"You can only create a ZIP or TAR.GZ archive, " f"not {archive}"
         )
 
 
 def download_url(
-        url: str,
-        destination: str,
-        *,
-        force_download: bool = False,
-        verbose: bool = False,
+    url: str,
+    destination: str,
+    *,
+    force_download: bool = False,
+    verbose: bool = False,
 ) -> str:
     r"""Download URL to destination.
 
@@ -250,7 +251,7 @@ def download_url(
         path of locally stored file
 
     Examples:
-        >>> dst = download_url('https://audeering.github.io/audeer/_static/favicon.png', '.')
+        >>> dst = download_url("https://audeering.github.io/audeer/_static/favicon.png", ".")
         >>> os.path.basename(dst)
         'favicon.png'
 
@@ -262,8 +263,8 @@ def download_url(
         return destination
 
     with progress_bar(
-            disable=not verbose,
-            desc=format_display_message(f'Downloading {url}', pbar=True),
+        disable=not verbose,
+        desc=format_display_message(f"Downloading {url}", pbar=True),
     ) as pbar:
 
         def bar_update(block_num, block_size, total_size):
@@ -277,11 +278,11 @@ def download_url(
 
 
 def extract_archive(
-        archive: str,
-        destination: str,
-        *,
-        keep_archive: bool = True,
-        verbose: bool = False,
+    archive: str,
+    destination: str,
+    *,
+    keep_archive: bool = True,
+    verbose: bool = False,
 ) -> typing.List[str]:
     r"""Extract ZIP or TAR.GZ file.
 
@@ -305,11 +306,11 @@ def extract_archive(
         RuntimeError: if ``archive`` is malformed
 
     Examples:
-        >>> _ = touch('a.txt')
-        >>> create_archive('.', None, 'archive.zip')
-        >>> extract_archive('archive.zip', '.')
+        >>> _ = touch("a.txt")
+        >>> create_archive(".", None, "archive.zip")
+        >>> extract_archive("archive.zip", ".")
         ['a.txt']
-        >>> extract_archive('archive.zip', 'sub')
+        >>> extract_archive("archive.zip", "sub")
         ['a.txt']
 
     """
@@ -345,14 +346,14 @@ def extract_archive(
 
     # Progress bar arguments
     desc = format_display_message(
-        f'Extract {os.path.basename(archive)}',
+        f"Extract {os.path.basename(archive)}",
         pbar=True,
     )
     disable = not verbose
 
     try:
-        if archive.endswith('zip'):
-            with zipfile.ZipFile(archive, 'r') as zf:
+        if archive.endswith("zip"):
+            with zipfile.ZipFile(archive, "r") as zf:
                 members = zf.infolist()
                 for member in progress_bar(
                     members,
@@ -361,8 +362,8 @@ def extract_archive(
                 ):
                     zf.extract(member, destination)
                 files = [m.filename for m in members]
-        elif archive.endswith('tar.gz'):
-            with tarfile.open(archive, 'r') as tf:
+        elif archive.endswith("tar.gz"):
+            with tarfile.open(archive, "r") as tf:
                 members = tf.getmembers()
                 for member in progress_bar(
                     members,
@@ -373,11 +374,10 @@ def extract_archive(
                 files = [m.name for m in members]
         else:
             raise RuntimeError(
-                f'You can only extract ZIP and TAR.GZ files, '
-                f'not {archive}'
+                f"You can only extract ZIP and TAR.GZ files, " f"not {archive}"
             )
     except (EOFError, zipfile.BadZipFile, tarfile.ReadError):
-        raise RuntimeError(f'Broken archive: {archive}')
+        raise RuntimeError(f"Broken archive: {archive}")
     except (KeyboardInterrupt, Exception):  # pragma: no cover
         # Clean up broken extraction files
         if destination_created:
@@ -388,19 +388,19 @@ def extract_archive(
     if not keep_archive:
         os.remove(archive)
 
-    if os.name == 'nt':  # pragma: no cover
+    if os.name == "nt":  # pragma: no cover
         # replace '/' with '\' on Windows
-        files = [file.replace('/', os.path.sep) for file in files]
+        files = [file.replace("/", os.path.sep) for file in files]
 
     return files
 
 
 def extract_archives(
-        archives: typing.Sequence[str],
-        destination: str,
-        *,
-        keep_archive: bool = True,
-        verbose: bool = False,
+    archives: typing.Sequence[str],
+    destination: str,
+    *,
+    keep_archive: bool = True,
+    verbose: bool = False,
 ) -> typing.List[str]:
     r"""Extract multiple ZIP or TAR.GZ archives at once.
 
@@ -424,11 +424,11 @@ def extract_archives(
         RuntimeError: if an archive file is malformed
 
     Examples:
-        >>> _ = touch('a.txt')
-        >>> create_archive('.', ['a.txt'], 'archive.zip')
-        >>> _ = touch('b.txt')
-        >>> create_archive('.', ['b.txt'], 'archive.tar.gz')
-        >>> extract_archives(['archive.zip', 'archive.tar.gz'], '.')
+        >>> _ = touch("a.txt")
+        >>> create_archive(".", ["a.txt"], "archive.zip")
+        >>> _ = touch("b.txt")
+        >>> create_archive(".", ["b.txt"], "archive.tar.gz")
+        >>> extract_archives(["archive.zip", "archive.tar.gz"], ".")
         ['a.txt', 'b.txt']
 
     """
@@ -439,7 +439,7 @@ def extract_archives(
         member_names = []
         for archive in archives:
             desc = format_display_message(
-                f'Extract {os.path.basename(archive)}',
+                f"Extract {os.path.basename(archive)}",
                 pbar=True,
             )
             pbar.set_description_str(desc)
@@ -456,7 +456,7 @@ def extract_archives(
 
 
 def file_extension(
-        path: typing.Union[str, bytes]
+    path: typing.Union[str, bytes],
 ) -> str:
     """File extension.
 
@@ -467,7 +467,7 @@ def file_extension(
         extension of file without "."
 
     Examples:
-        >>> path = '/test/file.wav'
+        >>> path = "/test/file.wav"
         >>> file_extension(path)
         'wav'
 
@@ -477,11 +477,11 @@ def file_extension(
 
 
 def list_dir_names(
-        path: typing.Union[str, bytes],
-        *,
-        basenames: bool = False,
-        recursive: bool = False,
-        hidden: bool = True,
+    path: typing.Union[str, bytes],
+    *,
+    basenames: bool = False,
+    recursive: bool = False,
+    hidden: bool = True,
 ) -> typing.List[str]:
     """List of folder names located inside provided path.
 
@@ -499,20 +499,20 @@ def list_dir_names(
         FileNotFoundError: if path does not exists
 
     Examples:
-        >>> _ = mkdir('path', 'a', '.b', 'c')
+        >>> _ = mkdir("path", "a", ".b", "c")
         >>> list_dir_names(
-        ...     'path',
+        ...     "path",
         ...     basenames=True,
         ... )
         ['a']
         >>> list_dir_names(
-        ...     'path',
+        ...     "path",
         ...     basenames=True,
         ...     recursive=True,
         ... )
         ['a', 'a/.b', 'a/.b/c']
         >>> list_dir_names(
-        ...     'path',
+        ...     "path",
         ...     basenames=True,
         ...     recursive=True,
         ...     hidden=False,
@@ -526,7 +526,7 @@ def list_dir_names(
         ps = [os.path.join(p, x) for x in os.listdir(p)]
         ps = [x for x in ps if os.path.isdir(x)]
         if not hidden:
-            ps = [x for x in ps if not os.path.basename(x).startswith('.')]
+            ps = [x for x in ps if not os.path.basename(x).startswith(".")]
         paths.extend(ps)
         if len(ps) > 0 and recursive:
             for p in ps:
@@ -535,18 +535,18 @@ def list_dir_names(
     paths = []
     helper(path, paths)
     if basenames:
-        paths = [p[len(path) + 1:] for p in paths]
+        paths = [p[len(path) + 1 :] for p in paths]
 
     return sorted(paths)
 
 
 def list_file_names(
-        path: typing.Union[str, bytes],
-        *,
-        filetype: str = '',
-        basenames: bool = False,
-        recursive: bool = False,
-        hidden: bool = False,
+    path: typing.Union[str, bytes],
+    *,
+    filetype: str = "",
+    basenames: bool = False,
+    recursive: bool = False,
+    hidden: bool = False,
 ) -> typing.List[str]:
     """List of file names inferred from provided path.
 
@@ -575,13 +575,13 @@ def list_file_names(
             and ``os.dirname(path)`` does not exist
 
     Examples:
-        >>> dir_path = mkdir('path')
-        >>> _ = touch(dir_path, 'file.wav')
-        >>> _ = touch(dir_path, 'File.wav')
-        >>> _ = touch(dir_path, '.lock')
-        >>> sub_dir_path = mkdir('path', 'sub')
-        >>> _ = touch(sub_dir_path, 'file.ogg')
-        >>> _ = touch(sub_dir_path, '.lock')
+        >>> dir_path = mkdir("path")
+        >>> _ = touch(dir_path, "file.wav")
+        >>> _ = touch(dir_path, "File.wav")
+        >>> _ = touch(dir_path, ".lock")
+        >>> sub_dir_path = mkdir("path", "sub")
+        >>> _ = touch(sub_dir_path, "file.ogg")
+        >>> _ = touch(sub_dir_path, ".lock")
         >>> list_file_names(
         ...     dir_path,
         ...     basenames=True,
@@ -607,29 +607,29 @@ def list_file_names(
         ... )
         ['.lock', 'File.wav', 'file.wav', 'sub/.lock', 'sub/file.ogg']
         >>> list_file_names(
-        ...     os.path.join(dir_path, 'f*'),
+        ...     os.path.join(dir_path, "f*"),
         ...     basenames=True,
         ...     recursive=True,
         ...     hidden=True,
         ... )
         ['file.wav', 'sub/file.ogg']
         >>> list_file_names(
-        ...     os.path.join(dir_path, '[fF]*'),
+        ...     os.path.join(dir_path, "[fF]*"),
         ...     basenames=True,
         ...     recursive=True,
         ...     hidden=True,
         ... )
         ['File.wav', 'file.wav', 'sub/file.ogg']
         >>> list_file_names(
-        ...     os.path.join(dir_path, '[!f]*'),
+        ...     os.path.join(dir_path, "[!f]*"),
         ...     basenames=True,
         ...     recursive=True,
         ...     hidden=True,
         ... )
         ['.lock', 'File.wav', 'sub/.lock']
         >>> list_file_names(
-        ...     os.path.join(dir_path, 'f*'),
-        ...     filetype='ogg',
+        ...     os.path.join(dir_path, "f*"),
+        ...     filetype="ogg",
         ...     basenames=True,
         ...     recursive=True,
         ...     hidden=True,
@@ -640,20 +640,17 @@ def list_file_names(
     path = safe_path(path)
 
     if os.path.isdir(path):
-
         pattern = None
         folder = path
 
     elif os.path.exists(path) and not recursive:
-
-        if not hidden and os.path.basename(path).startswith('.'):
+        if not hidden and os.path.basename(path).startswith("."):
             return []
         if basenames:
             path = os.path.basename(path)
         return [path]
 
     else:
-
         pattern = os.path.basename(path)
         folder = os.path.dirname(path)
 
@@ -666,13 +663,15 @@ def list_file_names(
         files = [x for x in ps if os.path.isfile(x)]
         if pattern:
             files = [
-                file for file in files
-                if fnmatch.fnmatch(os.path.basename(file), f'{pattern}')
+                file
+                for file in files
+                if fnmatch.fnmatch(os.path.basename(file), f"{pattern}")
             ]
         if filetype:
             files = [
-                file for file in files
-                if fnmatch.fnmatch(os.path.basename(file), f'*{filetype}')
+                file
+                for file in files
+                if fnmatch.fnmatch(os.path.basename(file), f"*{filetype}")
             ]
         paths.extend(files)
         if len(folders) > 0 and recursive:
@@ -683,39 +682,28 @@ def list_file_names(
     helper(folder, paths)
 
     def is_pattern(pattern):
-        return (
-                '*' in pattern or
-                '?' in pattern or
-                ('[' in pattern and ']' in pattern)
-        )
+        return "*" in pattern or "?" in pattern or ("[" in pattern and "]" in pattern)
 
     # if we have no match,
     # raise an error unless
     # 1. path is a folder (i.e. pattern is None)
     # 2. or we have a valid pattern
-    if (
-            len(paths) == 0
-            and pattern is not None
-            and not is_pattern(pattern)
-    ):
+    if len(paths) == 0 and pattern is not None and not is_pattern(pattern):
         raise NotADirectoryError(path)
 
     if not hidden:
-        paths = [
-            p for p in paths
-            if not os.path.basename(p).startswith('.')
-        ]
+        paths = [p for p in paths if not os.path.basename(p).startswith(".")]
 
     if basenames:
-        paths = [p[len(folder) + 1:] for p in paths]
+        paths = [p[len(folder) + 1 :] for p in paths]
 
     return sorted(paths)
 
 
 def mkdir(
-        path: typing.Union[str, bytes],
-        *paths: typing.Sequence[typing.Union[str, bytes]],
-        mode: int = 0o777
+    path: typing.Union[str, bytes],
+    *paths: typing.Sequence[typing.Union[str, bytes]],
+    mode: int = 0o777,
 ) -> str:
     """Create directory.
 
@@ -747,7 +735,7 @@ def mkdir(
         absolute path to the created directory
 
     Examples:
-        >>> p = mkdir('path1', 'path2', 'path3')
+        >>> p = mkdir("path1", "path2", "path3")
         >>> os.path.basename(p)
         'path3'
 
@@ -759,8 +747,8 @@ def mkdir(
 
 
 def md5(
-        path: str,
-        chunk_size: int = 8192,
+    path: str,
+    chunk_size: int = 8192,
 ) -> str:
     r"""Calculate MD5 checksum of file or folder.
 
@@ -788,10 +776,10 @@ def md5(
         FileNotFoundError: if ``path`` does not exist
 
     Examples:
-        >>> path = touch('file.txt')
+        >>> path = touch("file.txt")
         >>> md5(path)
         'd41d8cd98f00b204e9800998ecf8427e'
-        >>> md5('.')
+        >>> md5(".")
         '3d8e577bddb17db339eae0b3d9bcf180'
 
     """
@@ -806,13 +794,11 @@ def md5(
         )
 
     if not os.path.isdir(path):
-
-        with open(path, 'rb') as fp:
+        with open(path, "rb") as fp:
             for chunk in md5_read_chunk(fp, chunk_size):
                 hasher.update(chunk)
 
     else:
-
         files = list_file_names(
             path,
             recursive=True,
@@ -823,8 +809,8 @@ def md5(
         for file in files:
             # encode file name that renaming of files
             # produces different checksum
-            hasher.update(file.replace(os.path.sep, '/').encode())
-            with open(safe_path(path, file), 'rb') as fp:
+            hasher.update(file.replace(os.path.sep, "/").encode())
+            with open(safe_path(path, file), "rb") as fp:
                 for chunk in md5_read_chunk(fp, chunk_size):
                     hasher.update(chunk)
 
@@ -832,8 +818,8 @@ def md5(
 
 
 def md5_read_chunk(
-        fp: typing.IO,
-        chunk_size: int = 8192,
+    fp: typing.IO,
+    chunk_size: int = 8192,
 ):
     while True:
         data = fp.read(chunk_size)
@@ -843,8 +829,8 @@ def md5_read_chunk(
 
 
 def move(
-        src_path,
-        dst_path,
+    src_path,
+    dst_path,
 ):
     """Move a file or folder independent of operating system.
 
@@ -873,9 +859,9 @@ def move(
             (raised only under Windows)
 
     Examples:
-        >>> path = mkdir('folder')
-        >>> src_path = touch(path, 'file1')
-        >>> dst_path = os.path.join(path, 'file2')
+        >>> path = mkdir("folder")
+        >>> src_path = touch(path, "file1")
+        >>> dst_path = os.path.join(path, "file2")
         >>> move(src_path, dst_path)
         >>> list_file_names(path, basenames=True)
         ['file2']
@@ -885,8 +871,8 @@ def move(
 
 
 def move_file(
-        src_path,
-        dst_path,
+    src_path,
+    dst_path,
 ):
     """Move a file independent of operating system.
 
@@ -905,9 +891,9 @@ def move_file(
         dst_path: destination file path
 
     Examples:
-        >>> path = mkdir('folder')
-        >>> src_path = touch(path, 'file1')
-        >>> dst_path = os.path.join(path, 'file2')
+        >>> path = mkdir("folder")
+        >>> src_path = touch(path, "file1")
+        >>> dst_path = os.path.join(path, "file2")
         >>> move_file(src_path, dst_path)
         >>> list_file_names(path, basenames=True)
         ['file2']
@@ -917,10 +903,10 @@ def move_file(
 
 
 def replace_file_extension(
-        path: typing.Union[str, bytes],
-        new_extension: str,
-        *,
-        ext: str = None,
+    path: typing.Union[str, bytes],
+    new_extension: str,
+    *,
+    ext: str = None,
 ) -> str:
     """Replace file extension.
 
@@ -942,15 +928,15 @@ def replace_file_extension(
         path to file with a possibly new extension
 
     Examples:
-        >>> replace_file_extension('file.txt', 'rst')
+        >>> replace_file_extension("file.txt", "rst")
         'file.rst'
-        >>> replace_file_extension('file', 'rst')
+        >>> replace_file_extension("file", "rst")
         'file.rst'
-        >>> replace_file_extension('file.txt', '')
+        >>> replace_file_extension("file.txt", "")
         'file'
-        >>> replace_file_extension('file.tar.gz', 'zip', ext='tar.gz')
+        >>> replace_file_extension("file.tar.gz", "zip", ext="tar.gz")
         'file.zip'
-        >>> replace_file_extension('file.zip', 'rst', ext='txt')
+        >>> replace_file_extension("file.zip", "rst", ext="txt")
         'file.zip'
 
     """
@@ -958,12 +944,12 @@ def replace_file_extension(
         ext = file_extension(path)
 
     # '.mp3' => 'mp3'
-    if ext.startswith('.'):
+    if ext.startswith("."):
         ext = ext[1:]
-    if new_extension.startswith('.'):
+    if new_extension.startswith("."):
         new_extension = new_extension[1:]
 
-    if ext and not path.endswith(f'.{ext}'):
+    if ext and not path.endswith(f".{ext}"):
         return path
 
     if not path:
@@ -972,18 +958,18 @@ def replace_file_extension(
     if not ext and not new_extension:
         pass
     elif not ext:
-        path = f'{path}.{new_extension}'
+        path = f"{path}.{new_extension}"
     elif not new_extension:
-        path = path[:-len(ext) - 1]
+        path = path[: -len(ext) - 1]
     else:
-        path = f'{path[:-len(ext)]}{new_extension}'
+        path = f"{path[:-len(ext)]}{new_extension}"
 
     return path
 
 
 def rmdir(
-        path: typing.Union[str, bytes],
-        *paths: typing.Sequence[typing.Union[str, bytes]],
+    path: typing.Union[str, bytes],
+    *paths: typing.Sequence[typing.Union[str, bytes]],
 ):
     """Remove directory.
 
@@ -1001,11 +987,11 @@ def rmdir(
         NotADirectoryError: if path is not a directory
 
     Examples:
-        >>> _ = mkdir('path1', 'path2', 'path3')
-        >>> list_dir_names('path1', basenames=True)
+        >>> _ = mkdir("path1", "path2", "path3")
+        >>> list_dir_names("path1", basenames=True)
         ['path2']
-        >>> rmdir('path1', 'path2')
-        >>> list_dir_names('path1')
+        >>> rmdir("path1", "path2")
+        >>> list_dir_names("path1")
         []
 
     """
@@ -1015,8 +1001,8 @@ def rmdir(
 
 
 def touch(
-        path: typing.Union[str, bytes],
-        *paths: typing.Sequence[typing.Union[str, bytes]],
+    path: typing.Union[str, bytes],
+    *paths: typing.Sequence[typing.Union[str, bytes]],
 ) -> str:
     """Create an empty file.
 
@@ -1034,7 +1020,7 @@ def touch(
         expanded path to file
 
     Examples:
-        >>> path = touch('file.txt')
+        >>> path = touch("file.txt")
         >>> os.path.basename(path)
         'file.txt'
 
@@ -1043,5 +1029,5 @@ def touch(
     if os.path.exists(path):
         os.utime(path, None)
     else:
-        open(path, 'a').close()
+        open(path, "a").close()
     return path

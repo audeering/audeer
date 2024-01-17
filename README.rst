@@ -22,7 +22,7 @@ that lists all WAV files in the ``data`` folder:
 
     import audeer
 
-    files = audeer.list_file_names('data', filetype='wav')
+    files = audeer.list_file_names("data", filetype="wav")
 
 
 .. _tqdm: https://tqdm.github.io/
