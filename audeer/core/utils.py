@@ -20,13 +20,13 @@ from audeer.core import tqdm
 from audeer.core.version import LooseVersion
 
 
-__doctest_skip__ = ['git_repo_tags', 'git_repo_version']
+__doctest_skip__ = ["git_repo_tags", "git_repo_version"]
 
 
 def deprecated(
-        *,
-        removal_version: str,
-        alternative: str = None
+    *,
+    removal_version: str,
+    alternative: str = None,
 ) -> typing.Callable:
     """Mark code as deprecated.
 
@@ -46,11 +46,12 @@ def deprecated(
         alternative: alternative code to use
 
     Examples:
-        >>> @deprecated(removal_version='2.0.0')
+        >>> @deprecated(removal_version="2.0.0")
         ... def deprecated_function():
         ...     pass
 
     """
+
     def _deprecated(func):
         # functools.wraps preserves the name
         # and docstring of the decorated code:
@@ -58,22 +59,24 @@ def deprecated(
         @functools.wraps(func)
         def new_func(*args, **kwargs):
             message = (
-                f'{func.__name__} is deprecated and will be removed '
-                f'with version {removal_version}.'
+                f"{func.__name__} is deprecated and will be removed "
+                f"with version {removal_version}."
             )
             if alternative is not None:
-                message += f' Use {alternative} instead.'
+                message += f" Use {alternative} instead."
             warnings.warn(message, category=UserWarning, stacklevel=2)
             return func(*args, **kwargs)
+
         return new_func
+
     return _deprecated
 
 
 def deprecated_default_value(
-        *,
-        argument: str,
-        change_in_version: str,
-        new_default_value: typing.Any,
+    *,
+    argument: str,
+    change_in_version: str,
+    new_default_value: typing.Any,
 ) -> typing.Callable:
     """Mark default value of keyword argument as deprecated.
 
@@ -90,13 +93,14 @@ def deprecated_default_value(
 
     Examples:
         >>> @deprecated_default_value(
-        ...     argument='foo',
-        ...     change_in_version='2.0.0',
-        ...     new_default_value='bar',
+        ...     argument="foo",
+        ...     change_in_version="2.0.0",
+        ...     new_default_value="bar",
         ... )
-        ... def deprecated_function(foo='foo'):
+        ... def deprecated_function(foo="foo"):
         ...     pass
     """
+
     def _deprecated(func):
         # functools.wraps preserves the name
         # and docstring of the decorated code:
@@ -109,21 +113,23 @@ def deprecated_default_value(
                 message = (
                     f"The default of '{argument}' will change from "
                     f"'{default_value}' to '{new_default_value}' "
-                    f'with version {change_in_version}.'
+                    f"with version {change_in_version}."
                 )
                 warnings.warn(message, category=UserWarning, stacklevel=2)
             return func(*args, **kwargs)
+
         return new_func
+
     return _deprecated
 
 
 def deprecated_keyword_argument(
-        *,
-        deprecated_argument: str,
-        removal_version: str,
-        new_argument: str = None,
-        mapping: typing.Callable = None,
-        remove_from_kwargs: bool = True,
+    *,
+    deprecated_argument: str,
+    removal_version: str,
+    new_argument: str = None,
+    mapping: typing.Callable = None,
+    remove_from_kwargs: bool = True,
 ) -> typing.Callable:
     r"""Mark keyword argument as deprecated.
 
@@ -148,14 +154,15 @@ def deprecated_keyword_argument(
 
     Examples:
         >>> @deprecated_keyword_argument(
-        ...     deprecated_argument='foo',
-        ...     new_argument='bar',
-        ...     removal_version='2.0.0',
+        ...     deprecated_argument="foo",
+        ...     new_argument="bar",
+        ...     removal_version="2.0.0",
         ... )
         ... def function_with_new_argument(*, bar):
         ...     pass
 
     """
+
     def _deprecated(func):
         # functools.wraps preserves the name
         # and docstring of the decorated code:
@@ -183,13 +190,13 @@ def deprecated_keyword_argument(
                     stacklevel=2,
                 )
             return func(*args, **kwargs)
+
         return new_func
+
     return _deprecated
 
 
-def flatten_list(
-        nested_list: typing.List
-) -> typing.List:
+def flatten_list(nested_list: typing.List) -> typing.List:
     """Flatten an arbitrarily nested list.
 
     Implemented without  recursion to avoid stack overflows.
@@ -208,6 +215,7 @@ def flatten_list(
         [1, 2, 3]
 
     """
+
     def _flat_generator(nested_list):
         while nested_list:
             sublist = nested_list.pop(0)
@@ -215,6 +223,7 @@ def flatten_list(
                 nested_list = sublist + nested_list
             else:
                 yield sublist
+
     nested_list = copy.deepcopy(nested_list)
     return list(_flat_generator(nested_list))
 
@@ -230,21 +239,21 @@ def freeze_requirements(outfile: str):
         RuntimeError: if running ``pip freeze`` returns an error
 
     """
-    cmd = f'pip freeze > {outfile}'
+    cmd = f"pip freeze > {outfile}"
     with subprocess.Popen(
-            args=cmd,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
-            shell=True,
+        args=cmd,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        shell=True,
     ) as p:
         _, err = p.communicate()
         if bool(p.returncode):
-            raise RuntimeError(f'Freezing Python packages failed: {err}')
+            raise RuntimeError(f"Freezing Python packages failed: {err}")
 
 
 def git_repo_tags(
-        *,
-        v: bool = None,
+    *,
+    v: bool = None,
 ) -> typing.List:
     r"""Get a list of available git tags.
 
@@ -267,23 +276,23 @@ def git_repo_tags(
 
     """
     try:
-        git = ['git', 'tag']
+        git = ["git", "tag"]
         tags = subprocess.check_output(git)
-        tags = tags.decode().strip().split('\n')
+        tags = tags.decode().strip().split("\n")
     except Exception:  # pragma: no cover
         tags = []
     if v is None:
         return tags
     if v:
-        tags = [f'v{t}' if not t.startswith('v') else t for t in tags]
+        tags = [f"v{t}" if not t.startswith("v") else t for t in tags]
     else:
-        tags = [t[1:] if t.startswith('v') else t for t in tags]
+        tags = [t[1:] if t.startswith("v") else t for t in tags]
     return tags
 
 
 def git_repo_version(
-        *,
-        v: bool = True,
+    *,
+    v: bool = True,
 ) -> str:
     r"""Get a version number from current git ref.
 
@@ -305,23 +314,23 @@ def git_repo_version(
 
     """
     try:
-        git = ['git', 'describe', '--tags', '--always']
+        git = ["git", "describe", "--tags", "--always"]
         version = subprocess.check_output(git)
         version = version.decode().strip()
     except Exception:  # pragma: no cover
-        version = '<unknown>'
-    if version.startswith('v') and not v:  # pragma: no cover (only local)
+        version = "<unknown>"
+    if version.startswith("v") and not v:  # pragma: no cover (only local)
         version = version[1:]
-    elif not version.startswith('v') and v:  # pragma: no cover (only github)
-        version = f'v{version}'
+    elif not version.startswith("v") and v:  # pragma: no cover (only github)
+        version = f"v{version}"
     return version
 
 
 def install_package(
-        name: str,
-        *,
-        version: str = None,
-        silent: bool = False,
+    name: str,
+    *,
+    version: str = None,
+    silent: bool = False,
 ):
     r"""Install a Python package with pip.
 
@@ -357,16 +366,16 @@ def install_package(
     # check for operators, e.g.
     # >=1.0, >1.0, <=1.0, <1.0
     if version is not None:
-        if version.startswith('>='):
+        if version.startswith(">="):
             op = operator.ge
             version = version[2:].strip()
-        elif version.startswith('>'):
+        elif version.startswith(">"):
             op = operator.gt
             version = version[1:].strip()
-        elif version.startswith('<='):
+        elif version.startswith("<="):
             op = operator.le
             version = version[2:].strip()
-        elif version.startswith('<'):
+        elif version.startswith("<"):
             op = operator.lt
             version = version[1:].strip()
 
@@ -397,16 +406,16 @@ def install_package(
         if op == operator.eq:
             # since we do not support ==1.0
             # we have to add it here
-            name = f'{name}=={version}'
+            name = f"{name}=={version}"
         else:
-            name = f'{name}{version}'
+            name = f"{name}{version}"
 
     subprocess.check_call(
         [
             sys.executable,
-            '-m',
-            'pip',
-            'install',
+            "-m",
+            "pip",
+            "install",
             name,
         ],
         stdout=subprocess.DEVNULL if silent else None,
@@ -437,15 +446,15 @@ def is_semantic_version(version: str) -> bool:
         ``True`` if version is a semantic version
 
     Examples:
-        >>> is_semantic_version('v1')
+        >>> is_semantic_version("v1")
         False
-        >>> is_semantic_version('1.2.3-r3')
+        >>> is_semantic_version("1.2.3-r3")
         True
-        >>> is_semantic_version('v0.7.2-9-g1572b37')
+        >>> is_semantic_version("v0.7.2-9-g1572b37")
         True
 
     """
-    version_parts = version.split('.')
+    version_parts = version.split(".")
 
     if len(version_parts) < 3:
         return False
@@ -459,15 +468,15 @@ def is_semantic_version(version: str) -> bool:
 
     x, y = version_parts[:2]
     # Ignore starting 'v'
-    if x.startswith('v'):
+    if x.startswith("v"):
         x = x[1:]
 
-    z = '.'.join(version_parts[2:])
+    z = ".".join(version_parts[2:])
     # For Z, '-' and '+' are also allowed as separators,
     # but you are not allowed to have an additional '.' before
-    z = z.split('-')[0]
-    z = z.split('+')[0]
-    if len(z.split('.')) > 1:
+    z = z.split("-")[0]
+    z = z.split("+")[0]
+    if len(z.split(".")) > 1:
         return False
 
     for v in (x, y, z):
@@ -489,11 +498,11 @@ def is_uid(uid: str) -> bool:
         ``True`` if string is a unique identifier
 
     Examples:
-        >>> is_uid('626f68e6-d336-70b9-e753-ed9fad855840')
+        >>> is_uid("626f68e6-d336-70b9-e753-ed9fad855840")
         True
-        >>> is_uid('ad855840')
+        >>> is_uid("ad855840")
         True
-        >>> is_uid('not a unique identifier')
+        >>> is_uid("not a unique identifier")
         False
 
     """
@@ -505,10 +514,10 @@ def is_uid(uid: str) -> bool:
         return False
 
     if len(uid) == 8:
-        uid = f'00000000-0000-0000-0000-0000{uid}'
+        uid = f"00000000-0000-0000-0000-0000{uid}"
 
     for pos in [8, 13, 18, 23]:
-        if not uid[pos] == '-':
+        if not uid[pos] == "-":
             return False
 
     try:
@@ -520,18 +529,18 @@ def is_uid(uid: str) -> bool:
 
 
 def run_tasks(
-        task_func: typing.Callable,
-        params: typing.Sequence[
-            typing.Tuple[
-                typing.Sequence[typing.Any],
-                typing.Dict[str, typing.Any],
-            ]
-        ],
-        *,
-        num_workers: int = 1,
-        multiprocessing: bool = False,
-        progress_bar: bool = False,
-        task_description: str = None
+    task_func: typing.Callable,
+    params: typing.Sequence[
+        typing.Tuple[
+            typing.Sequence[typing.Any],
+            typing.Dict[str, typing.Any],
+        ]
+    ],
+    *,
+    num_workers: int = 1,
+    multiprocessing: bool = False,
+    progress_bar: bool = False,
+    task_description: str = None,
 ) -> typing.Sequence[typing.Any]:
     r"""Run parallel tasks using multprocessing.
 
@@ -555,7 +564,7 @@ def run_tasks(
             that will be displayed next to progress bar
 
     Examples:
-        >>> power = lambda x, n: x ** n
+        >>> power = lambda x, n: x**n
         >>> params = [([2, n], {}) for n in range(10)]
         >>> run_tasks(power, params, num_workers=3)
         [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
@@ -565,7 +574,6 @@ def run_tasks(
     results = [None] * num_tasks
 
     if num_workers == 1:  # sequential
-
         with tqdm.progress_bar(
             params,
             total=len(params),
@@ -576,16 +584,15 @@ def run_tasks(
                 results[index] = task_func(*param[0], **param[1])
 
     else:  # parallel
-
         if multiprocessing:
             executor = concurrent.futures.ProcessPoolExecutor
         else:
             executor = concurrent.futures.ThreadPoolExecutor
         with executor(max_workers=num_workers) as pool:
             with tqdm.progress_bar(
-                    total=len(params),
-                    desc=task_description,
-                    disable=not progress_bar,
+                total=len(params),
+                desc=task_description,
+                disable=not progress_bar,
             ) as pbar:
                 futures = []
                 for param in params:
@@ -599,14 +606,14 @@ def run_tasks(
     return results
 
 
-@deprecated(removal_version='2.0.0', alternative='run_tasks')
+@deprecated(removal_version="2.0.0", alternative="run_tasks")
 def run_worker_threads(
-        task_fun: typing.Callable,
-        params: typing.Sequence[typing.Any] = None,
-        *,
-        num_workers: int = None,
-        progress_bar: bool = False,
-        task_description: str = None
+    task_fun: typing.Callable,
+    params: typing.Sequence[typing.Any] = None,
+    *,
+    num_workers: int = None,
+    progress_bar: bool = False,
+    task_description: str = None,
 ) -> typing.Sequence[typing.Any]:  # pragma: no cover
     r"""Run parallel tasks using worker threads.
 
@@ -624,7 +631,7 @@ def run_worker_threads(
             that will be displayed next to progress bar
 
     Examples:
-        >>> power = lambda x, n: x ** n
+        >>> power = lambda x, n: x**n
         >>> params = [(2, n) for n in range(10)]
         >>> run_worker_threads(power, params, num_workers=3)
         [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
@@ -652,9 +659,9 @@ def run_worker_threads(
 
     # num_workers > 1 -> run parallel
     else:
-
         # Create queue, possibly with a progress bar
         if progress_bar:
+
             class QueueWithProgbar(queue.Queue):
                 def __init__(self, num_tasks, maxsize=0):
                     super().__init__(maxsize)
@@ -666,6 +673,7 @@ def run_worker_threads(
                 def task_done(self):
                     super().task_done()
                     self.pbar.update(1)
+
             q = QueueWithProgbar(num_tasks)
         else:
             q = queue.Queue()
@@ -706,7 +714,7 @@ def run_worker_threads(
 
 
 def sort_versions(
-        versions: typing.List[str],
+    versions: typing.List[str],
 ) -> typing.List:
     """Sort version numbers.
 
@@ -725,10 +733,10 @@ def sort_versions(
 
     Examples:
         >>> vers = [
-        ...     '2.0.0',
-        ...     '2.0.1',
-        ...     'v1.0.0',
-        ...     'v2.0.0-1-gdf29c4a',
+        ...     "2.0.0",
+        ...     "2.0.1",
+        ...     "v1.0.0",
+        ...     "v2.0.0-1-gdf29c4a",
         ... ]
         >>> sort_versions(vers)
         ['v1.0.0', '2.0.0', 'v2.0.0-1-gdf29c4a', '2.0.1']
@@ -744,7 +752,7 @@ def sort_versions(
             )
 
     def sort_key(value):
-        if value.startswith('v'):
+        if value.startswith("v"):
             value = value[1:]
         return LooseVersion(value)
 
@@ -765,7 +773,7 @@ def to_list(x: typing.Any):
         input as a list
 
     Examples:
-        >>> to_list('abc')
+        >>> to_list("abc")
         ['abc']
         >>> to_list((1, 2, 3))
         [1, 2, 3]
@@ -778,9 +786,9 @@ def to_list(x: typing.Any):
 
 
 def uid(
-        *,
-        from_string: str = None,
-        short: bool = False,
+    *,
+    from_string: str = None,
+    short: bool = False,
 ) -> str:
     r"""Generate unique identifier.
 
@@ -803,9 +811,9 @@ def uid(
         unique identifier
 
     Examples:
-        >>> uid(from_string='example_string')
+        >>> uid(from_string="example_string")
         '626f68e6-d336-70b9-e753-ed9fad855840'
-        >>> uid(from_string='example_string', short=True)
+        >>> uid(from_string="example_string", short=True)
         'ad855840'
 
     """
@@ -813,9 +821,9 @@ def uid(
         uid = str(uuid.uuid1())
     else:
         uid = hashlib.md5()
-        uid.update(from_string.encode('utf-8'))
+        uid.update(from_string.encode("utf-8"))
         uid = uid.hexdigest()
-        uid = f'{uid[0:8]}-{uid[8:12]}-{uid[12:16]}-{uid[16:20]}-{uid[20:]}'
+        uid = f"{uid[0:8]}-{uid[8:12]}-{uid[12:16]}-{uid[16:20]}-{uid[20:]}"
 
     if short:
         uid = uid[-8:]

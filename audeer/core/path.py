@@ -7,17 +7,17 @@ import typing
 # on Windows and MacOS
 # (which adds /System/Volumes/Data in front in the Github runner)
 # as it outputs a path in Linux syntax in the example
-if platform.system() in ['Darwin', 'Windows']:  # pragma: no cover
+if platform.system() in ["Darwin", "Windows"]:  # pragma: no cover
     __doctest_skip__ = [
-        'path',
-        'safe_path',
+        "path",
+        "safe_path",
     ]
 
 
 def path(
-        path: typing.Union[str, bytes],
-        *paths: typing.Sequence[typing.Union[str, bytes]],
-        follow_symlink: bool = True,
+    path: typing.Union[str, bytes],
+    *paths: typing.Sequence[typing.Union[str, bytes]],
+    follow_symlink: bool = True,
 ) -> str:
     """Expand and normalize to absolute path.
 
@@ -45,15 +45,15 @@ def path(
         (joined and) expanded path
 
     Examples:
-        >>> home = path('~')
-        >>> folder = path('~/path/.././path')
-        >>> folder[len(home) + 1:]
+        >>> home = path("~")
+        >>> folder = path("~/path/.././path")
+        >>> folder[len(home) + 1 :]
         'path'
-        >>> file = path('~/path/.././path', './file.txt')
-        >>> file[len(home) + 1:]
+        >>> file = path("~/path/.././path", "./file.txt")
+        >>> file[len(home) + 1 :]
         'path/file.txt'
-        >>> file = audeer.touch('file.txt')
-        >>> link = path('link.txt')
+        >>> file = audeer.touch("file.txt")
+        >>> link = path("link.txt")
         >>> os.symlink(file, link)
         >>> file = path(link)
         >>> os.path.basename(file)
@@ -72,8 +72,8 @@ def path(
         else:
             path = os.path.abspath(path)
         # Convert bytes to str, see https://stackoverflow.com/a/606199
-        if type(path) == bytes:
-            path = path.decode('utf-8').strip('\x00')
+        if isinstance(path, bytes):
+            path = path.decode("utf-8").strip("\x00")
     return path
 
 
@@ -83,9 +83,9 @@ _path = path
 
 
 def safe_path(
-        path: typing.Union[str, bytes],
-        *paths: typing.Sequence[typing.Union[str, bytes]],
-        follow_symlink: bool = True,
+    path: typing.Union[str, bytes],
+    *paths: typing.Sequence[typing.Union[str, bytes]],
+    follow_symlink: bool = True,
 ) -> str:
     """Expand and normalize to absolute path.
 
@@ -117,15 +117,15 @@ def safe_path(
         (joined and) expanded path
 
     Examples:
-        >>> home = safe_path('~')
-        >>> folder = safe_path('~/path/.././path')
-        >>> folder[len(home) + 1:]
+        >>> home = safe_path("~")
+        >>> folder = safe_path("~/path/.././path")
+        >>> folder[len(home) + 1 :]
         'path'
-        >>> file = safe_path('~/path/.././path', './file.txt')
-        >>> file[len(home) + 1:]
+        >>> file = safe_path("~/path/.././path", "./file.txt")
+        >>> file[len(home) + 1 :]
         'path/file.txt'
-        >>> file = audeer.touch('file.txt')
-        >>> link = path('link.txt')
+        >>> file = audeer.touch("file.txt")
+        >>> link = path("link.txt")
         >>> os.symlink(file, link)
         >>> file = path(link)
         >>> os.path.basename(file)

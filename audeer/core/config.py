@@ -5,6 +5,7 @@ class config:
     for the progress bar::
 
         import audeer
+
         audeer.config.TQDM_COLUMNS = 50
 
     """
@@ -13,8 +14,8 @@ class config:
     """Length of progress bar description."""
 
     TQDM_FORMAT = (
-        '{percentage:3.0f}%|{bar} [{elapsed}<{remaining}] '
-        '{desc:' + str(TQDM_DESCLEN) + '}'
+        "{percentage:3.0f}%|{bar} [{elapsed}<{remaining}] "
+        "{desc:" + str(TQDM_DESCLEN) + "}"
     )
     """Format of progress bars."""
 
