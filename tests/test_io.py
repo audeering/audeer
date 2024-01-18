@@ -360,6 +360,15 @@ def test_basename_wo_ext(path, ext, basename):
     assert isinstance(b, str)
 
 
+def test_basename_wo_ext_symlink(tmpdir):
+    # Ensure basename_wo_ext() is not influenced by existing files
+    file = audeer.touch(tmpdir, "file.txt")
+    link = os.path.join(tmpdir, "link.txt")
+    os.symlink(file, link)
+    assert audeer.basename_wo_ext(file) == "file"
+    assert audeer.basename_wo_ext(link) == "link"
+
+
 @pytest.mark.parametrize(
     "dirs,expected",
     [
