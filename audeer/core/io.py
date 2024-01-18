@@ -256,7 +256,7 @@ def download_url(
         'favicon.png'
 
     """  # noqa: E501
-    destination = safe_path(destination)
+    destination = safe_path(destination, follow_symlink=False)
     if os.path.isdir(destination):
         destination = os.path.join(destination, os.path.basename(url))
     if os.path.exists(destination) and not force_download:
