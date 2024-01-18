@@ -48,7 +48,7 @@ def basename_wo_ext(
         'file'
 
     """
-    path = safe_path(path)
+    path = safe_path(path, follow_symlink=False)  # convert byte to str
     path = os.path.basename(path)
     if ext is not None:
         if not ext.startswith("."):
