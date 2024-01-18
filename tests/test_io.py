@@ -32,7 +32,7 @@ def tree(tmpdir, request):
 
 
 @pytest.mark.parametrize(
-    "tree, root, files, archive_create, archive_extract, destination, " "expected",
+    "tree, root, files, archive_create, archive_extract, destination, expected",
     [
         (  # empty
             [],
@@ -338,6 +338,19 @@ def test_archives(
         keep_archive=False,
     )
     assert not os.path.exists(archive_extract)
+
+
+def test_archives_symlink(tmpdir):
+    # Create folder with files and symlink to folder
+    folder = audeer.mkdir(tmpdir, "folder")
+    file = audeer.touch(folder, "file.txt")
+    link = os.path.join(tmpdir, "link")
+    os.symlink(folder, link)
+    archive = os.path.join(tmpdir, "archive.zip")
+
+    audeer.create_archive(link, [file], archive)
+    result = audeer.extract_archive(archive, link)
+    assert result == ["file.txt"]
 
 
 @pytest.mark.parametrize(

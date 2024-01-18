@@ -314,9 +314,6 @@ def extract_archive(
         ['a.txt']
 
     """
-    archive = safe_path(archive)
-    destination = safe_path(destination)
-
     if not os.path.exists(archive):
         raise FileNotFoundError(
             errno.ENOENT,
