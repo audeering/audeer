@@ -1466,6 +1466,13 @@ def test_rmdir(tmpdir):
     audeer.rmdir("folder")
     assert not os.path.exists(path)
     os.chdir(current_path)
+    # Symlink
+    path = audeer.mkdir(tmpdir, "folder")
+    link = os.path.join(tmpdir, "link")
+    os.symlink(path, link)
+    audeer.rmdir(link)
+    assert not os.path.exists(link)
+    assert not os.path.exists(path)
 
 
 def test_touch(tmpdir):
