@@ -970,6 +970,7 @@ def replace_file_extension(
 def rmdir(
     path: typing.Union[str, bytes],
     *paths: typing.Sequence[typing.Union[str, bytes]],
+    follow_symlink=True,
 ):
     """Remove directory.
 
@@ -982,9 +983,15 @@ def rmdir(
         *paths: additional arguments
             to be joined with ``path``
             by :func:`os.path.join`
+        follow_symlink: if ``True``
+            and path is a symbolic link,
+            the link and the folder it points to
+            will be removed
 
     Raises:
         NotADirectoryError: if path is not a directory
+        OSError: if ``follow_symlink`` is ``False``
+            and ``path`` is a symbolic link
 
     Examples:
         >>> _ = mkdir("path1", "path2", "path3")
@@ -995,7 +1002,7 @@ def rmdir(
         []
 
     """
-    path = safe_path(path, *paths)
+    path = safe_path(path, *paths, follow_symlink=follow_symlink)
     if os.path.exists(path):
         shutil.rmtree(path)
 
