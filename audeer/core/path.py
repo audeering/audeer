@@ -17,7 +17,7 @@ if platform.system() in ["Darwin", "Windows"]:  # pragma: no cover
 def path(
     path: typing.Union[str, bytes],
     *paths: typing.Sequence[typing.Union[str, bytes]],
-    follow_symlink: bool = True,
+    follow_symlink: bool = False,
 ) -> str:
     """Expand and normalize to absolute path.
 
@@ -55,12 +55,10 @@ def path(
         >>> file = audeer.touch("file.txt")
         >>> link = path("link.txt")
         >>> os.symlink(file, link)
-        >>> file = path(link)
-        >>> os.path.basename(file)
-        'file.txt'
-        >>> file = path(link, follow_symlink=False)
-        >>> os.path.basename(file)
+        >>> os.path.basename(path(link))
         'link.txt'
+        >>> os.path.basename(path(link, follow_symlink=True))
+        'file.txt'
 
     """
     if paths:
@@ -85,7 +83,7 @@ _path = path
 def safe_path(
     path: typing.Union[str, bytes],
     *paths: typing.Sequence[typing.Union[str, bytes]],
-    follow_symlink: bool = True,
+    follow_symlink: bool = False,
 ) -> str:
     """Expand and normalize to absolute path.
 
@@ -127,12 +125,10 @@ def safe_path(
         >>> file = audeer.touch("file.txt")
         >>> link = path("link.txt")
         >>> os.symlink(file, link)
-        >>> file = path(link)
-        >>> os.path.basename(file)
-        'file.txt'
-        >>> file = path(link, follow_symlink=False)
-        >>> os.path.basename(file)
+        >>> os.path.basename(path(link))
         'link.txt'
+        >>> os.path.basename(path(link, follow_symlink=True))
+        'file.txt'
 
     """
-    return _path(path, *paths)
+    return _path(path, *paths, follow_symlink=follow_symlink)
