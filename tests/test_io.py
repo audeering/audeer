@@ -968,6 +968,30 @@ def test_list_file_names(tmpdir, files, path, filetype, expected, recursive, hid
     assert f == expected
 
 
+def test_list_file_names_symlinks(tmpdir):
+    # symlinks in folder
+    folder = audeer.mkdir(tmpdir, "folder")
+    file = audeer.touch(folder, "file.txt")
+    link = audeer.path(folder, "link.txt")
+    os.symlink(file, link)
+    files = audeer.list_file_names(folder, basenames=True)
+    assert files == ["file.txt", "link.txt"]
+    os.remove(link)
+    # symlinks to sub-folders
+    sub_folder = audeer.mkdir(folder, "sub-folder")
+    audeer.touch(sub_folder, "file2.txt")
+    link = audeer.path(folder, "link")
+    os.symlink(sub_folder, link)
+    files = audeer.list_file_names(folder, basenames=True)
+    assert files == ["file.txt"]
+    files = audeer.list_file_names(folder, basenames=True, recursive=True)
+    assert files == [
+        "file.txt",
+        os.path.join("link", "file2.txt"),
+        os.path.join("sub-folder", "file2.txt"),
+    ]
+
+
 def test_md5_errors():
     with pytest.raises(FileNotFoundError):
         audeer.md5("does/not/exist")
@@ -1070,6 +1094,33 @@ def test_md5_folder(tmpdir, tree, content, expected):
                 fp.write(content)
 
     assert audeer.md5(tmpdir) == expected
+
+
+def test_md5_symbolic_link(tmpdir):
+    # Link to a file
+    file = audeer.touch(tmpdir, "file.txt")
+    link = audeer.path(tmpdir, "link.txt")
+    os.symlink(file, link)
+    assert audeer.md5(file) == audeer.md5(link)
+    os.remove(file)
+    os.remove(link)
+    # Link to a folder
+    folder = audeer.mkdir(tmpdir, "folder")
+    file = audeer.touch(folder, "file.txt")
+    link = audeer.path(tmpdir, "link")
+    os.symlink(folder, link)
+    assert audeer.md5(folder) == audeer.md5(link)
+    os.remove(link)
+    # Link to file in folder
+    md5_single_file = audeer.md5(folder)
+    link = audeer.path(folder, "link.txt")
+    os.symlink(file, link)
+    md5_link = audeer.md5(folder)
+    os.remove(link)
+    audeer.touch(folder, "link.txt")
+    md5_file = audeer.md5(folder)
+    assert md5_link == md5_file
+    assert md5_file != md5_single_file
 
 
 def test_mkdir(tmpdir):
