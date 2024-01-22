@@ -985,7 +985,11 @@ def test_list_file_names_symlinks(tmpdir):
     files = audeer.list_file_names(folder, basenames=True)
     assert files == ["file.txt"]
     files = audeer.list_file_names(folder, basenames=True, recursive=True)
-    assert files == ["file.txt", "link/file2.txt", "sub-folder/file2.txt"]
+    assert files == [
+        "file.txt",
+        os.path.join("link", "file2.txt"),
+        os.path.join("sub-folder", "file2.txt"),
+    ]
 
 
 def test_md5_errors():
