@@ -7,6 +7,46 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.0.0 (2024-01-XX)
+--------------------------
+
+* Added: ``follow_symlink`` keyword argument
+  to ``audeer.path()``
+  with default value ``False``
+* Added: ``follow_symlink`` keyword argument
+  to ``audeer.rmdir()``
+  with default value ``True``
+* Changed: ``audeer.path()`` does no longer
+  uses ``os.path.realpath()``,
+  but ``os.path.abspath()``.
+  This means it does no longer convert symlinks
+  to the real path,
+  but returns the path to the symlink.
+  This provides a speed up of ``audeer.path()``
+  up to 6x
+  as it no longer requires a disk operation.
+  The old behavior of ``audeer.path()``
+  can be achieved by calling
+  ``audeer.path(..., follow_symlink=True)``.
+  The output of the following functions
+  is also affected by this change
+  if a symlink is part of their input path:
+  ``audeer.common_directory()``,
+  ``audeer.download_url()``,
+  ``audeer.list_dir_names()``,
+  ``audeer.list_file_names()``,
+  ``audeer.mkdir()``,
+  ``audeer.touch()``
+* Changed: ``audeer.create_archive()``
+  can no longer include symbolic links
+  that are located outside of ``root``
+* Fixed: ``audeer.basename_wo_ext()``,
+  ``audeer.file_extension()``,
+  and ``audeer.replace_file_extension()``
+  are no longer affected by existing files,
+  but rely only on the provided input string
+
+
 Version 1.21.0 (2023-12-06)
 ---------------------------
 
