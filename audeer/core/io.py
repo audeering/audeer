@@ -970,7 +970,7 @@ def replace_file_extension(
 def rmdir(
     path: typing.Union[str, bytes],
     *paths: typing.Sequence[typing.Union[str, bytes]],
-    follow_symlink=True,
+    follow_symlink: bool = True,
 ):
     """Remove directory.
 
