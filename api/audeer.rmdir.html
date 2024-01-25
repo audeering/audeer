@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.21.0
+                v2.0.0
               </div>
             
           
@@ -183,7 +183,7 @@
 <h1>rmdir()<a class="headerlink" href="#rmdir" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.rmdir">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">rmdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#rmdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.rmdir" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">rmdir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#rmdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.rmdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove directory.</p>
 <p>Remove the directory
 and all its content
@@ -195,18 +195,26 @@ if the directory exists.</p>
 <li><p><strong>*paths</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]]) – additional arguments
 to be joined with <code class="docutils literal notranslate"><span class="pre">path</span></code>
 by <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.join" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.join()</span></code></a></p></li>
+<li><p><strong>follow_symlink</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>
+and path is a symbolic link,
+the link and the folder it points to
+will be removed</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotADirectoryError" title="(in Python v3.12)"><strong>NotADirectoryError</strong></a> – if path is not a directory</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotADirectoryError" title="(in Python v3.12)"><strong>NotADirectoryError</strong></a> – if path is not a directory</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">follow_symlink</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>
+    and <code class="docutils literal notranslate"><span class="pre">path</span></code> is a symbolic link</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">,</span> <span class="s1">&#39;path2&#39;</span><span class="p">,</span> <span class="s1">&#39;path3&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_dir_names</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;path1&quot;</span><span class="p">,</span> <span class="s2">&quot;path2&quot;</span><span class="p">,</span> <span class="s2">&quot;path3&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_dir_names</span><span class="p">(</span><span class="s2">&quot;path1&quot;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">[&#39;path2&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rmdir</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">,</span> <span class="s1">&#39;path2&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_dir_names</span><span class="p">(</span><span class="s1">&#39;path1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rmdir</span><span class="p">(</span><span class="s2">&quot;path1&quot;</span><span class="p">,</span> <span class="s2">&quot;path2&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">list_dir_names</span><span class="p">(</span><span class="s2">&quot;path1&quot;</span><span class="p">)</span>
 <span class="go">[]</span>
 </pre></div>
 </div>
@@ -237,7 +245,7 @@ by <a class="reference external" href="https://docs.python.org/3/library/os.path
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/01/25 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

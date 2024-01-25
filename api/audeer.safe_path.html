@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.21.0
+                v2.0.0
               </div>
             
           
@@ -183,14 +183,17 @@
 <h1>safe_path()<a class="headerlink" href="#safe-path" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.safe_path">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">safe_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">paths</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/path.html#safe_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.safe_path" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">safe_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">paths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_symlink</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/path.html#safe_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.safe_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Expand and normalize to absolute path.</p>
 <p>It uses <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.realpath" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.realpath()</span></code></a>
 and <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.expanduser" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.expanduser()</span></code></a>
 to ensure an absolute path
 without <code class="docutils literal notranslate"><span class="pre">..</span></code> or <code class="docutils literal notranslate"><span class="pre">~</span></code>,
 and independent of the path separator
-of the operating system.</p>
+of the operating system.
+If <code class="docutils literal notranslate"><span class="pre">follow_symlink</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+the faster <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.abspath" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.abspath()</span></code></a> is used
+instead of <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.realpath" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.realpath()</span></code></a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p><a class="reference internal" href="#audeer.safe_path" title="audeer.safe_path"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.safe_path()</span></code></a> is deprecated,
@@ -203,6 +206,10 @@ please use <a class="reference internal" href="audeer.path.html#audeer.path" tit
 <li><p><strong>*paths</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]]) – additional arguments
 to be joined with <code class="docutils literal notranslate"><span class="pre">path</span></code>
 by <a class="reference external" href="https://docs.python.org/3/library/os.path.html#os.path.join" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.path.join()</span></code></a></p></li>
+<li><p><strong>follow_symlink</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>
+symlinks are followed
+and the path of the original file
+is returned</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -213,13 +220,20 @@ by <a class="reference external" href="https://docs.python.org/3/library/os.path
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s2">&quot;~/path/.././path&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
 <span class="go">&#39;path&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s1">&#39;~/path/.././path&#39;</span><span class="p">,</span> <span class="s1">&#39;./file.txt&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="s2">&quot;~/path/.././path&quot;</span><span class="p">,</span> <span class="s2">&quot;./file.txt&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
 <span class="go">&#39;path/file.txt&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="s2">&quot;file.txt&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">link</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s2">&quot;link.txt&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">(</span><span class="n">link</span><span class="p">))</span>
+<span class="go">&#39;link.txt&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="n">follow_symlink</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="go">&#39;file.txt&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -249,7 +263,7 @@ by <a class="reference external" href="https://docs.python.org/3/library/os.path
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/01/25 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                v1.21.0
+                v2.0.0
               </div>
             
           
@@ -102,6 +102,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-0-0-2024-01-25">Version 2.0.0 (2024-01-25)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-21-0-2023-12-06">Version 1.21.0 (2023-12-06)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-20-2-2023-11-28">Version 1.20.2 (2023-11-28)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-1-20-1-2023-05-04">Version 1.20.1 (2023-05-04)</a></li>
@@ -209,6 +210,46 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<div class="section" id="version-2-0-0-2024-01-25">
+<h2>Version 2.0.0 (2024-01-25)<a class="headerlink" href="#version-2-0-0-2024-01-25" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Added: <code class="docutils literal notranslate"><span class="pre">follow_symlink</span></code> keyword argument
+to <code class="docutils literal notranslate"><span class="pre">audeer.path()</span></code>
+with default value <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p>Added: <code class="docutils literal notranslate"><span class="pre">follow_symlink</span></code> keyword argument
+to <code class="docutils literal notranslate"><span class="pre">audeer.rmdir()</span></code>
+with default value <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.path()</span></code> does no longer
+uses <code class="docutils literal notranslate"><span class="pre">os.path.realpath()</span></code>,
+but <code class="docutils literal notranslate"><span class="pre">os.path.abspath()</span></code>.
+This means it does no longer convert symlinks
+to the real path,
+but returns the path to the symlink.
+This provides a speed up of <code class="docutils literal notranslate"><span class="pre">audeer.path()</span></code>
+up to 6x
+as it no longer requires a disk operation.
+The old behavior of <code class="docutils literal notranslate"><span class="pre">audeer.path()</span></code>
+can be achieved by calling
+<code class="docutils literal notranslate"><span class="pre">audeer.path(...,</span> <span class="pre">follow_symlink=True)</span></code>.
+The output of the following functions
+is also affected by this change
+if a symlink is part of their input path:
+<code class="docutils literal notranslate"><span class="pre">audeer.common_directory()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.download_url()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.list_dir_names()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.list_file_names()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.mkdir()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.touch()</span></code></p></li>
+<li><p>Changed: the <code class="docutils literal notranslate"><span class="pre">files</span></code> argument of <code class="docutils literal notranslate"><span class="pre">audeer.create_archive()</span></code>
+can no longer include symbolic links
+that are located outside of <code class="docutils literal notranslate"><span class="pre">root</span></code></p></li>
+<li><p>Fixed: <code class="docutils literal notranslate"><span class="pre">audeer.basename_wo_ext()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.file_extension()</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">audeer.replace_file_extension()</span></code>
+are no longer affected by existing files and symlinks,
+but rely only on the provided input string</p></li>
+</ul>
+</div>
 <div class="section" id="version-1-21-0-2023-12-06">
 <h2>Version 1.21.0 (2023-12-06)<a class="headerlink" href="#version-1-21-0-2023-12-06" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
@@ -219,8 +260,8 @@ and should be used instead of <code class="docutils literal notranslate"><span c
 <code class="docutils literal notranslate"><span class="pre">audeer.mkdir()</span></code>,
 <code class="docutils literal notranslate"><span class="pre">audeer.rmdir()</span></code>,
 and <code class="docutils literal notranslate"><span class="pre">audeer.touch()</span></code>.
-Instead of writing <code class="docutils literal notranslate"><span class="pre">audeer.mkdir(os.path.join('a',</span> <span class="pre">'b'))</span></code>,
-you can now write <code class="docutils literal notranslate"><span class="pre">audeer.mkdir('a',</span> <span class="pre">'b')</span></code></p></li>
+Instead of writing <code class="docutils literal notranslate"><span class="pre">audeer.mkdir(os.path.join(&quot;a&quot;,</span> <span class="pre">&quot;b&quot;))</span></code>,
+you can now write <code class="docutils literal notranslate"><span class="pre">audeer.mkdir(&quot;a&quot;,</span> <span class="pre">&quot;b&quot;)</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="version-1-20-2-2023-11-28">
@@ -292,7 +333,7 @@ instead of replacing the filename</p></li>
 <li><p>Fixed: <code class="docutils literal notranslate"><span class="pre">audeer.replace_file_extension()</span></code>
 now returns the original filename
 when an empty new file extension is provided
-instead of adding <code class="docutils literal notranslate"><span class="pre">'.'</span></code> at the end of the filename</p></li>
+instead of adding <code class="docutils literal notranslate"><span class="pre">&quot;.&quot;</span></code> at the end of the filename</p></li>
 <li><p>Fixed: <code class="docutils literal notranslate"><span class="pre">audeer.extract_archive()</span></code>
 and <code class="docutils literal notranslate"><span class="pre">audeer.extract_archives()</span></code>
 now return normalized relative paths
@@ -771,7 +812,7 @@ and remove obsolete <code class="docutils literal notranslate"><span class="pre"
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/01/25 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

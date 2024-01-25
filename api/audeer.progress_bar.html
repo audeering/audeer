@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v1.21.0
+                v2.0.0
               </div>
             
           
@@ -188,7 +188,7 @@
 <p>If you want to show a constant description text
 during presenting the prgress bar,
 you can use it similar to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Copying&#39;</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">progress_bar</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Copying&quot;</span><span class="p">):</span>
     <span class="n">copy</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -197,7 +197,7 @@ you have to explicitly do that in each step:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">progress_bar</span><span class="p">(</span><span class="n">files</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="n">format_display_message</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Copying </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Copying </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">pbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">pbar</span><span class="o">.</span><span class="n">set_description_str</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span>
@@ -249,7 +249,7 @@ you have to explicitly do that in each step:</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/01/25 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

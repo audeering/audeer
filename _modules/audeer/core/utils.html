@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v1.21.0
+                v2.0.0
               </div>
             
           
@@ -160,13 +160,13 @@
 <span class="kn">from</span> <span class="nn">audeer.core.version</span> <span class="kn">import</span> <span class="n">LooseVersion</span>
 
 
-<span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;git_repo_tags&#39;</span><span class="p">,</span> <span class="s1">&#39;git_repo_version&#39;</span><span class="p">]</span>
+<span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git_repo_tags&quot;</span><span class="p">,</span> <span class="s2">&quot;git_repo_version&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="deprecated"><a class="viewcode-back" href="../../../api/audeer.deprecated.html#audeer.deprecated">[docs]</a><span class="k">def</span> <span class="nf">deprecated</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">removal_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">alternative</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">removal_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">alternative</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark code as deprecated.</span>
 
@@ -186,11 +186,12 @@
 <span class="sd">        alternative: alternative code to use</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; @deprecated(removal_version=&#39;2.0.0&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; @deprecated(removal_version=&quot;2.0.0&quot;)</span>
 <span class="sd">        ... def deprecated_function():</span>
 <span class="sd">        ...     pass</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">_deprecated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="c1"># functools.wraps preserves the name</span>
         <span class="c1"># and docstring of the decorated code:</span>
@@ -198,22 +199,24 @@
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">new_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1"> is deprecated and will be removed &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;with version </span><span class="si">{</span><span class="n">removal_version</span><span class="si">}</span><span class="s1">.&#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is deprecated and will be removed &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;with version </span><span class="si">{</span><span class="n">removal_version</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">alternative</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; Use </span><span class="si">{</span><span class="n">alternative</span><span class="si">}</span><span class="s1"> instead.&#39;</span>
+                <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Use </span><span class="si">{</span><span class="n">alternative</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">new_func</span>
+
     <span class="k">return</span> <span class="n">_deprecated</span></div>
 
 
 <div class="viewcode-block" id="deprecated_default_value"><a class="viewcode-back" href="../../../api/audeer.deprecated_default_value.html#audeer.deprecated_default_value">[docs]</a><span class="k">def</span> <span class="nf">deprecated_default_value</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">argument</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">change_in_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">new_default_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">argument</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">change_in_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">new_default_value</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Mark default value of keyword argument as deprecated.</span>
 
@@ -230,13 +233,14 @@
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; @deprecated_default_value(</span>
-<span class="sd">        ...     argument=&#39;foo&#39;,</span>
-<span class="sd">        ...     change_in_version=&#39;2.0.0&#39;,</span>
-<span class="sd">        ...     new_default_value=&#39;bar&#39;,</span>
+<span class="sd">        ...     argument=&quot;foo&quot;,</span>
+<span class="sd">        ...     change_in_version=&quot;2.0.0&quot;,</span>
+<span class="sd">        ...     new_default_value=&quot;bar&quot;,</span>
 <span class="sd">        ... )</span>
-<span class="sd">        ... def deprecated_function(foo=&#39;foo&#39;):</span>
+<span class="sd">        ... def deprecated_function(foo=&quot;foo&quot;):</span>
 <span class="sd">        ...     pass</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">_deprecated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="c1"># functools.wraps preserves the name</span>
         <span class="c1"># and docstring of the decorated code:</span>
@@ -249,21 +253,23 @@
                 <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;The default of &#39;</span><span class="si">{</span><span class="n">argument</span><span class="si">}</span><span class="s2">&#39; will change from &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">default_value</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">new_default_value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                    <span class="sa">f</span><span class="s1">&#39;with version </span><span class="si">{</span><span class="n">change_in_version</span><span class="si">}</span><span class="s1">.&#39;</span>
+                    <span class="sa">f</span><span class="s2">&quot;with version </span><span class="si">{</span><span class="n">change_in_version</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">new_func</span>
+
     <span class="k">return</span> <span class="n">_deprecated</span></div>
 
 
 <div class="viewcode-block" id="deprecated_keyword_argument"><a class="viewcode-back" href="../../../api/audeer.deprecated_keyword_argument.html#audeer.deprecated_keyword_argument">[docs]</a><span class="k">def</span> <span class="nf">deprecated_keyword_argument</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">deprecated_argument</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">removal_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">new_argument</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mapping</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">remove_from_kwargs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">deprecated_argument</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">removal_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">new_argument</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mapping</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">remove_from_kwargs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Mark keyword argument as deprecated.</span>
 
@@ -288,14 +294,15 @@
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; @deprecated_keyword_argument(</span>
-<span class="sd">        ...     deprecated_argument=&#39;foo&#39;,</span>
-<span class="sd">        ...     new_argument=&#39;bar&#39;,</span>
-<span class="sd">        ...     removal_version=&#39;2.0.0&#39;,</span>
+<span class="sd">        ...     deprecated_argument=&quot;foo&quot;,</span>
+<span class="sd">        ...     new_argument=&quot;bar&quot;,</span>
+<span class="sd">        ...     removal_version=&quot;2.0.0&quot;,</span>
 <span class="sd">        ... )</span>
 <span class="sd">        ... def function_with_new_argument(*, bar):</span>
 <span class="sd">        ...     pass</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">_deprecated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
         <span class="c1"># functools.wraps preserves the name</span>
         <span class="c1"># and docstring of the decorated code:</span>
@@ -323,13 +330,13 @@
                     <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">new_func</span>
+
     <span class="k">return</span> <span class="n">_deprecated</span></div>
 
 
-<div class="viewcode-block" id="flatten_list"><a class="viewcode-back" href="../../../api/audeer.flatten_list.html#audeer.flatten_list">[docs]</a><span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span>
-        <span class="n">nested_list</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
+<div class="viewcode-block" id="flatten_list"><a class="viewcode-back" href="../../../api/audeer.flatten_list.html#audeer.flatten_list">[docs]</a><span class="k">def</span> <span class="nf">flatten_list</span><span class="p">(</span><span class="n">nested_list</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Flatten an arbitrarily nested list.</span>
 
 <span class="sd">    Implemented without  recursion to avoid stack overflows.</span>
@@ -348,6 +355,7 @@
 <span class="sd">        [1, 2, 3]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">_flat_generator</span><span class="p">(</span><span class="n">nested_list</span><span class="p">):</span>
         <span class="k">while</span> <span class="n">nested_list</span><span class="p">:</span>
             <span class="n">sublist</span> <span class="o">=</span> <span class="n">nested_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -355,6 +363,7 @@
                 <span class="n">nested_list</span> <span class="o">=</span> <span class="n">sublist</span> <span class="o">+</span> <span class="n">nested_list</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">sublist</span>
+
     <span class="n">nested_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">nested_list</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_flat_generator</span><span class="p">(</span><span class="n">nested_list</span><span class="p">))</span></div>
 
@@ -370,21 +379,21 @@
 <span class="sd">        RuntimeError: if running ``pip freeze`` returns an error</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;pip freeze &gt; </span><span class="si">{</span><span class="n">outfile</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;pip freeze &gt; </span><span class="si">{</span><span class="n">outfile</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">with</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
-            <span class="n">args</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
-            <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
-            <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
-            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
+        <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
+        <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+        <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Freezing Python packages failed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Freezing Python packages failed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="git_repo_tags"><a class="viewcode-back" href="../../../api/audeer.git_repo_tags.html#audeer.git_repo_tags">[docs]</a><span class="k">def</span> <span class="nf">git_repo_tags</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get a list of available git tags.</span>
 
@@ -407,23 +416,23 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">git</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;tag&#39;</span><span class="p">]</span>
+        <span class="n">git</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;tag&quot;</span><span class="p">]</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="n">git</span><span class="p">)</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="n">tags</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="n">tags</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="n">tags</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">tags</span>
     <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;v</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;v&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
+        <span class="n">tags</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;v&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tags</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">tags</span></div>
 
 
 <div class="viewcode-block" id="git_repo_version"><a class="viewcode-back" href="../../../api/audeer.git_repo_version.html#audeer.git_repo_version">[docs]</a><span class="k">def</span> <span class="nf">git_repo_version</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get a version number from current git ref.</span>
 
@@ -445,23 +454,23 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">git</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;git&#39;</span><span class="p">,</span> <span class="s1">&#39;describe&#39;</span><span class="p">,</span> <span class="s1">&#39;--tags&#39;</span><span class="p">,</span> <span class="s1">&#39;--always&#39;</span><span class="p">]</span>
+        <span class="n">git</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;describe&quot;</span><span class="p">,</span> <span class="s2">&quot;--tags&quot;</span><span class="p">,</span> <span class="s2">&quot;--always&quot;</span><span class="p">]</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">(</span><span class="n">git</span><span class="p">)</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;&lt;unknown&gt;&#39;</span>
-    <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># pragma: no cover (only local)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;&lt;unknown&gt;&quot;</span>
+    <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;v&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># pragma: no cover (only local)</span>
         <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># pragma: no cover (only github)</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;v&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># pragma: no cover (only github)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;v</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">return</span> <span class="n">version</span></div>
 
 
 <div class="viewcode-block" id="install_package"><a class="viewcode-back" href="../../../api/audeer.install_package.html#audeer.install_package">[docs]</a><span class="k">def</span> <span class="nf">install_package</span><span class="p">(</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Install a Python package with pip.</span>
 
@@ -497,16 +506,16 @@
     <span class="c1"># check for operators, e.g.</span>
     <span class="c1"># &gt;=1.0, &gt;1.0, &lt;=1.0, &lt;1.0</span>
     <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&gt;=&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&gt;=&quot;</span><span class="p">):</span>
             <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">ge</span>
             <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">):</span>
             <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">gt</span>
             <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&lt;=&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;=&quot;</span><span class="p">):</span>
             <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">le</span>
             <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&lt;&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">version</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">):</span>
             <span class="n">op</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">lt</span>
             <span class="n">version</span> <span class="o">=</span> <span class="n">version</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
@@ -537,16 +546,16 @@
         <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="n">operator</span><span class="o">.</span><span class="n">eq</span><span class="p">:</span>
             <span class="c1"># since we do not support ==1.0</span>
             <span class="c1"># we have to add it here</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">==</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">==</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">version</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span>
         <span class="p">[</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
-            <span class="s1">&#39;-m&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;pip&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;install&#39;</span><span class="p">,</span>
+            <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;install&quot;</span><span class="p">,</span>
             <span class="n">name</span><span class="p">,</span>
         <span class="p">],</span>
         <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span> <span class="k">if</span> <span class="n">silent</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -577,15 +586,15 @@
 <span class="sd">        ``True`` if version is a semantic version</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; is_semantic_version(&#39;v1&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; is_semantic_version(&quot;v1&quot;)</span>
 <span class="sd">        False</span>
-<span class="sd">        &gt;&gt;&gt; is_semantic_version(&#39;1.2.3-r3&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; is_semantic_version(&quot;1.2.3-r3&quot;)</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; is_semantic_version(&#39;v0.7.2-9-g1572b37&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; is_semantic_version(&quot;v0.7.2-9-g1572b37&quot;)</span>
 <span class="sd">        True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">version_parts</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">version_parts</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">version_parts</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
@@ -599,15 +608,15 @@
 
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">version_parts</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
     <span class="c1"># Ignore starting &#39;v&#39;</span>
-    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;v&quot;</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
 
-    <span class="n">z</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">version_parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">version_parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
     <span class="c1"># For Z, &#39;-&#39; and &#39;+&#39; are also allowed as separators,</span>
     <span class="c1"># but you are not allowed to have an additional &#39;.&#39; before</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
@@ -629,11 +638,11 @@
 <span class="sd">        ``True`` if string is a unique identifier</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; is_uid(&#39;626f68e6-d336-70b9-e753-ed9fad855840&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; is_uid(&quot;626f68e6-d336-70b9-e753-ed9fad855840&quot;)</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; is_uid(&#39;ad855840&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; is_uid(&quot;ad855840&quot;)</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; is_uid(&#39;not a unique identifier&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; is_uid(&quot;not a unique identifier&quot;)</span>
 <span class="sd">        False</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -645,10 +654,10 @@
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">uid</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
-        <span class="n">uid</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;00000000-0000-0000-0000-0000</span><span class="si">{</span><span class="n">uid</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;00000000-0000-0000-0000-0000</span><span class="si">{</span><span class="n">uid</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">for</span> <span class="n">pos</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">23</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">uid</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">uid</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -660,18 +669,18 @@
 
 
 <div class="viewcode-block" id="run_tasks"><a class="viewcode-back" href="../../../api/audeer.run_tasks.html#audeer.run_tasks">[docs]</a><span class="k">def</span> <span class="nf">run_tasks</span><span class="p">(</span>
-        <span class="n">task_func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span>
-        <span class="n">params</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span>
-            <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
-                <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
-                <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
-            <span class="p">]</span>
-        <span class="p">],</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">multiprocessing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">task_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">task_func</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span>
+        <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span>
+            <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+            <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+        <span class="p">]</span>
+    <span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">multiprocessing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">task_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run parallel tasks using multprocessing.</span>
 
@@ -695,7 +704,7 @@
 <span class="sd">            that will be displayed next to progress bar</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; power = lambda x, n: x ** n</span>
+<span class="sd">        &gt;&gt;&gt; power = lambda x, n: x**n</span>
 <span class="sd">        &gt;&gt;&gt; params = [([2, n], {}) for n in range(10)]</span>
 <span class="sd">        &gt;&gt;&gt; run_tasks(power, params, num_workers=3)</span>
 <span class="sd">        [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]</span>
@@ -705,7 +714,6 @@
     <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_tasks</span>
 
     <span class="k">if</span> <span class="n">num_workers</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># sequential</span>
-
         <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
             <span class="n">params</span><span class="p">,</span>
             <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
@@ -716,16 +724,15 @@
                 <span class="n">results</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_func</span><span class="p">(</span><span class="o">*</span><span class="n">param</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">param</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">else</span><span class="p">:</span>  <span class="c1"># parallel</span>
-
         <span class="k">if</span> <span class="n">multiprocessing</span><span class="p">:</span>
             <span class="n">executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span>
         <span class="k">with</span> <span class="n">executor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">progress_bar</span><span class="p">(</span>
-                    <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
-                    <span class="n">desc</span><span class="o">=</span><span class="n">task_description</span><span class="p">,</span>
-                    <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">,</span>
+                <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">task_description</span><span class="p">,</span>
+                <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">progress_bar</span><span class="p">,</span>
             <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
                 <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
@@ -739,14 +746,14 @@
     <span class="k">return</span> <span class="n">results</span></div>
 
 
-<span class="nd">@deprecated</span><span class="p">(</span><span class="n">removal_version</span><span class="o">=</span><span class="s1">&#39;2.0.0&#39;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;run_tasks&#39;</span><span class="p">)</span>
+<span class="nd">@deprecated</span><span class="p">(</span><span class="n">removal_version</span><span class="o">=</span><span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span> <span class="n">alternative</span><span class="o">=</span><span class="s2">&quot;run_tasks&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">run_worker_threads</span><span class="p">(</span>
-        <span class="n">task_fun</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span>
-        <span class="n">params</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">task_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">task_fun</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">task_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run parallel tasks using worker threads.</span>
 
@@ -764,7 +771,7 @@
 <span class="sd">            that will be displayed next to progress bar</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; power = lambda x, n: x ** n</span>
+<span class="sd">        &gt;&gt;&gt; power = lambda x, n: x**n</span>
 <span class="sd">        &gt;&gt;&gt; params = [(2, n) for n in range(10)]</span>
 <span class="sd">        &gt;&gt;&gt; run_worker_threads(power, params, num_workers=3)</span>
 <span class="sd">        [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]</span>
@@ -792,9 +799,9 @@
 
     <span class="c1"># num_workers &gt; 1 -&gt; run parallel</span>
     <span class="k">else</span><span class="p">:</span>
-
         <span class="c1"># Create queue, possibly with a progress bar</span>
         <span class="k">if</span> <span class="n">progress_bar</span><span class="p">:</span>
+
             <span class="k">class</span> <span class="nc">QueueWithProgbar</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">):</span>
                 <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_tasks</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
                     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">maxsize</span><span class="p">)</span>
@@ -806,6 +813,7 @@
                 <span class="k">def</span> <span class="nf">task_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
                     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
             <span class="n">q</span> <span class="o">=</span> <span class="n">QueueWithProgbar</span><span class="p">(</span><span class="n">num_tasks</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">q</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
@@ -846,7 +854,7 @@
 
 
 <div class="viewcode-block" id="sort_versions"><a class="viewcode-back" href="../../../api/audeer.sort_versions.html#audeer.sort_versions">[docs]</a><span class="k">def</span> <span class="nf">sort_versions</span><span class="p">(</span>
-        <span class="n">versions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">versions</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sort version numbers.</span>
 
@@ -865,10 +873,10 @@
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; vers = [</span>
-<span class="sd">        ...     &#39;2.0.0&#39;,</span>
-<span class="sd">        ...     &#39;2.0.1&#39;,</span>
-<span class="sd">        ...     &#39;v1.0.0&#39;,</span>
-<span class="sd">        ...     &#39;v2.0.0-1-gdf29c4a&#39;,</span>
+<span class="sd">        ...     &quot;2.0.0&quot;,</span>
+<span class="sd">        ...     &quot;2.0.1&quot;,</span>
+<span class="sd">        ...     &quot;v1.0.0&quot;,</span>
+<span class="sd">        ...     &quot;v2.0.0-1-gdf29c4a&quot;,</span>
 <span class="sd">        ... ]</span>
 <span class="sd">        &gt;&gt;&gt; sort_versions(vers)</span>
 <span class="sd">        [&#39;v1.0.0&#39;, &#39;2.0.0&#39;, &#39;v2.0.0-1-gdf29c4a&#39;, &#39;2.0.1&#39;]</span>
@@ -884,7 +892,7 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">sort_key</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;v&quot;</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="k">return</span> <span class="n">LooseVersion</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
@@ -905,7 +913,7 @@
 <span class="sd">        input as a list</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; to_list(&#39;abc&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; to_list(&quot;abc&quot;)</span>
 <span class="sd">        [&#39;abc&#39;]</span>
 <span class="sd">        &gt;&gt;&gt; to_list((1, 2, 3))</span>
 <span class="sd">        [1, 2, 3]</span>
@@ -918,9 +926,9 @@
 
 
 <div class="viewcode-block" id="uid"><a class="viewcode-back" href="../../../api/audeer.uid.html#audeer.uid">[docs]</a><span class="k">def</span> <span class="nf">uid</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">from_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">short</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">from_string</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">short</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate unique identifier.</span>
 
@@ -943,9 +951,9 @@
 <span class="sd">        unique identifier</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; uid(from_string=&#39;example_string&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; uid(from_string=&quot;example_string&quot;)</span>
 <span class="sd">        &#39;626f68e6-d336-70b9-e753-ed9fad855840&#39;</span>
-<span class="sd">        &gt;&gt;&gt; uid(from_string=&#39;example_string&#39;, short=True)</span>
+<span class="sd">        &gt;&gt;&gt; uid(from_string=&quot;example_string&quot;, short=True)</span>
 <span class="sd">        &#39;ad855840&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -953,9 +961,9 @@
         <span class="n">uid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">uid</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">()</span>
-        <span class="n">uid</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">from_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="n">uid</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">from_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
         <span class="n">uid</span> <span class="o">=</span> <span class="n">uid</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-        <span class="n">uid</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">20</span><span class="p">:]</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">12</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">16</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">uid</span><span class="p">[</span><span class="mi">20</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">if</span> <span class="n">short</span><span class="p">:</span>
         <span class="n">uid</span> <span class="o">=</span> <span class="n">uid</span><span class="p">[</span><span class="o">-</span><span class="mi">8</span><span class="p">:]</span>
@@ -976,7 +984,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/01/25 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v1.21.0
+                v2.0.0
               </div>
             
           
@@ -242,21 +242,22 @@
 <span class="sd">            the ``StrictVersion.version_re`` pattern</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; v1 = StrictVersion(&#39;1.17.2a1&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; v1 = StrictVersion(&quot;1.17.2a1&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; v1</span>
 <span class="sd">        StrictVersion (&#39;1.17.2a1&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; v1.version</span>
 <span class="sd">        (1, 17, 2)</span>
 <span class="sd">        &gt;&gt;&gt; v1.prerelease</span>
 <span class="sd">        (&#39;a&#39;, 1)</span>
-<span class="sd">        &gt;&gt;&gt; v2 = StrictVersion(&#39;1.17.2&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; v2 = StrictVersion(&quot;1.17.2&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; v1 &lt; v2</span>
 <span class="sd">        True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">version_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?$&#39;</span><span class="p">,</span>
-                            <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">ASCII</span><span class="p">)</span>
+    <span class="n">version_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;^(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?$&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">ASCII</span>
+    <span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Version regexp pattern.</span>
 
 <span class="sd">    The regexp pattern is used to split the version</span>
@@ -293,8 +294,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;invalid version number &#39;</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
-        <span class="p">(</span><span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">prerelease</span><span class="p">,</span> <span class="n">prerelease_num</span><span class="p">)</span> <span class="o">=</span> \
-            <span class="k">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">prerelease</span><span class="p">,</span> <span class="n">prerelease_num</span><span class="p">)</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">patch</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="p">[</span><span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="p">,</span> <span class="n">patch</span><span class="p">]))</span>
@@ -309,9 +309,9 @@
 <div class="viewcode-block" id="StrictVersion.__str__"><a class="viewcode-back" href="../../../api/audeer.StrictVersion.html#audeer.StrictVersion.__str__">[docs]</a>    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;String representation of version.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">vstring</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]))</span>
+            <span class="n">vstring</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">vstring</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
+            <span class="n">vstring</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span><span class="p">:</span>
             <span class="n">vstring</span> <span class="o">=</span> <span class="n">vstring</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -338,13 +338,13 @@
         <span class="c1"># case 3: self doesn&#39;t have prerelease, other does: self is greater</span>
         <span class="c1"># case 4: both have prerelease: must compare them!</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">:</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">1</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">:</span>
                 <span class="k">return</span> <span class="mi">0</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">prerelease</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">prerelease</span><span class="p">:</span>
@@ -388,6 +388,7 @@
 <span class="c1"># &quot;1.5.1&quot; &lt; &quot;1.5.2a2&quot; &lt; &quot;1.5.2&quot;, but under the tuple/lexical comparison</span>
 <span class="c1"># implemented here, this just isn&#39;t so.</span>
 
+
 <div class="viewcode-block" id="LooseVersion"><a class="viewcode-back" href="../../../api/audeer.LooseVersion.html#audeer.LooseVersion">[docs]</a><span class="k">class</span> <span class="nc">LooseVersion</span><span class="p">(</span><span class="n">Version</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Version numbering for anarchists and software realists.</span>
 
@@ -422,17 +423,18 @@
 <span class="sd">        version: version string</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; v1 = LooseVersion(&#39;1.17.2&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; v1 = LooseVersion(&quot;1.17.2&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; v1</span>
 <span class="sd">        LooseVersion (&#39;1.17.2&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; v1.version</span>
 <span class="sd">        [1, 17, 2]</span>
-<span class="sd">        &gt;&gt;&gt; v2 = LooseVersion(&#39;1.17.2-3-g70b71bd&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; v2 = LooseVersion(&quot;1.17.2-3-g70b71bd&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; v1 &lt; v2</span>
 <span class="sd">        True</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">version_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+ | [a-z]+ | \.)&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
+
+    <span class="n">version_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(\d+ | [a-z]+ | \.)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Version regexp pattern.</span>
 
 <span class="sd">    The regexp pattern is used to split the version</span>
@@ -486,10 +488,7 @@
         <span class="c1"># from the parsed tuple -- so I just store the string here for</span>
         <span class="c1"># use by __str__</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vstring</span> <span class="o">=</span> <span class="n">version</span>
-        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span>
-        <span class="p">]</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">version</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="s2">&quot;.&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">components</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">components</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -525,7 +524,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/01/25 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v1.21.0
+                v2.0.0
               </div>
             
           
@@ -147,16 +147,17 @@
 <span class="c1"># on Windows and MacOS</span>
 <span class="c1"># (which adds /System/Volumes/Data in front in the Github runner)</span>
 <span class="c1"># as it outputs a path in Linux syntax in the example</span>
-<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Darwin&#39;</span><span class="p">,</span> <span class="s1">&#39;Windows&#39;</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
+<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Darwin&quot;</span><span class="p">,</span> <span class="s2">&quot;Windows&quot;</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
     <span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s1">&#39;path&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;safe_path&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;safe_path&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
 
 <div class="viewcode-block" id="path"><a class="viewcode-back" href="../../../api/audeer.path.html#audeer.path">[docs]</a><span class="k">def</span> <span class="nf">path</span><span class="p">(</span>
-        <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
-        <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
+    <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span>
+    <span class="n">follow_symlink</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Expand and normalize to absolute path.</span>
 
@@ -166,33 +167,51 @@
 <span class="sd">    without ``..`` or ``~``,</span>
 <span class="sd">    and independent of the path separator</span>
 <span class="sd">    of the operating system.</span>
+<span class="sd">    If ``follow_symlink`` is ``False``,</span>
+<span class="sd">    the faster :func:`os.path.abspath` is used</span>
+<span class="sd">    instead of :func:`os.path.realpath`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to file, directory</span>
 <span class="sd">        *paths: additional arguments</span>
 <span class="sd">            to be joined with ``path``</span>
 <span class="sd">            by :func:`os.path.join`</span>
+<span class="sd">        follow_symlink: if ``True``</span>
+<span class="sd">            symlinks are followed</span>
+<span class="sd">            and the path of the original file</span>
+<span class="sd">            is returned</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (joined and) expanded path</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; home = path(&#39;~&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; folder = path(&#39;~/path/.././path&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; folder[len(home) + 1:]</span>
+<span class="sd">        &gt;&gt;&gt; home = path(&quot;~&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; folder = path(&quot;~/path/.././path&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; folder[len(home) + 1 :]</span>
 <span class="sd">        &#39;path&#39;</span>
-<span class="sd">        &gt;&gt;&gt; file = path(&#39;~/path/.././path&#39;, &#39;./file.txt&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; file[len(home) + 1:]</span>
+<span class="sd">        &gt;&gt;&gt; file = path(&quot;~/path/.././path&quot;, &quot;./file.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; file[len(home) + 1 :]</span>
 <span class="sd">        &#39;path/file.txt&#39;</span>
+<span class="sd">        &gt;&gt;&gt; file = audeer.touch(&quot;file.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; link = path(&quot;link.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; os.symlink(file, link)</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(path(link))</span>
+<span class="sd">        &#39;link.txt&#39;</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(path(link, follow_symlink=True))</span>
+<span class="sd">        &#39;file.txt&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">paths</span><span class="p">:</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">follow_symlink</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="c1"># Convert bytes to str, see https://stackoverflow.com/a/606199</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bytes</span><span class="p">:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\x00</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">path</span></div>
 
 
@@ -202,8 +221,9 @@
 
 
 <div class="viewcode-block" id="safe_path"><a class="viewcode-back" href="../../../api/audeer.safe_path.html#audeer.safe_path">[docs]</a><span class="k">def</span> <span class="nf">safe_path</span><span class="p">(</span>
-        <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
-        <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
+    <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span>
+    <span class="n">follow_symlink</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Expand and normalize to absolute path.</span>
 
@@ -213,6 +233,9 @@
 <span class="sd">    without ``..`` or ``~``,</span>
 <span class="sd">    and independent of the path separator</span>
 <span class="sd">    of the operating system.</span>
+<span class="sd">    If ``follow_symlink`` is ``False``,</span>
+<span class="sd">    the faster :func:`os.path.abspath` is used</span>
+<span class="sd">    instead of :func:`os.path.realpath`.</span>
 
 <span class="sd">    Warning:</span>
 <span class="sd">        :func:`audeer.safe_path` is deprecated,</span>
@@ -223,21 +246,32 @@
 <span class="sd">        *paths: additional arguments</span>
 <span class="sd">            to be joined with ``path``</span>
 <span class="sd">            by :func:`os.path.join`</span>
+<span class="sd">        follow_symlink: if ``True``</span>
+<span class="sd">            symlinks are followed</span>
+<span class="sd">            and the path of the original file</span>
+<span class="sd">            is returned</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (joined and) expanded path</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; home = safe_path(&#39;~&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; folder = safe_path(&#39;~/path/.././path&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; folder[len(home) + 1:]</span>
+<span class="sd">        &gt;&gt;&gt; home = safe_path(&quot;~&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; folder = safe_path(&quot;~/path/.././path&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; folder[len(home) + 1 :]</span>
 <span class="sd">        &#39;path&#39;</span>
-<span class="sd">        &gt;&gt;&gt; file = safe_path(&#39;~/path/.././path&#39;, &#39;./file.txt&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; file[len(home) + 1:]</span>
+<span class="sd">        &gt;&gt;&gt; file = safe_path(&quot;~/path/.././path&quot;, &quot;./file.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; file[len(home) + 1 :]</span>
 <span class="sd">        &#39;path/file.txt&#39;</span>
+<span class="sd">        &gt;&gt;&gt; file = audeer.touch(&quot;file.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; link = path(&quot;link.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; os.symlink(file, link)</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(path(link))</span>
+<span class="sd">        &#39;link.txt&#39;</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(path(link, follow_symlink=True))</span>
+<span class="sd">        &#39;file.txt&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">,</span> <span class="n">follow_symlink</span><span class="o">=</span><span class="n">follow_symlink</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -253,7 +287,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2023/12/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/01/25 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
