@@ -37,13 +37,13 @@ Version 2.0.0 (2024-01-25)
   ``audeer.list_file_names()``,
   ``audeer.mkdir()``,
   ``audeer.touch()``
-* Changed: ``audeer.create_archive()``
+* Changed: the ``files`` argument of ``audeer.create_archive()``
   can no longer include symbolic links
   that are located outside of ``root``
 * Fixed: ``audeer.basename_wo_ext()``,
   ``audeer.file_extension()``,
   and ``audeer.replace_file_extension()``
-  are no longer affected by existing files,
+  are no longer affected by existing files and symlinks,
   but rely only on the provided input string
 
 
