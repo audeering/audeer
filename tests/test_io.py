@@ -1522,6 +1522,7 @@ def test_rmdir(tmpdir):
     link = os.path.join(tmpdir, "link")
     os.symlink(path, link)
     with pytest.raises(OSError, match="symbolic link"):
+        # Skip this on MacOS Python 3.12?
         audeer.rmdir(link, follow_symlink=False)
     assert os.path.exists(link)
     assert os.path.exists(path)
