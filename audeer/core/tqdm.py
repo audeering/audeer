@@ -49,7 +49,7 @@ def progress_bar(
     total: int = None,
     desc: str = None,
     disable: bool = False,
-    maximum_refresh_time: typing.Optional = 1,
+    maximum_refresh_time: float = None,
 ) -> tqdm:
     r"""Progress bar with optional text on the right.
 
@@ -107,10 +107,32 @@ def progress_bar(
     )
 
 
-def tqdm_wrapper(iterable, maximum_refresh_time, *args, **kwargs):
-    r"""Progress bar wrapper to enforce update once a second.
+def tqdm_wrapper(
+    iterable: typing.Sequence,
+    maximum_refresh_time: float,
+    *args,
+    **kwargs,
+) -> tqdm:
+    r"""Tqdm progress bar wrapper to enforce update once a second.
 
-    See https://github.com/tqdm/tqdm/issues/861#issuecomment-2197893883.
+    When using tqdm with large time durations
+    between single steps of the iteration,
+    it will not automatically update the elapsed time,
+    but needs to be forced,
+    see https://github.com/tqdm/tqdm/issues/861#issuecomment-2197893883.
+
+    Args:
+        iterable: sequence to iterate through
+        maximum_refresh_time: refresh the progress bar
+            at least every ``maximum_refresh_time`` seconds,
+            using another thread.
+            If ``None``,
+            no refreshing is enforced
+        args: arguments passed on to ``tqdm``
+        kwargs: keyword arguments passed on to ``tqdm``
+
+    Returns:
+        progress bar object
 
     """
     pbar = tqdm(iterable, *args, **kwargs)
