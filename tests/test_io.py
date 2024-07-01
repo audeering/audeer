@@ -1,6 +1,7 @@
 import os
 import platform
 import stat
+import sys
 import time
 
 import pytest
@@ -1521,8 +1522,12 @@ def test_rmdir(tmpdir):
     path = audeer.mkdir(tmpdir, "folder")
     link = os.path.join(tmpdir, "link")
     os.symlink(path, link)
-    with pytest.raises(OSError, match="symbolic link"):
-        # Skip this on MacOS Python 3.12?
+    # Error message changed at some point for Python 3.12
+    if sys.version_info >= "3.12.1":
+        error_msg = "None"
+    else:
+        error_msg = "symbolic link"
+    with pytest.raises(OSError, match=error_msg):
         audeer.rmdir(link, follow_symlink=False)
     assert os.path.exists(link)
     assert os.path.exists(path)
