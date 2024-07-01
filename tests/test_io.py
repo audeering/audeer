@@ -1522,8 +1522,10 @@ def test_rmdir(tmpdir):
     path = audeer.mkdir(tmpdir, "folder")
     link = os.path.join(tmpdir, "link")
     os.symlink(path, link)
-    # Error message changed at some point for Python 3.12
-    if sys.version_info >= (3, 12, 1):
+    # Error message is broken
+    # for newer version of Python 3.12
+    # under MacOS and Linux
+    if sys.version_info >= (3, 12, 1) and platform.system() != "Windows":
         error_msg = "None"
     else:
         error_msg = "symbolic link"
