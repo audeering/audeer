@@ -37,3 +37,15 @@ def test_progress_bar():
     pbar = audeer.progress_bar([0.1])
     for step in pbar:
         time.sleep(step)
+
+
+def test_progress_bar_update():
+    r"""Ensure progress bar is refreshed.
+
+    If the progress bar has to wait for a long time
+    until it would get updated,
+    we enforce an update by a given time.
+
+    """
+    for _ in audeer.progress_bar(range(2), maximum_refresh_time=0.01):
+        time.sleep(0.05)
