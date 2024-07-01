@@ -1525,6 +1525,7 @@ def test_rmdir(tmpdir):
     # Error message is broken
     # for newer version of Python 3.12
     # under MacOS and Linux
+    print(f"{sys.version_info=}")
     if sys.version_info == (3, 12, 4) and platform.system() != "Windows":
         error_msg = "None"
     else:
