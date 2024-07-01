@@ -1523,7 +1523,7 @@ def test_rmdir(tmpdir):
     link = os.path.join(tmpdir, "link")
     os.symlink(path, link)
     # Error message changed at some point for Python 3.12
-    if sys.version_info >= "3.12.1":
+    if sys.version_info >= (3, 12, 1):
         error_msg = "None"
     else:
         error_msg = "symbolic link"
