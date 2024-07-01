@@ -1,4 +1,6 @@
-from typing import Sequence
+import threading
+import time
+import typing
 
 from tqdm import tqdm
 
@@ -42,11 +44,12 @@ def format_display_message(text: str, pbar: bool = False) -> str:
 
 
 def progress_bar(
-    iterable: Sequence = None,
+    iterable: typing.Sequence = None,
     *,
     total: int = None,
     desc: str = None,
     disable: bool = False,
+    maximum_refresh_time: typing.Optional = 1,
 ) -> tqdm:
     r"""Progress bar with optional text on the right.
 
@@ -80,6 +83,11 @@ def progress_bar(
         total: total number of iterations
         desc: text shown on the right of the progress bar
         disable: don't show the display bar
+        maximum_refresh_time: refresh the progress bar
+            at least every ``maximum_refresh_time`` seconds,
+            using another thread.
+            If ``None``,
+            no refreshing is enforced
 
     Returns:
         progress bar object
@@ -87,8 +95,9 @@ def progress_bar(
     """
     if desc is None:
         desc = ""
-    return tqdm(
+    return tqdm_wrapper(
         iterable=iterable,
+        maximum_refresh_time=maximum_refresh_time,
         ncols=config.TQDM_COLUMNS,
         bar_format=config.TQDM_FORMAT,
         total=total,
@@ -96,3 +105,23 @@ def progress_bar(
         desc=format_display_message(desc, pbar=True),
         leave=config.TQDM_LEAVE,
     )
+
+
+def tqdm_wrapper(iterable, maximum_refresh_time, *args, **kwargs):
+    r"""Progress bar wrapper to enforce update once a second.
+
+    See https://github.com/tqdm/tqdm/issues/861#issuecomment-2197893883.
+
+    """
+    pbar = tqdm(iterable, *args, **kwargs)
+
+    def refresh():
+        while not pbar.disable:
+            time.sleep(maximum_refresh_time)
+            pbar.refresh()
+
+    if maximum_refresh_time is not None:
+        thread = threading.Thread(target=refresh, daemon=True)
+        thread.start()
+
+    return pbar
