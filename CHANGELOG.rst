@@ -7,6 +7,22 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.1.0 (2024-07-05)
+--------------------------
+
+* Added: ``audeer.unique()``,
+  which returns unique values
+  in the order they appear in a sequence
+* Added: ``maximum_refresh_time`` argument
+  to ``audeer.progress_bar()``
+  and ``audeer.run_tasks()``,
+  which can be used
+  to force an update interval
+  of the progress bar
+* Fixed: documentation of return value
+  of ``audeer.run_tasks()``
+
+
 Version 2.0.0 (2024-01-25)
 --------------------------
 
