@@ -16,7 +16,7 @@ import typing
 import uuid
 import warnings
 
-from audeer.core import tqdm
+from audeer.core.tqdm import progress_bar as audeer_progress_bar
 from audeer.core.version import LooseVersion
 
 
@@ -541,6 +541,7 @@ def run_tasks(
     multiprocessing: bool = False,
     progress_bar: bool = False,
     task_description: str = None,
+    maximum_refresh_time: float = None,
 ) -> typing.List[typing.Any]:
     r"""Run parallel tasks using multprocessing.
 
@@ -562,6 +563,11 @@ def run_tasks(
         progress_bar: show a progress bar
         task_description: task description
             that will be displayed next to progress bar
+        maximum_refresh_time: refresh the progress bar
+            at least every ``maximum_refresh_time`` seconds,
+            using another thread.
+            If ``None``,
+            no refreshing is enforced
 
     Returns:
         list of computed results
@@ -577,10 +583,11 @@ def run_tasks(
     results = [None] * num_tasks
 
     if num_workers == 1:  # sequential
-        with tqdm.progress_bar(
+        with audeer_progress_bar(
             params,
             total=len(params),
             desc=task_description,
+            maximum_refresh_time=maximum_refresh_time,
             disable=not progress_bar,
         ) as pbar:
             for index, param in enumerate(pbar):
@@ -592,9 +599,10 @@ def run_tasks(
         else:
             executor = concurrent.futures.ThreadPoolExecutor
         with executor(max_workers=num_workers) as pool:
-            with tqdm.progress_bar(
+            with audeer_progress_bar(
                 total=len(params),
                 desc=task_description,
+                maximum_refresh_time=maximum_refresh_time,
                 disable=not progress_bar,
             ) as pbar:
                 futures = []
@@ -668,7 +676,7 @@ def run_worker_threads(
             class QueueWithProgbar(queue.Queue):
                 def __init__(self, num_tasks, maxsize=0):
                     super().__init__(maxsize)
-                    self.pbar = tqdm.progress_bar(
+                    self.pbar = audeer_progress_bar(
                         total=num_tasks,
                         desc=task_description,
                     )
