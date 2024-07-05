@@ -840,3 +840,28 @@ def uid(
         uid = uid[-8:]
 
     return uid
+
+
+def unique(sequence: typing.Iterable) -> typing.List:
+    r"""Unique values in its original order.
+
+    This is an alternative to ``list(set(x))``,
+    which does not preserve the original order.
+
+    Args:
+        sequence: sequence of values
+
+    Returns:
+        unique values from ``x`` in order of appearance
+
+    Examples:
+        >>> list(set([2, 2, 1]))
+        [1, 2]
+        >>> unique([2, 2, 1])
+        [2, 1]
+
+    """
+    # https://stackoverflow.com/a/480227
+    seen = set()
+    seen_add = seen.add
+    return [x for x in sequence if not (x in seen or seen_add(x))]

@@ -34,6 +34,7 @@ from audeer.core.utils import run_worker_threads
 from audeer.core.utils import sort_versions
 from audeer.core.utils import to_list
 from audeer.core.utils import uid
+from audeer.core.utils import unique
 from audeer.core.version import LooseVersion
 from audeer.core.version import StrictVersion
 
