@@ -541,7 +541,7 @@ def run_tasks(
     multiprocessing: bool = False,
     progress_bar: bool = False,
     task_description: str = None,
-) -> typing.Sequence[typing.Any]:
+) -> typing.List[typing.Any]:
     r"""Run parallel tasks using multprocessing.
 
     .. note:: Result values are returned in order of ``params``.
@@ -562,6 +562,9 @@ def run_tasks(
         progress_bar: show a progress bar
         task_description: task description
             that will be displayed next to progress bar
+
+    Returns:
+        list of computed results
 
     Examples:
         >>> power = lambda x, n: x**n
