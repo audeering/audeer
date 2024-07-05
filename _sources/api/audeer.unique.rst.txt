@@ -1,0 +1,6 @@
+﻿unique\(\)
+==========
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.unique
