@@ -562,6 +562,11 @@ def run_tasks(
         progress_bar: show a progress bar
         task_description: task description
             that will be displayed next to progress bar
+        maximum_refresh_time: refresh the progress bar
+            at least every ``maximum_refresh_time`` seconds,
+            using another thread.
+            If ``None``,
+            no refreshing is enforced
 
     Returns:
         list of computed results
@@ -581,6 +586,7 @@ def run_tasks(
             params,
             total=len(params),
             desc=task_description,
+            maximum_refresh_time=maximum_refresh_time,
             disable=not progress_bar,
         ) as pbar:
             for index, param in enumerate(pbar):
@@ -595,6 +601,7 @@ def run_tasks(
             with audeer_progress_bar(
                 total=len(params),
                 desc=task_description,
+                maximum_refresh_time=maximum_refresh_time,
                 disable=not progress_bar,
             ) as pbar:
                 futures = []
