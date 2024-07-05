@@ -541,6 +541,7 @@ def run_tasks(
     multiprocessing: bool = False,
     progress_bar: bool = False,
     task_description: str = None,
+    maximum_refresh_time: float = None,
 ) -> typing.List[typing.Any]:
     r"""Run parallel tasks using multprocessing.
 
