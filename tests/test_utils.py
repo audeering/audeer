@@ -531,3 +531,27 @@ def test_uid(from_string, short):
             assert uid == uid2
         else:
             assert uid != uid2
+
+
+@pytest.mark.parametrize(
+    "sequence, expected",
+    [
+        ([], []),
+        ([1], [1]),
+        ([2, 1], [2, 1]),
+        ([2, 1, 2], [2, 1]),
+        (["a", 1, "a", 1], ["a", 1]),
+        ((1, 1), [1]),
+    ],
+)
+def test_unique(sequence, expected):
+    r"""Test audeer.unique().
+
+    Should return unique values in original order.
+
+    Args:
+        sequence: sequence if input values
+        expected: expected unique list
+
+    """
+    assert audeer.unique(sequence) == expected

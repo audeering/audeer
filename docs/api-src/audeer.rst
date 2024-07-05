@@ -44,3 +44,4 @@ audeer
     to_list
     touch
     uid
+    unique
