@@ -831,7 +831,7 @@ def uid(
     return uid
 
 
-def unique(sequence: typing.Sequence) -> typing.List:
+def unique(sequence: typing.Iterable) -> typing.List:
     r"""Unique values in its original order.
 
     This is an alternative to ``list(set(x))``,
