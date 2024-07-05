@@ -16,7 +16,7 @@ import typing
 import uuid
 import warnings
 
-from audeer.core import tqdm
+from audeer.core.tqdm import progress_bar as audeer_progress_bar
 from audeer.core.version import LooseVersion
 
 
@@ -577,7 +577,7 @@ def run_tasks(
     results = [None] * num_tasks
 
     if num_workers == 1:  # sequential
-        with tqdm.progress_bar(
+        with audeer_progress_bar(
             params,
             total=len(params),
             desc=task_description,
@@ -592,7 +592,7 @@ def run_tasks(
         else:
             executor = concurrent.futures.ThreadPoolExecutor
         with executor(max_workers=num_workers) as pool:
-            with tqdm.progress_bar(
+            with audeer_progress_bar(
                 total=len(params),
                 desc=task_description,
                 disable=not progress_bar,
@@ -668,7 +668,7 @@ def run_worker_threads(
             class QueueWithProgbar(queue.Queue):
                 def __init__(self, num_tasks, maxsize=0):
                     super().__init__(maxsize)
-                    self.pbar = tqdm.progress_bar(
+                    self.pbar = audeer_progress_bar(
                         total=num_tasks,
                         desc=task_description,
                     )
