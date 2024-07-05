@@ -542,6 +542,8 @@ def test_uid(from_string, short):
         ([2, 1, 2], [2, 1]),
         (["a", 1, "a", 1], ["a", 1]),
         ((1, 1), [1]),
+        ("dddnnfhg", ["d", "n", "f", "h", "g"]),
+        ([None, None], [None]),
     ],
 )
 def test_unique(sequence, expected):
