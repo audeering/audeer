@@ -104,6 +104,7 @@ def progress_bar(
         disable=disable,
         desc=format_display_message(desc, pbar=True),
         leave=config.TQDM_LEAVE,
+        smoothing=0,
     )
 
 
