@@ -10,7 +10,7 @@ and this project adheres to `Semantic Versioning`_.
 Version 2.1.1 (2024-07-15)
 --------------------------
 
-* Fixed: make calculation of remaining time
+* Fixed: make estimation of remaining time
   in ``audeer.progress_bar()``
   less erratic
 
