@@ -7,6 +7,14 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.1.1 (2024-07-15)
+--------------------------
+
+* Fixed: make calculation of remaining time
+  in ``audeer.progress_bar()``
+  less erratic
+
+
 Version 2.1.0 (2024-07-05)
 --------------------------
 
