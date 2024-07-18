@@ -425,14 +425,19 @@ def test_common_directory(dirs, expected):
     assert common == expected
 
 
-def test_current_dir():
+def test_current_dir(tmpdir):
     r"""Test estimation of current directory of caller.
 
     See https://stackoverflow.com/a/5137509.
 
+    Args:
+        tmpdir: tmpdir fixture
+
     """
-    current_dir = audeer.current_dir()
-    assert current_dir == os.path.dirname(os.path.realpath(__file__))
+    expected_current_dir = os.path.dirname(os.path.realpath(__file__))
+    assert audeer.current_dir() == expected_current_dir
+    os.chdir(tmpdir)
+    assert audeer.current_dir() == expected_current_dir
 
 
 def test_download_url(tmpdir):
