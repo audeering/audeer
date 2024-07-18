@@ -11,6 +11,7 @@ audeer
     common_directory
     config
     create_archive
+    current_dir
     deprecated
     deprecated_default_value
     deprecated_keyword_argument

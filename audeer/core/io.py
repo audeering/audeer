@@ -1,6 +1,7 @@
 import errno
 import fnmatch
 import hashlib
+import inspect
 import itertools
 import os
 import platform
@@ -229,6 +230,21 @@ def create_archive(
         raise RuntimeError(
             f"You can only create a ZIP or TAR.GZ archive, " f"not {archive}"
         )
+
+
+def current_dir() -> str:
+    r"""Folder in which caller of this function is located.
+
+    Returns:
+        current directory of caller
+
+    Examples:
+        >>> os.path.basename(current_dir())
+        'audeer_core_io_current_dir0'
+
+    """
+    caller = inspect.stack()[1].filename
+    return os.path.dirname(os.path.realpath(caller))
 
 
 def download_url(

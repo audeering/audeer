@@ -2,6 +2,7 @@ from audeer.core.config import config
 from audeer.core.io import basename_wo_ext
 from audeer.core.io import common_directory
 from audeer.core.io import create_archive
+from audeer.core.io import current_dir
 from audeer.core.io import download_url
 from audeer.core.io import extract_archive
 from audeer.core.io import extract_archives
