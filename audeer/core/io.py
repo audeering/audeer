@@ -246,7 +246,7 @@ def current_dir() -> str:
         current directory of caller
 
     Examples:
-        >>> os.path.basename(current_dir())
+        >>> os.path.basename(current_dir())  # folder of docstring test
         'audeer_core_io_current_dir0'
 
     """
