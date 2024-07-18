@@ -235,6 +235,13 @@ def create_archive(
 def current_dir() -> str:
     r"""Folder in which caller of this function is located.
 
+    When called from a file,
+    it returns the directory,
+    in which the file is stored.
+    When called in an interactive session,
+    it returns the current directory
+    of the interactive session.
+
     Returns:
         current directory of caller
 
