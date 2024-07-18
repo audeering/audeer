@@ -250,7 +250,9 @@ def current_dir() -> str:
         'audeer_core_io_current_dir0'
 
     """
+    # See https://stackoverflow.com/a/37792573
     caller = inspect.stack()[1].filename
+    # See https://stackoverflow.com/a/5137509
     return os.path.dirname(os.path.realpath(caller))
 
 
