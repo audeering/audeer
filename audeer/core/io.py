@@ -1015,7 +1015,7 @@ def script_dir() -> str:
     it returns the directory,
     in which the file is stored.
     When called in an interactive session,
-    it returns the current directory
+    it returns the current working directory
     of the interactive session.
 
     Returns:
