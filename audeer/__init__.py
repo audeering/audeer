@@ -14,6 +14,7 @@ from audeer.core.io import move
 from audeer.core.io import move_file
 from audeer.core.io import replace_file_extension
 from audeer.core.io import rmdir
+from audeer.core.io import script_dir
 from audeer.core.io import touch
 from audeer.core.path import path
 from audeer.core.path import safe_path

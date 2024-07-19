@@ -1543,6 +1543,23 @@ def test_rmdir(tmpdir):
     assert not os.path.exists(path)
 
 
+def test_script_dir(tmpdir):
+    r"""Test estimation of current directory of caller.
+
+    See https://stackoverflow.com/a/5137509.
+
+    Args:
+        tmpdir: tmpdir fixture
+
+    """
+    expected_script_dir = os.path.dirname(os.path.realpath(__file__))
+    assert audeer.script_dir() == expected_script_dir
+    current_dir = os.getcwd()
+    os.chdir(tmpdir)
+    assert audeer.script_dir() == expected_script_dir
+    os.chdir(current_dir)
+
+
 def test_touch(tmpdir):
     path = audeer.mkdir(tmpdir, "folder1")
     path = os.path.join(path, "file")

@@ -39,6 +39,7 @@ audeer
     rmdir
     run_tasks
     safe_path
+    script_dir
     sort_versions
     StrictVersion
     to_list

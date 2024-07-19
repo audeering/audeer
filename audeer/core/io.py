@@ -1,6 +1,7 @@
 import errno
 import fnmatch
 import hashlib
+import inspect
 import itertools
 import os
 import platform
@@ -1005,6 +1006,36 @@ def rmdir(
     path = safe_path(path, *paths, follow_symlink=follow_symlink)
     if os.path.exists(path):
         shutil.rmtree(path)
+
+
+def script_dir() -> str:
+    r"""Folder in which caller of this function is located.
+
+    When called from a file,
+    it returns the directory,
+    in which the file is stored.
+    When called in an interactive session,
+    it returns the current working directory
+    of the interactive session.
+
+    Returns:
+        current directory of caller
+
+    Examples:
+        >>> os.path.basename(script_dir())  # folder of docstring test
+        'audeer_core_io_script_dir0'
+
+    """
+    # Returning the script dir is usually done with
+    # `os.path.dirname(os.path.realpath(__file__))`,
+    # see https://stackoverflow.com/a/5137509.
+    # We cannot use `__file__` here,
+    # as this would always point to this file (`io.py`).
+    # Instead we find the script
+    # of the caller of `audeer.script_dir()`,
+    # see https://stackoverflow.com/a/37792573
+    caller = inspect.stack()[1].filename
+    return os.path.dirname(os.path.realpath(caller))
 
 
 def touch(
