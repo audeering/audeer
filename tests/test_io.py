@@ -1554,8 +1554,10 @@ def test_script_dir(tmpdir):
     """
     expected_script_dir = os.path.dirname(os.path.realpath(__file__))
     assert audeer.script_dir() == expected_script_dir
+    current_dir = os.getcwd()
     os.chdir(tmpdir)
     assert audeer.script_dir() == expected_script_dir
+    os.chdir(current_dir)
 
 
 def test_touch(tmpdir):
