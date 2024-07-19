@@ -232,30 +232,6 @@ def create_archive(
         )
 
 
-def current_dir() -> str:
-    r"""Folder in which caller of this function is located.
-
-    When called from a file,
-    it returns the directory,
-    in which the file is stored.
-    When called in an interactive session,
-    it returns the current directory
-    of the interactive session.
-
-    Returns:
-        current directory of caller
-
-    Examples:
-        >>> os.path.basename(current_dir())  # folder of docstring test
-        'audeer_core_io_current_dir0'
-
-    """
-    # See https://stackoverflow.com/a/37792573
-    caller = inspect.stack()[1].filename
-    # See https://stackoverflow.com/a/5137509
-    return os.path.dirname(os.path.realpath(caller))
-
-
 def download_url(
     url: str,
     destination: str,
@@ -1030,6 +1006,30 @@ def rmdir(
     path = safe_path(path, *paths, follow_symlink=follow_symlink)
     if os.path.exists(path):
         shutil.rmtree(path)
+
+
+def script_dir() -> str:
+    r"""Folder in which caller of this function is located.
+
+    When called from a file,
+    it returns the directory,
+    in which the file is stored.
+    When called in an interactive session,
+    it returns the current directory
+    of the interactive session.
+
+    Returns:
+        current directory of caller
+
+    Examples:
+        >>> os.path.basename(script_dir())  # folder of docstring test
+        'audeer_core_io_script_dir0'
+
+    """
+    # See https://stackoverflow.com/a/37792573
+    caller = inspect.stack()[1].filename
+    # See https://stackoverflow.com/a/5137509
+    return os.path.dirname(os.path.realpath(caller))
 
 
 def touch(

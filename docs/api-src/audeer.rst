@@ -11,7 +11,6 @@ audeer
     common_directory
     config
     create_archive
-    current_dir
     deprecated
     deprecated_default_value
     deprecated_keyword_argument
@@ -40,6 +39,7 @@ audeer
     rmdir
     run_tasks
     safe_path
+    script_dir
     sort_versions
     StrictVersion
     to_list

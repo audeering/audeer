@@ -2,7 +2,6 @@ from audeer.core.config import config
 from audeer.core.io import basename_wo_ext
 from audeer.core.io import common_directory
 from audeer.core.io import create_archive
-from audeer.core.io import current_dir
 from audeer.core.io import download_url
 from audeer.core.io import extract_archive
 from audeer.core.io import extract_archives
@@ -15,6 +14,7 @@ from audeer.core.io import move
 from audeer.core.io import move_file
 from audeer.core.io import replace_file_extension
 from audeer.core.io import rmdir
+from audeer.core.io import script_dir
 from audeer.core.io import touch
 from audeer.core.path import path
 from audeer.core.path import safe_path

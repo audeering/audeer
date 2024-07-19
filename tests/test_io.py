@@ -425,21 +425,6 @@ def test_common_directory(dirs, expected):
     assert common == expected
 
 
-def test_current_dir(tmpdir):
-    r"""Test estimation of current directory of caller.
-
-    See https://stackoverflow.com/a/5137509.
-
-    Args:
-        tmpdir: tmpdir fixture
-
-    """
-    expected_current_dir = os.path.dirname(os.path.realpath(__file__))
-    assert audeer.current_dir() == expected_current_dir
-    os.chdir(tmpdir)
-    assert audeer.current_dir() == expected_current_dir
-
-
 def test_download_url(tmpdir):
     url = "https://audeering.github.io/audeer/_static/favicon.png"
     audeer.download_url(url, tmpdir)
@@ -1556,6 +1541,21 @@ def test_rmdir(tmpdir):
     audeer.rmdir(link, follow_symlink=True)
     assert not os.path.exists(link)
     assert not os.path.exists(path)
+
+
+def test_script_dir(tmpdir):
+    r"""Test estimation of current directory of caller.
+
+    See https://stackoverflow.com/a/5137509.
+
+    Args:
+        tmpdir: tmpdir fixture
+
+    """
+    expected_script_dir = os.path.dirname(os.path.realpath(__file__))
+    assert audeer.script_dir() == expected_script_dir
+    os.chdir(tmpdir)
+    assert audeer.script_dir() == expected_script_dir
 
 
 def test_touch(tmpdir):
