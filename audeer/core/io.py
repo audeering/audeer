@@ -1026,9 +1026,15 @@ def script_dir() -> str:
         'audeer_core_io_script_dir0'
 
     """
-    # See https://stackoverflow.com/a/37792573
+    # Returning the script dir is usually done with
+    # `os.path.dirname(os.path.realpath(__file__))`,
+    # see https://stackoverflow.com/a/5137509.
+    # We cannot use `__file__` here,
+    # as this would always point to this file (`io.py`).
+    # Instead we find the script
+    # of the caller of `audeer.script_dir()`,
+    # see https://stackoverflow.com/a/37792573
     caller = inspect.stack()[1].filename
-    # See https://stackoverflow.com/a/5137509
     return os.path.dirname(os.path.realpath(caller))
 
 
