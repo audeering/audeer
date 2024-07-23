@@ -11,8 +11,8 @@ Version 2.2.0 (2024-07-23)
 --------------------------
 
 * Added: ``audeer.script_dir()``
-  which returns the directory of the file,
-  in which the function is called,
+  which returns the directory
+  of the file where it was called,
   or the current working directory
   when called in an interactive session
 
