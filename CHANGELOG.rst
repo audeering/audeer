@@ -7,6 +7,16 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.2.0 (2024-07-23)
+--------------------------
+
+* Added: ``audeer.script_dir()``
+  which returns the directory
+  of the file where it was called,
+  or the current working directory
+  when called in an interactive session
+
+
 Version 2.1.1 (2024-07-15)
 --------------------------
 
