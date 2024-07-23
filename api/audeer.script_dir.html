@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>install_package() &mdash; audeer Documentation</title>
+  <title>script_dir() &mdash; audeer Documentation</title>
   
 
   
@@ -31,8 +31,8 @@
   <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="is_semantic_version()" href="audeer.is_semantic_version.html" />
-    <link rel="prev" title="git_repo_version()" href="audeer.git_repo_version.html" />
+    <link rel="next" title="sort_versions()" href="audeer.sort_versions.html" />
+    <link rel="prev" title="safe_path()" href="audeer.safe_path.html" />
     
   
 
@@ -113,7 +113,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.freeze_requirements.html">freeze_requirements()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.git_repo_tags.html">git_repo_tags()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.git_repo_version.html">git_repo_version()</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">install_package()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.install_package.html">install_package()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.is_semantic_version.html">is_semantic_version()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.is_uid.html">is_uid()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
@@ -129,7 +129,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.rmdir.html">rmdir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.run_tasks.html">run_tasks()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.safe_path.html">safe_path()</a></li>
-<li class="toctree-l2"><a class="reference internal" href="audeer.script_dir.html">script_dir()</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">script_dir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.sort_versions.html">sort_versions()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.StrictVersion.html">StrictVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.to_list.html">to_list()</a></li>
@@ -171,7 +171,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="audeer.html">audeer</a> &raquo;</li>
-      <li>install_package()</li>
+      <li>script_dir()</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/audeering/audeer/" class="fa fa-github"> GitHub</a>
       </li>
@@ -181,41 +181,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="install-package">
-<h1>install_package()<a class="headerlink" href="#install-package" title="Permalink to this heading">¶</a></h1>
+  <div class="section" id="script-dir">
+<h1>script_dir()<a class="headerlink" href="#script-dir" title="Permalink to this heading">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="audeer.install_package">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">install_package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/utils.html#install_package"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.install_package" title="Permalink to this definition">¶</a></dt>
-<dd><p>Install a Python package with pip.</p>
-<p>An error is raised if a different version
-of the package is already installed.
-However,
-it is possible to use one of the following
-operators in front of the version string:
-<code class="docutils literal notranslate"><span class="pre">'&gt;='</span></code>, <code class="docutils literal notranslate"><span class="pre">'&gt;'</span></code>, <code class="docutils literal notranslate"><span class="pre">'&lt;='</span></code>, <code class="docutils literal notranslate"><span class="pre">'&lt;'</span></code>.
-In that case,
-an error is raised only
-if the condition is not satisfied.
-If version is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>
-and the package is not installed yet,
-the latest version will be installed.</p>
+<dt class="sig sig-object py" id="audeer.script_dir">
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">script_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#script_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.script_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Folder in which caller of this function is located.</p>
+<p>When called from a file,
+it returns the directory,
+in which the file is stored.
+When called in an interactive session,
+it returns the current working directory
+of the interactive session.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – package name</p></li>
-<li><p><strong>version</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – version string (see description)</p></li>
-<li><p><strong>silent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – suppress messages to stdout</p></li>
-</ul>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/subprocess.html#subprocess.CalledProcessError" title="(in Python v3.12)"><strong>subprocess.CalledProcessError</strong></a> – if the sub-process calling pip fails,
-    e.g. because requested version of the package is not found</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.12)"><strong>RuntimeError</strong></a> – if a version of the package is already
-    installed that does not satisfy the requested version</p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>current directory of caller</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">script_dir</span><span class="p">())</span>  <span class="c1"># folder of docstring test</span>
+<span class="go">&#39;audeer_core_io_script_dir0&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -228,10 +218,10 @@ the latest version will be installed.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="audeer.is_semantic_version.html" class="btn btn-neutral float-right" title="is_semantic_version()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="audeer.sort_versions.html" class="btn btn-neutral float-right" title="sort_versions()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="audeer.git_repo_version.html" class="btn btn-neutral float-left" title="git_repo_version()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="audeer.safe_path.html" class="btn btn-neutral float-left" title="safe_path()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

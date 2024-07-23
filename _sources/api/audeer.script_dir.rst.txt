@@ -1,0 +1,6 @@
+﻿script\_dir\(\)
+===============
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.script_dir
