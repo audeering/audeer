@@ -1,17 +1,5 @@
 import os
-import platform
 import typing
-
-
-# Exclude common_directory example from doctest
-# on Windows and MacOS
-# (which adds /System/Volumes/Data in front in the Github runner)
-# as it outputs a path in Linux syntax in the example
-if platform.system() in ["Darwin", "Windows"]:  # pragma: no cover
-    __doctest_skip__ = [
-        "path",
-        "safe_path",
-    ]
 
 
 def path(
@@ -44,12 +32,8 @@ def path(
     Returns:
         (joined and) expanded path
 
-    ..
-        >>> import audeer
-        >>> import platform
-
     Examples:
-        .. skip: start if(platform.system == "Windows")
+        .. skip: start if(platform.system() == "Windows")
 
         >>> home = audeer.path("~")
         >>> folder = audeer.path("~/path/.././path")
@@ -123,7 +107,7 @@ def safe_path(
         (joined and) expanded path
 
     Examples:
-        .. skip: start if(platform.system == "Windows")
+        .. skip: start if(platform.system() == "Windows")
 
         >>> home = audeer.safe_path("~")
         >>> folder = audeer.safe_path("~/path/.././path")

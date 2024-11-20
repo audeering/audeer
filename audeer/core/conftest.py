@@ -1,18 +1,19 @@
 from doctest import ELLIPSIS
 import os
+import platform
 
 import pytest
 import sybil
 from sybil.parsers.rest import DocTestParser
 from sybil.parsers.rest import SkipParser
 
+import audeer
 
-# Collect doctests
-pytest_collect_file = sybil.Sybil(
-    parsers=[DocTestParser(optionflags=ELLIPSIS), SkipParser()],
-    patterns=["*.py"],
-    fixtures=["run_in_tmpdir"],
-).pytest()
+
+def imports(namespace):
+    """Provide Python modules to namespace."""
+    namespace["platform"] = platform
+    namespace["audeer"] = audeer
 
 
 @pytest.fixture(scope="function")
@@ -25,3 +26,12 @@ def run_in_tmpdir(tmpdir_factory):
     yield
 
     os.chdir(current_dir)
+
+
+# Collect doctests
+pytest_collect_file = sybil.Sybil(
+    parsers=[DocTestParser(optionflags=ELLIPSIS), SkipParser()],
+    patterns=["*.py"],
+    fixtures=["run_in_tmpdir"],
+    setup=imports,
+).pytest()

@@ -41,9 +41,6 @@ def deprecated(
     with the next minor release (`X.(Y+1).Z`).
     Otherwise, choose the next major release (`(X+1).Y.Z`).
 
-    ..
-        >>> import audeer
-
     Args:
         removal_version: version the code will be removed
         alternative: alternative code to use

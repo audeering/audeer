@@ -4,7 +4,6 @@ import hashlib
 import inspect
 import itertools
 import os
-import platform
 import shutil
 import tarfile
 import typing
@@ -15,18 +14,6 @@ from audeer.core.path import path as safe_path
 from audeer.core.tqdm import format_display_message
 from audeer.core.tqdm import progress_bar
 from audeer.core.utils import to_list
-
-
-# Exclude common_directory example from doctest
-# on Windows and MacOS
-# (which adds /System/Volumes/Data in front in the Github runner)
-# as it outputs a path in Linux syntax in the example
-if platform.system() in ["Darwin", "Windows"]:  # pragma: no cover
-    __doctest_skip__ = [
-        "common_directory",
-        "list_dir_names",
-        "list_file_names",
-    ]
 
 
 def basename_wo_ext(
@@ -42,10 +29,6 @@ def basename_wo_ext(
 
     Returns:
         basename of directory or file without extension
-
-    ..
-        >>> import audeer
-        >>> import os
 
     Examples:
         >>> path = "/test/file.wav"
@@ -78,9 +61,6 @@ def common_directory(
 
     Returns:
         part of the directory tree that is common to all the directories
-
-    ..
-        >>> import platform
 
     Examples:
         .. skip: start if(platform.system == "Windows")
