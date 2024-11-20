@@ -15,24 +15,19 @@ to estimate Pi with a Monte Carlo method.
     import audeer
 
 
-    NUM_SAMPLES = int(1e6)
-
-
     def is_inside(p):
         x, y = random.random(), random.random()
         return x * x + y * y < 1
 
 
-    def main():
+    def pi(iterations=100_000):
         inside_samples = audeer.run_tasks(
             is_inside,
-            [([n], {}) for n in range(0, NUM_SAMPLES)],
+            [([n], {}) for n in range(0, iterations)],
             num_workers=4,
             progress_bar=True,
+            task_description="Estimate PI",
         )
-        pi = 4.0 * sum(inside_samples) / NUM_SAMPLES
-        print(f"Pi is roughly {pi}")
+        return 4.0 * sum(inside_samples) / iterations
 
-
-    if __name__ == "__main__":
-        main()
+>>> pi(1000)

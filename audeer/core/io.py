@@ -43,9 +43,13 @@ def basename_wo_ext(
     Returns:
         basename of directory or file without extension
 
+    ..
+        >>> import audeer
+        >>> import os
+
     Examples:
         >>> path = "/test/file.wav"
-        >>> basename_wo_ext(path)
+        >>> audeer.basename_wo_ext(path)
         'file'
 
     """
@@ -81,7 +85,7 @@ def common_directory(
         ...     "/home/user1/tmp/covert/operator",
         ...     "/home/user1/tmp/coven/members",
         ... ]
-        >>> common_directory(paths)
+        >>> audeer.common_directory(paths)
         '/home/user1/tmp'
 
     """
@@ -141,13 +145,16 @@ def create_archive(
             or a file in ``files`` is not below ``root``
 
     Examples:
-        >>> _ = touch("a.txt")
-        >>> _ = touch("b.txt")
-        >>> create_archive(".", None, "archive.zip")
-        >>> extract_archive("archive.zip", ".")
+        >>> file_a = audeer.touch("a.txt")
+        >>> folder = os.path.dirname(file_a)
+        >>> file_b = audeer.touch(folder, "b.txt")
+        >>> archive = audeer.path("archive.zip")
+        >>> audeer.create_archive(folder, None, archive)
+        >>> audeer.extract_archive(archive, ".")
         ['a.txt', 'b.txt']
-        >>> create_archive(".", ["a.txt"], "archive.tar.gz")
-        >>> extract_archive("archive.tar.gz", ".")
+        >>> archive = audeer.path("archive.tar.gz")
+        >>> audeer.create_archive(folder, ["a.txt"], archive)
+        >>> audeer.extract_archive(archive, ".")
         ['a.txt']
 
     """
@@ -252,7 +259,9 @@ def download_url(
         path of locally stored file
 
     Examples:
-        >>> dst = download_url("https://audeering.github.io/audeer/_static/favicon.png", ".")
+        >>> dst = audeer.download_url(
+        ...     "https://audeering.github.io/audeer/_static/favicon.png", "."
+        ... )
         >>> os.path.basename(dst)
         'favicon.png'
 
@@ -307,11 +316,13 @@ def extract_archive(
         RuntimeError: if ``archive`` is malformed
 
     Examples:
-        >>> _ = touch("a.txt")
-        >>> create_archive(".", None, "archive.zip")
-        >>> extract_archive("archive.zip", ".")
+        >>> folder = audeer.path(".")
+        >>> file = audeer.touch(folder, "a.txt")
+        >>> archive = audeer.path("archive.zip")
+        >>> audeer.create_archive(folder, None, archive)
+        >>> audeer.extract_archive(archive, ".")
         ['a.txt']
-        >>> extract_archive("archive.zip", "sub")
+        >>> audeer.extract_archive(archive, "sub")
         ['a.txt']
 
     """
@@ -425,11 +436,14 @@ def extract_archives(
         RuntimeError: if an archive file is malformed
 
     Examples:
-        >>> _ = touch("a.txt")
-        >>> create_archive(".", ["a.txt"], "archive.zip")
-        >>> _ = touch("b.txt")
-        >>> create_archive(".", ["b.txt"], "archive.tar.gz")
-        >>> extract_archives(["archive.zip", "archive.tar.gz"], ".")
+        >>> folder = audeer.path(".")
+        >>> _ = audeer.touch(folder, "a.txt")
+        >>> _ = audeer.touch(folder, "b.txt")
+        >>> archive_a = audeer.path("archive.zip")
+        >>> archive_b = audeer.path("archive.tar.gz")
+        >>> audeer.create_archive(folder, ["a.txt"], archive_a)
+        >>> audeer.create_archive(folder, ["b.txt"], archive_b)
+        >>> audeer.extract_archives([archive_a, archive_b], ".")
         ['a.txt', 'b.txt']
 
     """
@@ -469,7 +483,7 @@ def file_extension(
 
     Examples:
         >>> path = "/test/file.wav"
-        >>> file_extension(path)
+        >>> audeer.file_extension(path)
         'wav'
 
     """
@@ -500,24 +514,13 @@ def list_dir_names(
         FileNotFoundError: if path does not exists
 
     Examples:
-        >>> _ = mkdir("path", "a", ".b", "c")
-        >>> list_dir_names(
-        ...     "path",
-        ...     basenames=True,
-        ... )
+        >>> path = audeer.path("path")
+        >>> _ = mkdir(path, "a", ".b", "c")
+        >>> audeer.list_dir_names(path, basenames=True)
         ['a']
-        >>> list_dir_names(
-        ...     "path",
-        ...     basenames=True,
-        ...     recursive=True,
-        ... )
+        >>> audeer.list_dir_names(path, basenames=True, recursive=True)
         ['a', 'a/.b', 'a/.b/c']
-        >>> list_dir_names(
-        ...     "path",
-        ...     basenames=True,
-        ...     recursive=True,
-        ...     hidden=False,
-        ... )
+        >>> audeer.list_dir_names(path, basenames=True, recursive=True, hidden=False)
         ['a']
 
     """
@@ -576,68 +579,35 @@ def list_file_names(
             and ``os.dirname(path)`` does not exist
 
     Examples:
-        >>> dir_path = mkdir("path")
-        >>> _ = touch(dir_path, "file.wav")
-        >>> _ = touch(dir_path, "File.wav")
-        >>> _ = touch(dir_path, ".lock")
-        >>> sub_dir_path = mkdir("path", "sub")
-        >>> _ = touch(sub_dir_path, "file.ogg")
-        >>> _ = touch(sub_dir_path, ".lock")
-        >>> list_file_names(
-        ...     dir_path,
-        ...     basenames=True,
-        ... )
+        >>> dir_path = audeer.mkdir("path")
+        >>> _ = audeer.touch(dir_path, "file.wav")
+        >>> _ = audeer.touch(dir_path, "File.wav")
+        >>> _ = audeer.touch(dir_path, ".lock")
+        >>> sub_dir_path = audeer.mkdir(dir_path, "sub")
+        >>> _ = audeer.touch(sub_dir_path, "file.ogg")
+        >>> _ = audeer.touch(sub_dir_path, ".lock")
+        >>> audeer.list_file_names(dir_path, basenames=True)
         ['File.wav', 'file.wav']
-        >>> list_file_names(
-        ...     dir_path,
-        ...     basenames=True,
-        ...     hidden=True,
-        ... )
+        >>> audeer.list_file_names(dir_path, basenames=True, hidden=True)
         ['.lock', 'File.wav', 'file.wav']
-        >>> list_file_names(
-        ...     dir_path,
-        ...     basenames=True,
-        ...     recursive=True,
-        ... )
+        >>> audeer.list_file_names(dir_path, basenames=True, recursive=True)
         ['File.wav', 'file.wav', 'sub/file.ogg']
-        >>> list_file_names(
-        ...     dir_path,
-        ...     basenames=True,
-        ...     recursive=True,
-        ...     hidden=True,
-        ... )
+        >>> audeer.list_file_names(dir_path, basenames=True, recursive=True, hidden=True)
         ['.lock', 'File.wav', 'file.wav', 'sub/.lock', 'sub/file.ogg']
-        >>> list_file_names(
-        ...     os.path.join(dir_path, "f*"),
-        ...     basenames=True,
-        ...     recursive=True,
-        ...     hidden=True,
-        ... )
+        >>> audeer.list_file_names(os.path.join(dir_path, "f*"), basenames=True, recursive=True)
         ['file.wav', 'sub/file.ogg']
-        >>> list_file_names(
-        ...     os.path.join(dir_path, "[fF]*"),
-        ...     basenames=True,
-        ...     recursive=True,
-        ...     hidden=True,
+        >>> audeer.list_file_names(
+        ...     os.path.join(dir_path, "[fF]*"), basenames=True, recursive=True
         ... )
         ['File.wav', 'file.wav', 'sub/file.ogg']
-        >>> list_file_names(
-        ...     os.path.join(dir_path, "[!f]*"),
-        ...     basenames=True,
-        ...     recursive=True,
-        ...     hidden=True,
+        >>> audeer.list_file_names(
+        ...     os.path.join(dir_path, "[!f]*"), basenames=True, recursive=True
         ... )
-        ['.lock', 'File.wav', 'sub/.lock']
-        >>> list_file_names(
-        ...     os.path.join(dir_path, "f*"),
-        ...     filetype="ogg",
-        ...     basenames=True,
-        ...     recursive=True,
-        ...     hidden=True,
-        ... )
+        ['File.wav']
+        >>> audeer.list_file_names(dir_path, filetype="ogg", basenames=True, recursive=True)
         ['sub/file.ogg']
 
-    """
+    """  # noqa: E501
     path = safe_path(path)
 
     if os.path.isdir(path):
@@ -736,8 +706,8 @@ def mkdir(
         absolute path to the created directory
 
     Examples:
-        >>> p = mkdir("path1", "path2", "path3")
-        >>> os.path.basename(p)
+        >>> path = audeer.mkdir("path1", "path2", "path3")
+        >>> os.path.basename(path)
         'path3'
 
     """
@@ -777,10 +747,10 @@ def md5(
         FileNotFoundError: if ``path`` does not exist
 
     Examples:
-        >>> path = touch("file.txt")
-        >>> md5(path)
+        >>> path = audeer.touch("file.txt")
+        >>> audeer.md5(path)
         'd41d8cd98f00b204e9800998ecf8427e'
-        >>> md5(".")
+        >>> audeer.md5(os.path.dirname(path))
         '3d8e577bddb17db339eae0b3d9bcf180'
 
     """
@@ -860,11 +830,11 @@ def move(
             (raised only under Windows)
 
     Examples:
-        >>> path = mkdir("folder")
-        >>> src_path = touch(path, "file1")
+        >>> path = audeer.mkdir("folder")
+        >>> src_path = audeer.touch(path, "file1")
         >>> dst_path = os.path.join(path, "file2")
-        >>> move(src_path, dst_path)
-        >>> list_file_names(path, basenames=True)
+        >>> audeer.move(src_path, dst_path)
+        >>> audeer.list_file_names(path, basenames=True)
         ['file2']
 
     """
@@ -892,11 +862,11 @@ def move_file(
         dst_path: destination file path
 
     Examples:
-        >>> path = mkdir("folder")
-        >>> src_path = touch(path, "file1")
+        >>> path = audeer.mkdir("folder")
+        >>> src_path = audeer.touch(path, "file1")
         >>> dst_path = os.path.join(path, "file2")
-        >>> move_file(src_path, dst_path)
-        >>> list_file_names(path, basenames=True)
+        >>> audeer.move_file(src_path, dst_path)
+        >>> audeer.list_file_names(path, basenames=True)
         ['file2']
 
     """
@@ -929,15 +899,15 @@ def replace_file_extension(
         path to file with a possibly new extension
 
     Examples:
-        >>> replace_file_extension("file.txt", "rst")
+        >>> audeer.replace_file_extension("file.txt", "rst")
         'file.rst'
-        >>> replace_file_extension("file", "rst")
+        >>> audeer.replace_file_extension("file", "rst")
         'file.rst'
-        >>> replace_file_extension("file.txt", "")
+        >>> audeer.replace_file_extension("file.txt", "")
         'file'
-        >>> replace_file_extension("file.tar.gz", "zip", ext="tar.gz")
+        >>> audeer.replace_file_extension("file.tar.gz", "zip", ext="tar.gz")
         'file.zip'
-        >>> replace_file_extension("file.zip", "rst", ext="txt")
+        >>> audeer.replace_file_extension("file.zip", "rst", ext="txt")
         'file.zip'
 
     """
@@ -995,11 +965,12 @@ def rmdir(
             and ``path`` is a symbolic link
 
     Examples:
-        >>> _ = mkdir("path1", "path2", "path3")
-        >>> list_dir_names("path1", basenames=True)
+        >>> path = audeer.mkdir("path1")
+        >>> _ = audeer.mkdir(path, "path2", "path3")
+        >>> audeer.list_dir_names(path, basenames=True)
         ['path2']
-        >>> rmdir("path1", "path2")
-        >>> list_dir_names("path1")
+        >>> audeer.rmdir(path, "path2")
+        >>> audeer.list_dir_names(path)
         []
 
     """
@@ -1022,8 +993,8 @@ def script_dir() -> str:
         current directory of caller
 
     Examples:
-        >>> os.path.basename(script_dir())  # folder of docstring test
-        'audeer_core_io_script_dir0'
+        >>> audeer.script_dir()  # location of this file
+        '...audeer/core'
 
     """
     # Returning the script dir is usually done with
@@ -1058,7 +1029,7 @@ def touch(
         expanded path to file
 
     Examples:
-        >>> path = touch("file.txt")
+        >>> path = audeer.touch("file.txt")
         >>> os.path.basename(path)
         'file.txt'
 

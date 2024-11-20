@@ -44,20 +44,23 @@ def path(
     Returns:
         (joined and) expanded path
 
+    ..
+        >>> import audeer
+
     Examples:
-        >>> home = path("~")
-        >>> folder = path("~/path/.././path")
+        >>> home = audeer.path("~")
+        >>> folder = audeer.path("~/path/.././path")
         >>> folder[len(home) + 1 :]
         'path'
-        >>> file = path("~/path/.././path", "./file.txt")
+        >>> file = audeer.path("~/path/.././path", "./file.txt")
         >>> file[len(home) + 1 :]
         'path/file.txt'
         >>> file = audeer.touch("file.txt")
-        >>> link = path("link.txt")
+        >>> link = audeer.path("link.txt")
         >>> os.symlink(file, link)
-        >>> os.path.basename(path(link))
+        >>> os.path.basename(audeer.path(link))
         'link.txt'
-        >>> os.path.basename(path(link, follow_symlink=True))
+        >>> os.path.basename(audeer.path(link, follow_symlink=True))
         'file.txt'
 
     """
@@ -115,19 +118,19 @@ def safe_path(
         (joined and) expanded path
 
     Examples:
-        >>> home = safe_path("~")
-        >>> folder = safe_path("~/path/.././path")
+        >>> home = audeer.safe_path("~")
+        >>> folder = audeer.safe_path("~/path/.././path")
         >>> folder[len(home) + 1 :]
         'path'
-        >>> file = safe_path("~/path/.././path", "./file.txt")
+        >>> file = audeer.safe_path("~/path/.././path", "./file.txt")
         >>> file[len(home) + 1 :]
         'path/file.txt'
         >>> file = audeer.touch("file.txt")
-        >>> link = path("link.txt")
+        >>> link = audeer.path("link.txt")
         >>> os.symlink(file, link)
-        >>> os.path.basename(path(link))
+        >>> os.path.basename(audeer.path(link))
         'link.txt'
-        >>> os.path.basename(path(link, follow_symlink=True))
+        >>> os.path.basename(audeer.path(link, follow_symlink=True))
         'file.txt'
 
     """

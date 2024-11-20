@@ -101,15 +101,18 @@ class StrictVersion(Version):
         ValueError: if ``version`` does not match
             the ``StrictVersion.version_re`` pattern
 
+    ..
+        >>> import audeer
+
     Examples:
-        >>> v1 = StrictVersion("1.17.2a1")
+        >>> v1 = audeer.StrictVersion("1.17.2a1")
         >>> v1
         StrictVersion ('1.17.2a1')
         >>> v1.version
         (1, 17, 2)
         >>> v1.prerelease
         ('a', 1)
-        >>> v2 = StrictVersion("1.17.2")
+        >>> v2 = audeer.StrictVersion("1.17.2")
         >>> v1 < v2
         True
 
@@ -283,12 +286,12 @@ class LooseVersion(Version):
         version: version string
 
     Examples:
-        >>> v1 = LooseVersion("1.17.2")
+        >>> v1 = audeer.LooseVersion("1.17.2")
         >>> v1
         LooseVersion ('1.17.2')
         >>> v1.version
         [1, 17, 2]
-        >>> v2 = LooseVersion("1.17.2-3-g70b71bd")
+        >>> v2 = audeer.LooseVersion("1.17.2-3-g70b71bd")
         >>> v1 < v2
         True
 

@@ -65,7 +65,7 @@ ignore-words-list = 'covert,te'
 cache_dir = '.cache/pytest'
 xfail_strict = true
 addopts = '''
-    --doctest-plus
+    -p no:doctest
     --cov=audeer
     --cov-fail-under=100
     --cov-report term-missing

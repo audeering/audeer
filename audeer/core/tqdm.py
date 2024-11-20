@@ -22,9 +22,12 @@ def format_display_message(text: str, pbar: bool = False) -> str:
     Returns:
         formatted text message
 
+    ..
+        >>> import audeer
+
     Examples:
-        >>> config.TQDM_COLUMNS = 20
-        >>> format_display_message("Long text that will be shorten to fit")
+        >>> audeer.config.TQDM_COLUMNS = 20
+        >>> audeer.format_display_message("Long text that will be shorten to fit")
         'Long te...n to fit'
 
     """

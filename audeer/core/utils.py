@@ -45,8 +45,11 @@ def deprecated(
         removal_version: version the code will be removed
         alternative: alternative code to use
 
+    ..
+        >>> import audeer
+
     Examples:
-        >>> @deprecated(removal_version="2.0.0")
+        >>> @audeer.deprecated(removal_version="2.0.0")
         ... def deprecated_function():
         ...     pass
 
@@ -92,7 +95,7 @@ def deprecated_default_value(
         new_default_value: new default value
 
     Examples:
-        >>> @deprecated_default_value(
+        >>> @audeer.deprecated_default_value(
         ...     argument="foo",
         ...     change_in_version="2.0.0",
         ...     new_default_value="bar",
@@ -153,7 +156,7 @@ def deprecated_keyword_argument(
             from ``kwargs`` inside the decorated object
 
     Examples:
-        >>> @deprecated_keyword_argument(
+        >>> @audeer.deprecated_keyword_argument(
         ...     deprecated_argument="foo",
         ...     new_argument="bar",
         ...     removal_version="2.0.0",
@@ -209,9 +212,9 @@ def flatten_list(nested_list: typing.List) -> typing.List:
         flattened list
 
     Examples:
-        >>> flatten_list([1, 2, 3, [4], [], [[[[[[[[[5]]]]]]]]]])
+        >>> audeer.flatten_list([1, 2, 3, [4], [], [[[[[[[[[5]]]]]]]]]])
         [1, 2, 3, 4, 5]
-        >>> flatten_list([[1, 2], 3])
+        >>> audeer.flatten_list([[1, 2], 3])
         [1, 2, 3]
 
     """
@@ -271,7 +274,9 @@ def git_repo_tags(
         list of tags
 
     Examples:
-        >>> git_repo_tags()
+        .. skip: next
+
+        >>> audeer.git_repo_tags()
         ['v1.0.0', 'v1.1.0', 'v2.0.0']
 
     """
@@ -309,7 +314,9 @@ def git_repo_version(
         version number
 
     Examples:
-        >>> git_repo_version()
+        .. skip: next
+
+        >>> audeer.git_repo_version()
         'v1.0.0'
 
     """
@@ -446,11 +453,11 @@ def is_semantic_version(version: str) -> bool:
         ``True`` if version is a semantic version
 
     Examples:
-        >>> is_semantic_version("v1")
+        >>> audeer.is_semantic_version("v1")
         False
-        >>> is_semantic_version("1.2.3-r3")
+        >>> audeer.is_semantic_version("1.2.3-r3")
         True
-        >>> is_semantic_version("v0.7.2-9-g1572b37")
+        >>> audeer.is_semantic_version("v0.7.2-9-g1572b37")
         True
 
     """
@@ -498,11 +505,11 @@ def is_uid(uid: str) -> bool:
         ``True`` if string is a unique identifier
 
     Examples:
-        >>> is_uid("626f68e6-d336-70b9-e753-ed9fad855840")
+        >>> audeer.is_uid("626f68e6-d336-70b9-e753-ed9fad855840")
         True
-        >>> is_uid("ad855840")
+        >>> audeer.is_uid("ad855840")
         True
-        >>> is_uid("not a unique identifier")
+        >>> audeer.is_uid("not a unique identifier")
         False
 
     """
@@ -575,7 +582,7 @@ def run_tasks(
     Examples:
         >>> power = lambda x, n: x**n
         >>> params = [([2, n], {}) for n in range(10)]
-        >>> run_tasks(power, params, num_workers=3)
+        >>> audeer.run_tasks(power, params, num_workers=3)
         [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 
     """
@@ -644,7 +651,7 @@ def run_worker_threads(
     Examples:
         >>> power = lambda x, n: x**n
         >>> params = [(2, n) for n in range(10)]
-        >>> run_worker_threads(power, params, num_workers=3)
+        >>> audeer.run_worker_threads(power, params, num_workers=3)
         [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 
     """
@@ -749,7 +756,7 @@ def sort_versions(
         ...     "v1.0.0",
         ...     "v2.0.0-1-gdf29c4a",
         ... ]
-        >>> sort_versions(vers)
+        >>> audeer.sort_versions(vers)
         ['v1.0.0', '2.0.0', 'v2.0.0-1-gdf29c4a', '2.0.1']
 
     """
@@ -784,9 +791,9 @@ def to_list(x: typing.Any):
         input as a list
 
     Examples:
-        >>> to_list("abc")
+        >>> audeer.to_list("abc")
         ['abc']
-        >>> to_list((1, 2, 3))
+        >>> audeer.to_list((1, 2, 3))
         [1, 2, 3]
 
     """
@@ -822,9 +829,9 @@ def uid(
         unique identifier
 
     Examples:
-        >>> uid(from_string="example_string")
+        >>> audeer.uid(from_string="example_string")
         '626f68e6-d336-70b9-e753-ed9fad855840'
-        >>> uid(from_string="example_string", short=True)
+        >>> audeer.uid(from_string="example_string", short=True)
         'ad855840'
 
     """
@@ -857,7 +864,7 @@ def unique(sequence: typing.Iterable) -> typing.List:
     Examples:
         >>> list(set([2, 2, 1]))
         [1, 2]
-        >>> unique([2, 2, 1])
+        >>> audeer.unique([2, 2, 1])
         [2, 1]
 
     """
