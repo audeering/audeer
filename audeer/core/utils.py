@@ -28,7 +28,7 @@ def deprecated(
     removal_version: str,
     alternative: str = None,
 ) -> typing.Callable:
-    """Mark code as deprecated.
+    r"""Mark code as deprecated.
 
     Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
     to mark functions/classes as deprecated.
@@ -41,12 +41,12 @@ def deprecated(
     with the next minor release (`X.(Y+1).Z`).
     Otherwise, choose the next major release (`(X+1).Y.Z`).
 
+    ..
+        >>> import audeer
+
     Args:
         removal_version: version the code will be removed
         alternative: alternative code to use
-
-    ..
-        >>> import audeer
 
     Examples:
         >>> @audeer.deprecated(removal_version="2.0.0")
