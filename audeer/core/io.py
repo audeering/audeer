@@ -581,29 +581,29 @@ def list_file_names(
     Examples:
         >>> dir_path = audeer.mkdir("path")
         >>> _ = audeer.touch(dir_path, "file.wav")
-        >>> _ = audeer.touch(dir_path, "File.wav")
+        >>> _ = audeer.touch(dir_path, "album.wav")
         >>> _ = audeer.touch(dir_path, ".lock")
         >>> sub_dir_path = audeer.mkdir(dir_path, "sub")
         >>> _ = audeer.touch(sub_dir_path, "file.ogg")
         >>> _ = audeer.touch(sub_dir_path, ".lock")
         >>> audeer.list_file_names(dir_path, basenames=True)
-        ['File.wav', 'file.wav']
+        ['album.wav', 'file.wav']
         >>> audeer.list_file_names(dir_path, basenames=True, hidden=True)
-        ['.lock', 'File.wav', 'file.wav']
+        ['.lock', 'album.wav', 'file.wav']
         >>> audeer.list_file_names(dir_path, basenames=True, recursive=True)
-        ['File.wav', 'file.wav', 'sub/file.ogg']
+        ['album.wav', 'file.wav', 'sub/file.ogg']
         >>> audeer.list_file_names(dir_path, basenames=True, recursive=True, hidden=True)
-        ['.lock', 'File.wav', 'file.wav', 'sub/.lock', 'sub/file.ogg']
+        ['.lock', 'album.wav', 'file.wav', 'sub/.lock', 'sub/file.ogg']
         >>> audeer.list_file_names(os.path.join(dir_path, "f*"), basenames=True, recursive=True)
         ['file.wav', 'sub/file.ogg']
         >>> audeer.list_file_names(
-        ...     os.path.join(dir_path, "[fF]*"), basenames=True, recursive=True
+        ...     os.path.join(dir_path, "[fa]*"), basenames=True, recursive=True
         ... )
-        ['File.wav', 'file.wav', 'sub/file.ogg']
+        ['album.wav', 'file.wav', 'sub/file.ogg']
         >>> audeer.list_file_names(
         ...     os.path.join(dir_path, "[!f]*"), basenames=True, recursive=True
         ... )
-        ['File.wav']
+        ['album.wav']
         >>> audeer.list_file_names(dir_path, filetype="ogg", basenames=True, recursive=True)
         ['sub/file.ogg']
 
