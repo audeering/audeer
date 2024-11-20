@@ -1530,7 +1530,7 @@ def test_rmdir(tmpdir):
         sys.version_info.minor,
         sys.version_info.micro,
     )
-    if python_version == (3, 12, 4) and platform.system() != "Windows":
+    if python_version >= (3, 12, 4) and platform.system() != "Windows":
         error_msg = "None"
     else:
         error_msg = "symbolic link"
