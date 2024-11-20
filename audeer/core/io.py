@@ -63,7 +63,7 @@ def common_directory(
         part of the directory tree that is common to all the directories
 
     Examples:
-        .. skip: start if(platform.system == "Windows")
+        .. skip: start if(platform.system() == "Windows")
 
         >>> paths = [
         ...     "/home/user1/tmp/coverage/test",
@@ -501,7 +501,7 @@ def list_dir_names(
         FileNotFoundError: if path does not exists
 
     Examples:
-        .. skip: start if(platform.system == "Windows")
+        .. skip: start if(platform.system() == "Windows")
 
         >>> path = audeer.path("path")
         >>> _ = mkdir(path, "a", ".b", "c")
@@ -570,7 +570,7 @@ def list_file_names(
             and ``os.dirname(path)`` does not exist
 
     Examples:
-        .. skip: start if(platform.system == "Windows")
+        .. skip: start if(platform.system() == "Windows")
 
         >>> dir_path = audeer.mkdir("path")
         >>> _ = audeer.touch(dir_path, "file.wav")
@@ -988,7 +988,7 @@ def script_dir() -> str:
         current directory of caller
 
     Examples:
-        .. skip: next if(platform.system == "Windows")
+        .. skip: next if(platform.system() == "Windows")
 
         >>> audeer.script_dir()  # location of this file
         '...audeer/core'
