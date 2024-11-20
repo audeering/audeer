@@ -79,7 +79,12 @@ def common_directory(
     Returns:
         part of the directory tree that is common to all the directories
 
+    ..
+        >>> import platform
+
     Examples:
+        .. skip: start if(platform.system == "Windows")
+
         >>> paths = [
         ...     "/home/user1/tmp/coverage/test",
         ...     "/home/user1/tmp/covert/operator",
@@ -87,6 +92,8 @@ def common_directory(
         ... ]
         >>> audeer.common_directory(paths)
         '/home/user1/tmp'
+
+        .. skip: end
 
     """
 
@@ -514,6 +521,8 @@ def list_dir_names(
         FileNotFoundError: if path does not exists
 
     Examples:
+        .. skip: start if(platform.system == "Windows")
+
         >>> path = audeer.path("path")
         >>> _ = mkdir(path, "a", ".b", "c")
         >>> audeer.list_dir_names(path, basenames=True)
@@ -522,6 +531,8 @@ def list_dir_names(
         ['a', 'a/.b', 'a/.b/c']
         >>> audeer.list_dir_names(path, basenames=True, recursive=True, hidden=False)
         ['a']
+
+        .. skip: end
 
     """
     path = safe_path(path)
@@ -579,6 +590,8 @@ def list_file_names(
             and ``os.dirname(path)`` does not exist
 
     Examples:
+        .. skip: start if(platform.system == "Windows")
+
         >>> dir_path = audeer.mkdir("path")
         >>> _ = audeer.touch(dir_path, "file.wav")
         >>> _ = audeer.touch(dir_path, "album.wav")
@@ -606,6 +619,8 @@ def list_file_names(
         ['album.wav']
         >>> audeer.list_file_names(dir_path, filetype="ogg", basenames=True, recursive=True)
         ['sub/file.ogg']
+
+        .. skip: end
 
     """  # noqa: E501
     path = safe_path(path)
@@ -993,6 +1008,8 @@ def script_dir() -> str:
         current directory of caller
 
     Examples:
+        .. skip: next if(platform.system == "Windows")
+
         >>> audeer.script_dir()  # location of this file
         '...audeer/core'
 

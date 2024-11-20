@@ -46,8 +46,11 @@ def path(
 
     ..
         >>> import audeer
+        >>> import platform
 
     Examples:
+        .. skip: start if(platform.system == "Windows")
+
         >>> home = audeer.path("~")
         >>> folder = audeer.path("~/path/.././path")
         >>> folder[len(home) + 1 :]
@@ -62,6 +65,8 @@ def path(
         'link.txt'
         >>> os.path.basename(audeer.path(link, follow_symlink=True))
         'file.txt'
+
+        .. skip: end
 
     """
     if paths:
@@ -118,6 +123,8 @@ def safe_path(
         (joined and) expanded path
 
     Examples:
+        .. skip: start if(platform.system == "Windows")
+
         >>> home = audeer.safe_path("~")
         >>> folder = audeer.safe_path("~/path/.././path")
         >>> folder[len(home) + 1 :]
@@ -132,6 +139,8 @@ def safe_path(
         'link.txt'
         >>> os.path.basename(audeer.path(link, follow_symlink=True))
         'file.txt'
+
+        .. skip: end
 
     """
     return _path(path, *paths, follow_symlink=follow_symlink)
