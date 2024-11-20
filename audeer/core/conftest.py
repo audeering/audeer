@@ -1,5 +1,4 @@
 from doctest import ELLIPSIS
-from doctest import NORMALIZE_WHITESPACE
 import os
 
 import pytest
@@ -10,7 +9,7 @@ from sybil.parsers.rest import SkipParser
 
 # Collect doctests
 pytest_collect_file = sybil.Sybil(
-    parsers=[DocTestParser(optionflags=ELLIPSIS + NORMALIZE_WHITESPACE), SkipParser()],
+    parsers=[DocTestParser(optionflags=ELLIPSIS), SkipParser()],
     patterns=["*.py"],
     fixtures=["run_in_tmpdir"],
 ).pytest()
