@@ -1,17 +1,5 @@
 import os
-import platform
 import typing
-
-
-# Exclude common_directory example from doctest
-# on Windows and MacOS
-# (which adds /System/Volumes/Data in front in the Github runner)
-# as it outputs a path in Linux syntax in the example
-if platform.system() in ["Darwin", "Windows"]:  # pragma: no cover
-    __doctest_skip__ = [
-        "path",
-        "safe_path",
-    ]
 
 
 def path(
@@ -45,20 +33,24 @@ def path(
         (joined and) expanded path
 
     Examples:
-        >>> home = path("~")
-        >>> folder = path("~/path/.././path")
+        .. skip: start if(platform.system() == "Windows")
+
+        >>> home = audeer.path("~")
+        >>> folder = audeer.path("~/path/.././path")
         >>> folder[len(home) + 1 :]
         'path'
-        >>> file = path("~/path/.././path", "./file.txt")
+        >>> file = audeer.path("~/path/.././path", "./file.txt")
         >>> file[len(home) + 1 :]
         'path/file.txt'
         >>> file = audeer.touch("file.txt")
-        >>> link = path("link.txt")
+        >>> link = audeer.path("link.txt")
         >>> os.symlink(file, link)
-        >>> os.path.basename(path(link))
+        >>> os.path.basename(audeer.path(link))
         'link.txt'
-        >>> os.path.basename(path(link, follow_symlink=True))
+        >>> os.path.basename(audeer.path(link, follow_symlink=True))
         'file.txt'
+
+        .. skip: end
 
     """
     if paths:
@@ -115,20 +107,24 @@ def safe_path(
         (joined and) expanded path
 
     Examples:
-        >>> home = safe_path("~")
-        >>> folder = safe_path("~/path/.././path")
+        .. skip: start if(platform.system() == "Windows")
+
+        >>> home = audeer.safe_path("~")
+        >>> folder = audeer.safe_path("~/path/.././path")
         >>> folder[len(home) + 1 :]
         'path'
-        >>> file = safe_path("~/path/.././path", "./file.txt")
+        >>> file = audeer.safe_path("~/path/.././path", "./file.txt")
         >>> file[len(home) + 1 :]
         'path/file.txt'
         >>> file = audeer.touch("file.txt")
-        >>> link = path("link.txt")
+        >>> link = audeer.path("link.txt")
         >>> os.symlink(file, link)
-        >>> os.path.basename(path(link))
+        >>> os.path.basename(audeer.path(link))
         'link.txt'
-        >>> os.path.basename(path(link, follow_symlink=True))
+        >>> os.path.basename(audeer.path(link, follow_symlink=True))
         'file.txt'
+
+        .. skip: end
 
     """
     return _path(path, *paths, follow_symlink=follow_symlink)
