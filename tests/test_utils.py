@@ -69,10 +69,9 @@ def test_deprecated_default_value():
         "The default of 'foo' will change from " "'foo' to 'bar' " "with version 1.0.0."
     )
     default_value = "foo"
-    with pytest.warns(None):
-        # no warning if we set value
-        function_with_deprecated_default_value(foo="foo")
-        function_with_deprecated_default_value(foo="bar")
+    # no warning if we set value
+    function_with_deprecated_default_value(foo="foo")
+    function_with_deprecated_default_value(foo="bar")
     with warnings.catch_warnings(record=True) as w:
         # Cause all warnings to always be triggered.
         warnings.simplefilter("always")
