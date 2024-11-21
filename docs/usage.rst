@@ -30,4 +30,6 @@ to estimate Pi with a Monte Carlo method.
         )
         return 4.0 * sum(inside_samples) / iterations
 
+>>> random.seed(1)
 >>> pi(1000)
+3.112
