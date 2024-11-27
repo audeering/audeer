@@ -8,6 +8,7 @@ import shutil
 import tarfile
 import typing
 import urllib.request
+import warnings
 import zipfile
 
 from audeer.core.path import path as safe_path
@@ -369,7 +370,12 @@ def extract_archive(
                     desc=desc,
                     disable=disable,
                 ):
-                    tf.extract(member, destination, numeric_owner=True)
+                    # In Python 3.12 the `filter` argument was introduced.
+                    # In a later version we should use `filter="tar"`,
+                    # until then we catch the deprecation warning
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        tf.extract(member, destination, numeric_owner=True)
                 files = [m.name for m in members]
         else:
             raise RuntimeError(
