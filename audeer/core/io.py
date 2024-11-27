@@ -5,10 +5,10 @@ import inspect
 import itertools
 import os
 import shutil
+import sys
 import tarfile
 import typing
 import urllib.request
-import warnings
 import zipfile
 
 from audeer.core.path import path as safe_path
@@ -370,11 +370,16 @@ def extract_archive(
                     desc=desc,
                     disable=disable,
                 ):
-                    # In Python 3.12 the `filter` argument was introduced.
-                    # In a later version we should use `filter="tar"`,
-                    # until then we catch the deprecation warning
-                    with warnings.catch_warnings():
-                        warnings.simplefilter("ignore")
+                    # In Python 3.12 the `filter` argument was introduced,
+                    # and it will be set automatically in Python 3.14,
+                    # see
+                    # https://docs.python.org/3.12/library/tarfile.html#tarfile-extraction-filter
+                    # noqa: E501
+                    if sys.version_info >= (3, 12):
+                        tf.extract(
+                            member, destination, numeric_owner=True, filter="tar"
+                        )
+                    else:
                         tf.extract(member, destination, numeric_owner=True)
                 files = [m.name for m in members]
         else:
