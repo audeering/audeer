@@ -375,12 +375,10 @@ def extract_archive(
                     # see
                     # https://docs.python.org/3.12/library/tarfile.html#tarfile-extraction-filter
                     # noqa: E501
-                    if sys.version_info >= (3, 12):
-                        tf.extract(
-                            member, destination, numeric_owner=True, filter="tar"
-                        )
-                    else:
-                        tf.extract(member, destination, numeric_owner=True)
+                    kwargs = {"numeric_owner": True}
+                    if sys.version_info >= (3, 12):  # pragma: no cover
+                        kwargs = kwargs | {"filter": "tar"}
+                    tf.extract(member, destination, **kwargs)
                 files = [m.name for m in members]
         else:
             raise RuntimeError(
