@@ -8,6 +8,7 @@ import importlib.metadata
 import inspect
 import multiprocessing
 import operator
+import os
 import queue
 import subprocess
 import sys
@@ -772,6 +773,22 @@ def sort_versions(
         return LooseVersion(value)
 
     return sorted(versions, key=sort_key)
+
+
+def set_or_delete_env_variable(name, value):
+    """Set or delete environment variable.
+
+    Args:
+        name: name of environment variable
+        value: value of environment variable.
+            If ``None``,
+            the variable is deleted
+
+    """
+    if value is None:
+        del os.environ[name]
+    else:
+        os.environ[name] = value
 
 
 def to_list(x: typing.Any):
