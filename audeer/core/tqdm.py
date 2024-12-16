@@ -54,7 +54,7 @@ def progress_bar(
     r"""Progress bar with optional text on the right.
 
     If you want to show a constant description text
-    during presenting the prgress bar,
+    during presenting the progress bar,
     you can use it similar to:
 
     .. code-block:: python

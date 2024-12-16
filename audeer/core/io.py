@@ -293,7 +293,7 @@ def extract_archive(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        paths of extracted files relative to ``destintation``
+        paths of extracted files relative to ``destination``
         in order they were added to the archive
 
     Raises:
@@ -421,7 +421,7 @@ def extract_archives(
         verbose: if ``True`` a progress bar is shown
 
     Returns:
-        paths of extracted files relative to ``destintation``
+        paths of extracted files relative to ``destination``
         in order they were added to the archives
 
     Raises:
@@ -596,7 +596,9 @@ def list_file_names(
         ['album.wav', 'file.wav', 'sub/file.ogg']
         >>> audeer.list_file_names(dir_path, basenames=True, recursive=True, hidden=True)
         ['.lock', 'album.wav', 'file.wav', 'sub/.lock', 'sub/file.ogg']
-        >>> audeer.list_file_names(os.path.join(dir_path, "f*"), basenames=True, recursive=True)
+        >>> audeer.list_file_names(
+        ...     os.path.join(dir_path, "f*"), basenames=True, recursive=True
+        ... )
         ['file.wav', 'sub/file.ogg']
         >>> audeer.list_file_names(
         ...     os.path.join(dir_path, "[fa]*"), basenames=True, recursive=True
