@@ -289,7 +289,7 @@ def git_repo_tags(
     if v:
         tags = [f"v{t}" if not t.startswith("v") else t for t in tags]
     else:
-        tags = [t[1:] if t.startswith("v") else t for t in tags]
+        tags = [t.removeprefix("v") for t in tags]
     return tags
 
 
@@ -473,8 +473,7 @@ def is_semantic_version(version: str) -> bool:
 
     x, y = version_parts[:2]
     # Ignore starting 'v'
-    if x.startswith("v"):
-        x = x[1:]
+    x = x.removeprefix("v")
 
     z = ".".join(version_parts[2:])
     # For Z, '-' and '+' are also allowed as separators,
@@ -768,8 +767,7 @@ def sort_versions(
             )
 
     def sort_key(value):
-        if value.startswith("v"):
-            value = value[1:]
+        value = value.removeprefix("v")
         return LooseVersion(value)
 
     return sorted(versions, key=sort_key)

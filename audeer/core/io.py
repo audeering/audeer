@@ -45,8 +45,7 @@ def basename_wo_ext(
     if ext is not None:
         if not ext.startswith("."):
             ext = "." + ext  # 'mp3' => '.mp3'
-        if path.endswith(ext):
-            path = path[: -len(ext)]
+        path = path.removesuffix(ext)
     else:
         path = os.path.splitext(path)[0]
     return path
@@ -931,10 +930,8 @@ def replace_file_extension(
         ext = file_extension(path)
 
     # '.mp3' => 'mp3'
-    if ext.startswith("."):
-        ext = ext[1:]
-    if new_extension.startswith("."):
-        new_extension = new_extension[1:]
+    ext = ext.removeprefix(".")
+    new_extension = new_extension.removeprefix(".")
 
     if ext and not path.endswith(f".{ext}"):
         return path
