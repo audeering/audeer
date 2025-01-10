@@ -1,6 +1,6 @@
+from collections.abc import Sequence
 import threading
 import time
-import typing
 
 from tqdm import tqdm
 
@@ -44,7 +44,7 @@ def format_display_message(text: str, pbar: bool = False) -> str:
 
 
 def progress_bar(
-    iterable: typing.Sequence = None,
+    iterable: Sequence = None,
     *,
     total: int = None,
     desc: str = None,
@@ -109,7 +109,7 @@ def progress_bar(
 
 
 def tqdm_wrapper(
-    iterable: typing.Sequence,
+    iterable: Sequence,
     maximum_refresh_time: float,
     *args,
     **kwargs,

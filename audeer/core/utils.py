@@ -1,4 +1,6 @@
+from collections.abc import Callable
 from collections.abc import Iterable
+from collections.abc import Sequence
 import concurrent.futures
 import copy
 import functools
@@ -12,7 +14,6 @@ import queue
 import subprocess
 import sys
 import threading
-import typing
 import uuid
 import warnings
 
@@ -27,7 +28,7 @@ def deprecated(
     *,
     removal_version: str,
     alternative: str = None,
-) -> typing.Callable:
+) -> Callable:
     r"""Mark code as deprecated.
 
     Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
@@ -76,8 +77,8 @@ def deprecated_default_value(
     *,
     argument: str,
     change_in_version: str,
-    new_default_value: typing.Any,
-) -> typing.Callable:
+    new_default_value: object,
+) -> Callable:
     """Mark default value of keyword argument as deprecated.
 
     Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
@@ -128,9 +129,9 @@ def deprecated_keyword_argument(
     deprecated_argument: str,
     removal_version: str,
     new_argument: str = None,
-    mapping: typing.Callable = None,
+    mapping: Callable = None,
     remove_from_kwargs: bool = True,
-) -> typing.Callable:
+) -> Callable:
     r"""Mark keyword argument as deprecated.
 
     Provide a `decorator <https://www.python.org/dev/peps/pep-0318/>`_
@@ -196,7 +197,7 @@ def deprecated_keyword_argument(
     return _deprecated
 
 
-def flatten_list(nested_list: typing.List) -> typing.List:
+def flatten_list(nested_list: list) -> list:
     """Flatten an arbitrarily nested list.
 
     Implemented without  recursion to avoid stack overflows.
@@ -254,7 +255,7 @@ def freeze_requirements(outfile: str):
 def git_repo_tags(
     *,
     v: bool = None,
-) -> typing.List:
+) -> list:
     r"""Get a list of available git tags.
 
     The tags are inferred by executing
@@ -288,7 +289,7 @@ def git_repo_tags(
     if v:
         tags = [f"v{t}" if not t.startswith("v") else t for t in tags]
     else:
-        tags = [t[1:] if t.startswith("v") else t for t in tags]
+        tags = [t.removeprefix("v") for t in tags]
     return tags
 
 
@@ -472,8 +473,7 @@ def is_semantic_version(version: str) -> bool:
 
     x, y = version_parts[:2]
     # Ignore starting 'v'
-    if x.startswith("v"):
-        x = x[1:]
+    x = x.removeprefix("v")
 
     z = ".".join(version_parts[2:])
     # For Z, '-' and '+' are also allowed as separators,
@@ -533,11 +533,11 @@ def is_uid(uid: str) -> bool:
 
 
 def run_tasks(
-    task_func: typing.Callable,
-    params: typing.Sequence[
-        typing.Tuple[
-            typing.Sequence[typing.Any],
-            typing.Dict[str, typing.Any],
+    task_func: Callable,
+    params: Sequence[
+        tuple[
+            Sequence[object],
+            dict[str, object],
         ]
     ],
     *,
@@ -546,7 +546,7 @@ def run_tasks(
     progress_bar: bool = False,
     task_description: str = None,
     maximum_refresh_time: float = None,
-) -> typing.List[typing.Any]:
+) -> list[object]:
     r"""Run parallel tasks using multprocessing.
 
     .. note:: Result values are returned in order of ``params``.
@@ -623,13 +623,13 @@ def run_tasks(
 
 @deprecated(removal_version="2.0.0", alternative="run_tasks")
 def run_worker_threads(
-    task_fun: typing.Callable,
-    params: typing.Sequence[typing.Any] = None,
+    task_fun: Callable,
+    params: Sequence[object] = None,
     *,
     num_workers: int = None,
     progress_bar: bool = False,
     task_description: str = None,
-) -> typing.Sequence[typing.Any]:  # pragma: no cover
+) -> Sequence[object]:  # pragma: no cover
     r"""Run parallel tasks using worker threads.
 
     .. note:: Result values are returned in order of ``params``.
@@ -729,8 +729,8 @@ def run_worker_threads(
 
 
 def sort_versions(
-    versions: typing.List[str],
-) -> typing.List:
+    versions: list[str],
+) -> list[str]:
     """Sort version numbers.
 
     If a version starts with ``v``,
@@ -767,14 +767,13 @@ def sort_versions(
             )
 
     def sort_key(value):
-        if value.startswith("v"):
-            value = value[1:]
+        value = value.removeprefix("v")
         return LooseVersion(value)
 
     return sorted(versions, key=sort_key)
 
 
-def to_list(x: typing.Any):
+def to_list(x: object):
     """Convert to list.
 
     If an iterable is passed,
@@ -846,7 +845,7 @@ def uid(
     return uid
 
 
-def unique(sequence: typing.Iterable) -> typing.List:
+def unique(sequence: Iterable) -> list:
     r"""Unique values in its original order.
 
     This is an alternative to ``list(set(x))``,

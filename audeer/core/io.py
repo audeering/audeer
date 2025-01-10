@@ -1,13 +1,16 @@
+from __future__ import annotations
+
+from collections.abc import Sequence
 import errno
 import fnmatch
 import hashlib
 import inspect
+import io
 import itertools
 import os
 import shutil
 import sys
 import tarfile
-import typing
 import urllib.request
 import zipfile
 
@@ -18,7 +21,7 @@ from audeer.core.utils import to_list
 
 
 def basename_wo_ext(
-    path: typing.Union[str, bytes],
+    path: str | bytes,
     *,
     ext: str = None,
 ) -> str:
@@ -42,15 +45,14 @@ def basename_wo_ext(
     if ext is not None:
         if not ext.startswith("."):
             ext = "." + ext  # 'mp3' => '.mp3'
-        if path.endswith(ext):
-            path = path[: -len(ext)]
+        path = path.removesuffix(ext)
     else:
         path = os.path.splitext(path)[0]
     return path
 
 
 def common_directory(
-    dirs: typing.Sequence[str],
+    dirs: Sequence[str],
     *,
     sep: str = os.path.sep,
 ) -> str:
@@ -94,7 +96,7 @@ def common_directory(
 
 def create_archive(
     root: str,
-    files: typing.Optional[typing.Union[str, typing.Sequence[str]]],
+    files: str | Sequence[str] | None,
     archive: str,
     *,
     verbose: bool = False,
@@ -292,7 +294,7 @@ def extract_archive(
     *,
     keep_archive: bool = True,
     verbose: bool = False,
-) -> typing.List[str]:
+) -> list[str]:
     r"""Extract ZIP or TAR file.
 
     Args:
@@ -411,12 +413,12 @@ def extract_archive(
 
 
 def extract_archives(
-    archives: typing.Sequence[str],
+    archives: Sequence[str],
     destination: str,
     *,
     keep_archive: bool = True,
     verbose: bool = False,
-) -> typing.List[str]:
+) -> list[str]:
     r"""Extract multiple ZIP or TAR archives at once.
 
     Args:
@@ -474,7 +476,7 @@ def extract_archives(
 
 
 def file_extension(
-    path: typing.Union[str, bytes],
+    path: str | bytes,
 ) -> str:
     """File extension.
 
@@ -495,12 +497,12 @@ def file_extension(
 
 
 def list_dir_names(
-    path: typing.Union[str, bytes],
+    path: str | bytes,
     *,
     basenames: bool = False,
     recursive: bool = False,
     hidden: bool = True,
-) -> typing.List[str]:
+) -> list[str]:
     """List of folder names located inside provided path.
 
     Args:
@@ -533,7 +535,7 @@ def list_dir_names(
     """
     path = safe_path(path)
 
-    def helper(p: str, paths: typing.List[str]):
+    def helper(p: str, paths: list[str]):
         ps = [os.path.join(p, x) for x in os.listdir(p)]
         ps = [x for x in ps if os.path.isdir(x)]
         if not hidden:
@@ -552,13 +554,13 @@ def list_dir_names(
 
 
 def list_file_names(
-    path: typing.Union[str, bytes],
+    path: str | bytes,
     *,
     filetype: str = "",
     basenames: bool = False,
     recursive: bool = False,
     hidden: bool = False,
-) -> typing.List[str]:
+) -> list[str]:
     """List of file names inferred from provided path.
 
     Args:
@@ -641,7 +643,7 @@ def list_file_names(
         if not os.path.isdir(folder):
             raise NotADirectoryError(folder)
 
-    def helper(p: str, paths: typing.List[str]):
+    def helper(p: str, paths: list[str]):
         ps = [os.path.join(p, x) for x in os.listdir(p)]
         folders = [x for x in ps if os.path.isdir(x)]
         files = [x for x in ps if os.path.isfile(x)]
@@ -685,8 +687,8 @@ def list_file_names(
 
 
 def mkdir(
-    path: typing.Union[str, bytes],
-    *paths: typing.Sequence[typing.Union[str, bytes]],
+    path: str | bytes,
+    *paths: Sequence[str | bytes],
     mode: int = 0o777,
 ) -> str:
     """Create directory.
@@ -802,7 +804,7 @@ def md5(
 
 
 def md5_read_chunk(
-    fp: typing.IO,
+    fp: io.IOBase,
     chunk_size: int = 8192,
 ):
     while True:
@@ -887,7 +889,7 @@ def move_file(
 
 
 def replace_file_extension(
-    path: typing.Union[str, bytes],
+    path: str | bytes,
     new_extension: str,
     *,
     ext: str = None,
@@ -928,10 +930,8 @@ def replace_file_extension(
         ext = file_extension(path)
 
     # '.mp3' => 'mp3'
-    if ext.startswith("."):
-        ext = ext[1:]
-    if new_extension.startswith("."):
-        new_extension = new_extension[1:]
+    ext = ext.removeprefix(".")
+    new_extension = new_extension.removeprefix(".")
 
     if ext and not path.endswith(f".{ext}"):
         return path
@@ -952,8 +952,8 @@ def replace_file_extension(
 
 
 def rmdir(
-    path: typing.Union[str, bytes],
-    *paths: typing.Sequence[typing.Union[str, bytes]],
+    path: str | bytes,
+    *paths: Sequence[str | bytes],
     follow_symlink: bool = True,
 ):
     """Remove directory.
@@ -1025,8 +1025,8 @@ def script_dir() -> str:
 
 
 def touch(
-    path: typing.Union[str, bytes],
-    *paths: typing.Sequence[typing.Union[str, bytes]],
+    path: str | bytes,
+    *paths: Sequence[str | bytes],
 ) -> str:
     """Create an empty file.
 
