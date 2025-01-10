@@ -1,10 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Sequence
 import os
-import typing
 
 
 def path(
-    path: typing.Union[str, bytes],
-    *paths: typing.Sequence[typing.Union[str, bytes]],
+    path: str | bytes,
+    *paths: Sequence[str | bytes],
     follow_symlink: bool = False,
 ) -> str:
     """Expand and normalize to absolute path.
@@ -73,8 +75,8 @@ _path = path
 
 
 def safe_path(
-    path: typing.Union[str, bytes],
-    *paths: typing.Sequence[typing.Union[str, bytes]],
+    path: str | bytes,
+    *paths: Sequence[str | bytes],
     follow_symlink: bool = False,
 ) -> str:
     """Expand and normalize to absolute path.
