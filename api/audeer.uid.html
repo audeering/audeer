@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v2.2.0
+                v2.2.1
               </div>
             
           
@@ -194,27 +194,27 @@ only the last 8 digits are returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>from_string</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – create a unique identifier
+<li><p><strong>from_string</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – create a unique identifier
 by hashing the provided string.
 This will return the same identifier
 for identical strings.
-If <code class="docutils literal notranslate"><span class="pre">None</span></code> <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.uuid1" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">uuid.uuid1()</span></code></a> is used.</p></li>
-<li><p><strong>short</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> returns
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> <a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.uuid1" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">uuid.uuid1()</span></code></a> is used.</p></li>
+<li><p><strong>short</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> returns
 a short unique identifier
 (last 8 digits)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>unique identifier</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uid</span><span class="p">(</span><span class="n">from_string</span><span class="o">=</span><span class="s2">&quot;example_string&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">uid</span><span class="p">(</span><span class="n">from_string</span><span class="o">=</span><span class="s2">&quot;example_string&quot;</span><span class="p">)</span>
 <span class="go">&#39;626f68e6-d336-70b9-e753-ed9fad855840&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">uid</span><span class="p">(</span><span class="n">from_string</span><span class="o">=</span><span class="s2">&quot;example_string&quot;</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">uid</span><span class="p">(</span><span class="n">from_string</span><span class="o">=</span><span class="s2">&quot;example_string&quot;</span><span class="p">,</span> <span class="n">short</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">&#39;ad855840&#39;</span>
 </pre></div>
 </div>
@@ -245,7 +245,7 @@ a short unique identifier
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/07/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/01/10 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

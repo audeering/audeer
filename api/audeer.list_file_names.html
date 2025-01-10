@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v2.2.0
+                v2.2.1
               </div>
             
           
@@ -190,7 +190,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.12)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>]) – path to directory,
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>) – path to directory,
 or path to directory plus file matching pattern,
 e.g. <code class="docutils literal notranslate"><span class="pre">'dir/file.txt'</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">recursive</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>
@@ -198,86 +198,55 @@ returns all files named <code class="docutils literal notranslate"><span class="
 from all sub-folders.
 Besides the filename <code class="docutils literal notranslate"><span class="pre">*</span></code>, <code class="docutils literal notranslate"><span class="pre">?</span></code>, <code class="docutils literal notranslate"><span class="pre">[seq]</span></code>,
 and <code class="docutils literal notranslate"><span class="pre">[!seq]</span></code> can be used as pattern,
-compare <a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.12)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fnmatch</span></code></a></p></li>
-<li><p><strong>filetype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – optional consider only this filetype</p></li>
-<li><p><strong>basenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> return relative path in respect to <code class="docutils literal notranslate"><span class="pre">path</span></code></p></li>
-<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> includes subdirectories</p></li>
-<li><p><strong>hidden</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> includes files starting with a dot (<code class="docutils literal notranslate"><span class="pre">.</span></code>)</p></li>
+compare <a class="reference external" href="https://docs.python.org/3/library/fnmatch.html#module-fnmatch" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fnmatch</span></code></a></p></li>
+<li><p><strong>filetype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – optional consider only this filetype</p></li>
+<li><p><strong>basenames</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> return relative path in respect to <code class="docutils literal notranslate"><span class="pre">path</span></code></p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> includes subdirectories</p></li>
+<li><p><strong>hidden</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> includes files starting with a dot (<code class="docutils literal notranslate"><span class="pre">.</span></code>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>alphabetically sorted list of path(s) to file(s)</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotADirectoryError" title="(in Python v3.12)"><strong>NotADirectoryError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">path</span></code> is a directory or file
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotADirectoryError" title="(in Python v3.13)"><strong>NotADirectoryError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">path</span></code> is a directory or file
     that does not exist,
     or <code class="docutils literal notranslate"><span class="pre">path</span></code> is a pattern
     and <code class="docutils literal notranslate"><span class="pre">os.dirname(path)</span></code> does not exist</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dir_path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;file.wav&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;File.wav&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;.lock&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sub_dir_path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">sub_dir_path</span><span class="p">,</span> <span class="s2">&quot;file.ogg&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">sub_dir_path</span><span class="p">,</span> <span class="s2">&quot;.lock&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">dir_path</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="go">[&#39;File.wav&#39;, &#39;file.wav&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">dir_path</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="go">[&#39;.lock&#39;, &#39;File.wav&#39;, &#39;file.wav&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">dir_path</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="go">[&#39;File.wav&#39;, &#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">dir_path</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
-<span class="go">[&#39;.lock&#39;, &#39;File.wav&#39;, &#39;file.wav&#39;, &#39;sub/.lock&#39;, &#39;sub/file.ogg&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;f*&quot;</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dir_path</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;file.wav&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;album.wav&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;.lock&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sub_dir_path</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">sub_dir_path</span><span class="p">,</span> <span class="s2">&quot;file.ogg&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">sub_dir_path</span><span class="p">,</span> <span class="s2">&quot;.lock&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;album.wav&#39;, &#39;file.wav&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;.lock&#39;, &#39;album.wav&#39;, &#39;file.wav&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;album.wav&#39;, &#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[&#39;.lock&#39;, &#39;album.wav&#39;, &#39;file.wav&#39;, &#39;sub/.lock&#39;, &#39;sub/file.ogg&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;f*&quot;</span><span class="p">),</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="go">[&#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;[fF]*&quot;</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;[fa]*&quot;</span><span class="p">),</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="go">[&#39;File.wav&#39;, &#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;[!f]*&quot;</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="go">[&#39;album.wav&#39;, &#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;[!f]*&quot;</span><span class="p">),</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="go">[&#39;.lock&#39;, &#39;File.wav&#39;, &#39;sub/.lock&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;f*&quot;</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">filetype</span><span class="o">=</span><span class="s2">&quot;ogg&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="gp">... </span><span class="p">)</span>
+<span class="go">[&#39;album.wav&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s2">&quot;ogg&quot;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">[&#39;sub/file.ogg&#39;]</span>
 </pre></div>
 </div>
@@ -308,7 +277,7 @@ compare <a class="reference external" href="https://docs.python.org/3/library/fn
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/07/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/01/10 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v2.2.0
+                v2.2.1
               </div>
             
           
@@ -138,16 +138,16 @@
            <div itemprop="articleBody">
             
   <h1>Source code for audeer.core.tqdm</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span> <span class="nn">audeer.core.config</span> <span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">audeer.core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
 
 
-<div class="viewcode-block" id="format_display_message"><a class="viewcode-back" href="../../../api/audeer.format_display_message.html#audeer.format_display_message">[docs]</a><span class="k">def</span> <span class="nf">format_display_message</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pbar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="format_display_message"><a class="viewcode-back" href="../../../api/audeer.format_display_message.html#audeer.format_display_message">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">format_display_message</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pbar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure a fixed length of text printed to screen.</span>
 
 <span class="sd">    The length of the text message is the same as the overall</span>
@@ -163,8 +163,8 @@
 <span class="sd">        formatted text message</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; config.TQDM_COLUMNS = 20</span>
-<span class="sd">        &gt;&gt;&gt; format_display_message(&quot;Long text that will be shorten to fit&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; audeer.config.TQDM_COLUMNS = 20</span>
+<span class="sd">        &gt;&gt;&gt; audeer.format_display_message(&quot;Long text that will be shorten to fit&quot;)</span>
 <span class="sd">        &#39;Long te...n to fit&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -183,8 +183,8 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="p">[:</span><span class="n">m</span><span class="p">]</span><span class="si">}</span><span class="s2">...</span><span class="si">{</span><span class="n">text</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">3</span><span class="p">):]</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
-<div class="viewcode-block" id="progress_bar"><a class="viewcode-back" href="../../../api/audeer.progress_bar.html#audeer.progress_bar">[docs]</a><span class="k">def</span> <span class="nf">progress_bar</span><span class="p">(</span>
-    <span class="n">iterable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="progress_bar"><a class="viewcode-back" href="../../../api/audeer.progress_bar.html#audeer.progress_bar">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">progress_bar</span><span class="p">(</span>
+    <span class="n">iterable</span><span class="p">:</span> <span class="n">Sequence</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">total</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -194,7 +194,7 @@
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Progress bar with optional text on the right.</span>
 
 <span class="sd">    If you want to show a constant description text</span>
-<span class="sd">    during presenting the prgress bar,</span>
+<span class="sd">    during presenting the progress bar,</span>
 <span class="sd">    you can use it similar to:</span>
 
 <span class="sd">    .. code-block:: python</span>
@@ -248,8 +248,8 @@
     <span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">tqdm_wrapper</span><span class="p">(</span>
-    <span class="n">iterable</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">,</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tqdm_wrapper</span><span class="p">(</span>
+    <span class="n">iterable</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">maximum_refresh_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -278,7 +278,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">refresh</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refresh</span><span class="p">():</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">pbar</span><span class="o">.</span><span class="n">disable</span><span class="p">:</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">maximum_refresh_time</span><span class="p">)</span>
             <span class="n">pbar</span><span class="o">.</span><span class="n">refresh</span><span class="p">()</span>
@@ -303,7 +303,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/07/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/01/10 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

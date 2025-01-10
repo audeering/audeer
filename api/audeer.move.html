@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v2.2.0
+                v2.2.1
               </div>
             
           
@@ -187,10 +187,10 @@
 <dt class="sig sig-object py" id="audeer.move">
 <span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/io.html#move"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move a file or folder independent of operating system.</p>
-<p>As <a class="reference external" href="https://docs.python.org/3/library/os.html#os.rename" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.rename()</span></code></a> works differently
+<p>As <a class="reference external" href="https://docs.python.org/3/library/os.html#os.rename" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.rename()</span></code></a> works differently
 under Unix and Windows
-and <a class="reference external" href="https://docs.python.org/3/library/shutil.html#shutil.move" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">shutil.move()</span></code></a> can be slow,
-we use <a class="reference external" href="https://docs.python.org/3/library/os.html#os.replace" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.replace()</span></code></a>
+and <a class="reference external" href="https://docs.python.org/3/library/shutil.html#shutil.move" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">shutil.move()</span></code></a> can be slow,
+we use <a class="reference external" href="https://docs.python.org/3/library/os.html#os.replace" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">os.replace()</span></code></a>
 to move the file/folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -201,15 +201,15 @@ to move the file/folder.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is a file
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.13)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is a file
     and <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is an existing folder</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is a folder
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.13)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is a folder
     and <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is an existing file
     (not raised under Windows)</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is a non-empty folder,
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.13)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is a non-empty folder,
     different from <code class="docutils literal notranslate"><span class="pre">src_path</span></code>,
     and <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is also a folder</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.12)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is an empty folder,
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#OSError" title="(in Python v3.13)"><strong>OSError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">dst_path</span></code> is an empty folder,
     different from <code class="docutils literal notranslate"><span class="pre">src_path</span></code>
     and <code class="docutils literal notranslate"><span class="pre">src_path</span></code> is also a folder
     (raised only under Windows)</p></li>
@@ -217,11 +217,11 @@ to move the file/folder.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;folder&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">src_path</span> <span class="o">=</span> <span class="n">touch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;file1&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s2">&quot;folder&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">src_path</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;file1&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dst_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;file2&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">move</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">[&#39;file2&#39;]</span>
 </pre></div>
 </div>
@@ -252,7 +252,7 @@ to move the file/folder.</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/07/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/01/10 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v2.2.0
+                v2.2.1
               </div>
             
           
@@ -146,32 +146,30 @@ to find usage examples for all available functions.</p>
 <p>The following code example
 applies multi-threading with <a class="reference internal" href="api/audeer.run_tasks.html#audeer.run_tasks" title="audeer.run_tasks"><code class="xref py py-func docutils literal notranslate"><span class="pre">audeer.run_tasks()</span></code></a>
 to estimate Pi with a Monte Carlo method.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
-<span class="kn">import</span> <span class="nn">audeer</span>
-
-
-<span class="n">NUM_SAMPLES</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e6</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">audeer</span>
 
 
-<span class="k">def</span> <span class="nf">is_inside</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_inside</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="mi">1</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pi</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="mi">100_000</span><span class="p">):</span>
     <span class="n">inside_samples</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">run_tasks</span><span class="p">(</span>
         <span class="n">is_inside</span><span class="p">,</span>
-        <span class="p">[([</span><span class="n">n</span><span class="p">],</span> <span class="p">{})</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">NUM_SAMPLES</span><span class="p">)],</span>
+        <span class="p">[([</span><span class="n">n</span><span class="p">],</span> <span class="p">{})</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">iterations</span><span class="p">)],</span>
         <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
         <span class="n">progress_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">task_description</span><span class="o">=</span><span class="s2">&quot;Estimate PI&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">pi</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">inside_samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">NUM_SAMPLES</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pi is roughly </span><span class="si">{</span><span class="n">pi</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
+    <span class="k">return</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">inside_samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">iterations</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pi</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">3.112</span>
 </pre></div>
 </div>
 </div>
@@ -199,7 +197,7 @@ to estimate Pi with a Monte Carlo method.</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/07/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/01/10 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

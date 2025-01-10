@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                v2.2.0
+                v2.2.1
               </div>
             
           
@@ -102,6 +102,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-2-1-2025-01-10">Version 2.2.1 (2025-01-10)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-2-0-2024-07-23">Version 2.2.0 (2024-07-23)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-1-1-2024-07-15">Version 2.1.1 (2024-07-15)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-1-0-2024-07-05">Version 2.1.0 (2024-07-05)</a></li>
@@ -213,6 +214,24 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<div class="section" id="version-2-2-1-2025-01-10">
+<h2>Version 2.2.1 (2025-01-10)<a class="headerlink" href="#version-2-2-1-2025-01-10" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Added: support for Python 3.13</p></li>
+<li><p>Added: support for <code class="docutils literal notranslate"><span class="pre">tar</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tar.bz2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tar.xz</span></code>
+archives in
+<code class="docutils literal notranslate"><span class="pre">audeer.create_archive()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audeer.extract_archive()</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">audeer.extract_archives()</span></code></p></li>
+<li><p>Fixed: avoid deprecation warnings
+in Python&gt;=3.12
+by using the <code class="docutils literal notranslate"><span class="pre">&quot;tar&quot;</span></code> filter
+when extracting tar archives</p></li>
+<li><p>Removed: support for Python 3.8</p></li>
+</ul>
+</div>
 <div class="section" id="version-2-2-0-2024-07-23">
 <h2>Version 2.2.0 (2024-07-23)<a class="headerlink" href="#version-2-2-0-2024-07-23" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
@@ -849,7 +868,7 @@ and remove obsolete <code class="docutils literal notranslate"><span class="pre"
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/07/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/01/10 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

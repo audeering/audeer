@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v2.2.0
+                v2.2.1
               </div>
             
           
@@ -138,25 +138,15 @@
            <div itemprop="articleBody">
             
   <h1>Source code for audeer.core.path</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">platform</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 
-<span class="c1"># Exclude common_directory example from doctest</span>
-<span class="c1"># on Windows and MacOS</span>
-<span class="c1"># (which adds /System/Volumes/Data in front in the Github runner)</span>
-<span class="c1"># as it outputs a path in Linux syntax in the example</span>
-<span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Darwin&quot;</span><span class="p">,</span> <span class="s2">&quot;Windows&quot;</span><span class="p">]:</span>  <span class="c1"># pragma: no cover</span>
-    <span class="n">__doctest_skip__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;path&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;safe_path&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
-
-
-<div class="viewcode-block" id="path"><a class="viewcode-back" href="../../../api/audeer.path.html#audeer.path">[docs]</a><span class="k">def</span> <span class="nf">path</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
-    <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span>
+<div class="viewcode-block" id="path"><a class="viewcode-back" href="../../../api/audeer.path.html#audeer.path">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">path</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">],</span>
     <span class="n">follow_symlink</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Expand and normalize to absolute path.</span>
@@ -185,20 +175,24 @@
 <span class="sd">        (joined and) expanded path</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; home = path(&quot;~&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; folder = path(&quot;~/path/.././path&quot;)</span>
+<span class="sd">        .. skip: start if(platform.system() == &quot;Windows&quot;)</span>
+
+<span class="sd">        &gt;&gt;&gt; home = audeer.path(&quot;~&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; folder = audeer.path(&quot;~/path/.././path&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; folder[len(home) + 1 :]</span>
 <span class="sd">        &#39;path&#39;</span>
-<span class="sd">        &gt;&gt;&gt; file = path(&quot;~/path/.././path&quot;, &quot;./file.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; file = audeer.path(&quot;~/path/.././path&quot;, &quot;./file.txt&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; file[len(home) + 1 :]</span>
 <span class="sd">        &#39;path/file.txt&#39;</span>
 <span class="sd">        &gt;&gt;&gt; file = audeer.touch(&quot;file.txt&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; link = path(&quot;link.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; link = audeer.path(&quot;link.txt&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; os.symlink(file, link)</span>
-<span class="sd">        &gt;&gt;&gt; os.path.basename(path(link))</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(audeer.path(link))</span>
 <span class="sd">        &#39;link.txt&#39;</span>
-<span class="sd">        &gt;&gt;&gt; os.path.basename(path(link, follow_symlink=True))</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(audeer.path(link, follow_symlink=True))</span>
 <span class="sd">        &#39;file.txt&#39;</span>
+
+<span class="sd">        .. skip: end</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">paths</span><span class="p">:</span>
@@ -220,9 +214,9 @@
 <span class="n">_path</span> <span class="o">=</span> <span class="n">path</span>
 
 
-<div class="viewcode-block" id="safe_path"><a class="viewcode-back" href="../../../api/audeer.safe_path.html#audeer.safe_path">[docs]</a><span class="k">def</span> <span class="nf">safe_path</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">],</span>
-    <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]],</span>
+<div class="viewcode-block" id="safe_path"><a class="viewcode-back" href="../../../api/audeer.safe_path.html#audeer.safe_path">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">safe_path</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
+    <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">],</span>
     <span class="n">follow_symlink</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Expand and normalize to absolute path.</span>
@@ -255,20 +249,24 @@
 <span class="sd">        (joined and) expanded path</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; home = safe_path(&quot;~&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; folder = safe_path(&quot;~/path/.././path&quot;)</span>
+<span class="sd">        .. skip: start if(platform.system() == &quot;Windows&quot;)</span>
+
+<span class="sd">        &gt;&gt;&gt; home = audeer.safe_path(&quot;~&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; folder = audeer.safe_path(&quot;~/path/.././path&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; folder[len(home) + 1 :]</span>
 <span class="sd">        &#39;path&#39;</span>
-<span class="sd">        &gt;&gt;&gt; file = safe_path(&quot;~/path/.././path&quot;, &quot;./file.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; file = audeer.safe_path(&quot;~/path/.././path&quot;, &quot;./file.txt&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; file[len(home) + 1 :]</span>
 <span class="sd">        &#39;path/file.txt&#39;</span>
 <span class="sd">        &gt;&gt;&gt; file = audeer.touch(&quot;file.txt&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; link = path(&quot;link.txt&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; link = audeer.path(&quot;link.txt&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; os.symlink(file, link)</span>
-<span class="sd">        &gt;&gt;&gt; os.path.basename(path(link))</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(audeer.path(link))</span>
 <span class="sd">        &#39;link.txt&#39;</span>
-<span class="sd">        &gt;&gt;&gt; os.path.basename(path(link, follow_symlink=True))</span>
+<span class="sd">        &gt;&gt;&gt; os.path.basename(audeer.path(link, follow_symlink=True))</span>
 <span class="sd">        &#39;file.txt&#39;</span>
+
+<span class="sd">        .. skip: end</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">,</span> <span class="n">follow_symlink</span><span class="o">=</span><span class="n">follow_symlink</span><span class="p">)</span></div>
@@ -287,7 +285,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org/en/master/">Sphinx</a> on 2024/07/23 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/01/10 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
