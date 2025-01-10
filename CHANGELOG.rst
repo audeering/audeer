@@ -7,6 +7,24 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.2.1 (2025-01-10)
+--------------------------
+
+* Added: support for Python 3.13
+* Added: support for ``tar``,
+  ``tar.bz2``,
+  ``tar.xz``
+  archives in
+  ``audeer.create_archive()``,
+  ``audeer.extract_archive()``,
+  and ``audeer.extract_archives()``
+* Fixed: avoid deprecation warnings
+  in Python>=3.12
+  by using the ``"tar"`` filter
+  when extracting tar archives
+* Removed: support for Python 3.8
+
+
 Version 2.2.0 (2024-07-23)
 --------------------------
 
