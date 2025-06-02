@@ -41,6 +41,20 @@ repository = 'https://github.com/audeering/audeer/'
 documentation = 'https://audeering.github.io/audeer/'
 
 
+# ===== Dependency groups =================================================
+[dependency-groups]
+dev = [
+    'pytest',
+    'pytest-cov',
+    'sphinx >=3.0.0',
+    'sphinx-apipages >=0.1.2',
+    'sphinx-audeering-theme >=1.1.4',
+    'sphinx_autodoc_typehints',
+    'sphinx-copybutton',
+    'sybil[pytest]',
+]
+
+
 # ===== BUILD-SYSTEM ======================================================
 #
 # Requirements for building the Python package

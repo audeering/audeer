@@ -12,7 +12,6 @@ import multiprocessing
 import operator
 import queue
 import subprocess
-import sys
 import threading
 import uuid
 import warnings
@@ -240,7 +239,7 @@ def freeze_requirements(outfile: str):
         RuntimeError: if running ``pip freeze`` returns an error
 
     """
-    cmd = f"pip freeze > {outfile}"
+    cmd = f"uv pip freeze > {outfile}"
     with subprocess.Popen(
         args=cmd,
         stdout=subprocess.DEVNULL,
@@ -415,10 +414,20 @@ def install_package(
         else:
             name = f"{name}{version}"
 
+    # pip based approach
+    # subprocess.check_call(
+    #     [
+    #         sys.executable,
+    #         "-m",
+    #         "pip",
+    #         "install",
+    #         name,
+    #     ],
+    #     stdout=subprocess.DEVNULL if silent else None,
+    # )
     subprocess.check_call(
         [
-            sys.executable,
-            "-m",
+            "uv",
             "pip",
             "install",
             name,

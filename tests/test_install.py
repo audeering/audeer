@@ -12,13 +12,24 @@ MODULE = "yaml"
 
 
 def uninstall():
+    # Approach for pip
+    # subprocess.run(
+    #     [
+    #         sys.executable,
+    #         "-m",
+    #         "pip",
+    #         "uninstall",
+    #         "--yes",
+    #         PACKAGE,
+    #     ],
+    #     stdout=subprocess.DEVNULL,
+    #     stderr=subprocess.DEVNULL,
+    # )
     subprocess.run(
         [
-            sys.executable,
-            "-m",
+            "uv",
             "pip",
             "uninstall",
-            "--yes",
             PACKAGE,
         ],
         stdout=subprocess.DEVNULL,
