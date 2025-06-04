@@ -882,8 +882,14 @@ def _pip(arguments: list[str]) -> list[str]:
     return [sys.executable, "-m", "pip"] + arguments  # pragma: no uv cover
 
 
+@functools.lru_cache(maxsize=1)
 def _is_uv() -> bool:
-    """Check if current virtual environment is managed by uv."""
+    """Check if current virtual environment is managed by uv.
+
+    The result is cached for the same virtual environment,
+    to avoid unnecessary disk reads.
+
+    """
     current_virtual_env_path = sys.prefix
     pyenv_cfg = os.path.join(current_virtual_env_path, "pyvenv.cfg")
     if os.path.exists(pyenv_cfg):
