@@ -418,7 +418,7 @@ def install_package(
         else:
             name = f"{name}{version}"
 
-    command = _pip("install", name)
+    command = _pip(["install", name])
     subprocess.check_call(command, stdout=subprocess.DEVNULL if silent else None)
 
     # This function should be called if any modules
@@ -866,7 +866,7 @@ def unique(sequence: Iterable) -> list:
     return [x for x in sequence if not (x in seen or seen_add(x))]
 
 
-def _pip(*args) -> list[str]:
+def _pip(arguments: list[str]) -> list[str]:
     """Pip command in the given virtual environment.
 
     The virtual environment can be created with Python,
@@ -878,8 +878,8 @@ def _pip(*args) -> list[str]:
 
     """
     if _is_uv():
-        return ["uv", "pip"] + list(args)
-    return [sys.executable, "-m", "pip"] + list(args)
+        return ["uv", "pip"] + arguments
+    return [sys.executable, "-m", "pip"] + arguments  # pragma: nocover
 
 
 def _is_uv() -> bool:
@@ -891,4 +891,4 @@ def _is_uv() -> bool:
             for line in fp.readlines():
                 if line.startswith("uv = "):
                     return True
-    return False
+    return False  # pragma: nocover

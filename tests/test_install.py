@@ -12,7 +12,7 @@ MODULE = "yaml"
 
 
 def uninstall():
-    command = audeer.core.utils._pip("uninstall", "--yes", PACKAGE)
+    command = audeer.core.utils._pip(["uninstall", PACKAGE])
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # remove from module cache
