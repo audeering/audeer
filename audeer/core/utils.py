@@ -885,8 +885,8 @@ def _is_uv() -> bool:
     current_virtual_env_path = sys.prefix
     pyenv_cfg = os.path.join(current_virtual_env_path, "pyvenv.cfg")
     if os.path.exists(pyenv_cfg):
-        with open(pyenv_cfg) as fp:
+        with open(pyenv_cfg) as fp:  # pragma: no pip cover
             for line in fp.readlines():
                 if line.startswith("uv = "):
-                    return True  # pragma: no pip cover
+                    return True
     return False  # pragma: no uv cover
