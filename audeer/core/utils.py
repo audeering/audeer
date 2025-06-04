@@ -10,8 +10,10 @@ import importlib.metadata
 import inspect
 import multiprocessing
 import operator
+import os
 import queue
 import subprocess
+import sys
 import threading
 import uuid
 import warnings
@@ -239,7 +241,9 @@ def freeze_requirements(outfile: str):
         RuntimeError: if running ``pip freeze`` returns an error
 
     """
-    cmd = f"uv pip freeze > {outfile}"
+    cmd = f"pip freeze > {outfile}"
+    if _is_uv():
+        cmd = f"uv {cmd}"
     with subprocess.Popen(
         args=cmd,
         stdout=subprocess.DEVNULL,
@@ -414,26 +418,9 @@ def install_package(
         else:
             name = f"{name}{version}"
 
-    # pip based approach
-    # subprocess.check_call(
-    #     [
-    #         sys.executable,
-    #         "-m",
-    #         "pip",
-    #         "install",
-    #         name,
-    #     ],
-    #     stdout=subprocess.DEVNULL if silent else None,
-    # )
-    subprocess.check_call(
-        [
-            "uv",
-            "pip",
-            "install",
-            name,
-        ],
-        stdout=subprocess.DEVNULL if silent else None,
-    )
+    command = _pip("install", name)
+    subprocess.check_call(command, stdout=subprocess.DEVNULL if silent else None)
+
     # This function should be called if any modules
     # are created/installed while your program is running
     # to guarantee all finders will notice the new module’s existence.
@@ -877,3 +864,31 @@ def unique(sequence: Iterable) -> list:
     seen = set()
     seen_add = seen.add
     return [x for x in sequence if not (x in seen or seen_add(x))]
+
+
+def _pip(*args) -> list[str]:
+    """Pip command in the given virtual environment.
+
+    The virtual environment can be created with Python,
+    virtualenv,
+    or be managed by uv.
+
+    Returns:
+        command to run pip in current virtual environment
+
+    """
+    if _is_uv():
+        return ["uv", "pip"] + list(args)
+    return [sys.executable, "-m", "pip"] + list(args)
+
+
+def _is_uv() -> bool:
+    """Check if current virtual environment is managed by uv."""
+    current_virtual_env_path = sys.prefix
+    pyenv_cfg = os.path.join(current_virtual_env_path, "pyvenv.cfg")
+    if os.path.exists(pyenv_cfg):
+        with open(pyenv_cfg) as fp:
+            for line in fp.readlines():
+                if line.startswith("uv = "):
+                    return True
+    return False

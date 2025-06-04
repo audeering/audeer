@@ -12,29 +12,9 @@ MODULE = "yaml"
 
 
 def uninstall():
-    # Approach for pip
-    # subprocess.run(
-    #     [
-    #         sys.executable,
-    #         "-m",
-    #         "pip",
-    #         "uninstall",
-    #         "--yes",
-    #         PACKAGE,
-    #     ],
-    #     stdout=subprocess.DEVNULL,
-    #     stderr=subprocess.DEVNULL,
-    # )
-    subprocess.run(
-        [
-            "uv",
-            "pip",
-            "uninstall",
-            PACKAGE,
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
+    command = audeer.core.utils._pip("uninstall", "--yes", PACKAGE)
+    subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
     # remove from module cache
     remove = []
     for module in sys.modules:
