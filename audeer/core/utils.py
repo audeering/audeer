@@ -12,7 +12,6 @@ import multiprocessing
 import operator
 import os
 import queue
-import shlex
 import subprocess
 import sys
 import threading
@@ -420,7 +419,7 @@ def install_package(
             name = f"{name}{version}"
 
     subprocess.check_call(
-        _pip(["install", shlex.escape(name)]),
+        _pip(["install", name]),
         stdout=subprocess.DEVNULL if silent else None,
     )
 
