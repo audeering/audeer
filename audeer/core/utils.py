@@ -241,9 +241,7 @@ def freeze_requirements(outfile: str):
         RuntimeError: if running ``pip freeze`` returns an error
 
     """
-    cmd = f"pip freeze > {outfile}"
-    if _is_uv():
-        cmd = f"uv {cmd}"
+    cmd = " ".join(_pip(["freeze"])) + f" > {outfile}"
     with subprocess.Popen(
         args=cmd,
         stdout=subprocess.DEVNULL,
@@ -878,8 +876,8 @@ def _pip(arguments: list[str]) -> list[str]:
 
     """
     if _is_uv():
-        return ["uv", "pip"] + arguments
-    return [sys.executable, "-m", "pip"] + arguments  # pragma: nocover
+        return ["uv", "pip"] + arguments  # pragma: no pip cover
+    return [sys.executable, "-m", "pip"] + arguments  # pragma: no uv cover
 
 
 def _is_uv() -> bool:
@@ -890,5 +888,5 @@ def _is_uv() -> bool:
         with open(pyenv_cfg) as fp:
             for line in fp.readlines():
                 if line.startswith("uv = "):
-                    return True
-    return False  # pragma: nocover
+                    return True  # pragma: no pip cover
+    return False  # pragma: no uv cover
