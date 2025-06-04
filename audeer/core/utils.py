@@ -18,6 +18,7 @@ import threading
 import uuid
 import warnings
 
+from audeer.core.path import path as safe_path
 from audeer.core.tqdm import progress_bar as audeer_progress_bar
 from audeer.core.version import LooseVersion
 
@@ -241,16 +242,17 @@ def freeze_requirements(outfile: str):
         RuntimeError: if running ``pip freeze`` returns an error
 
     """
-    cmd = " ".join(_pip(["freeze"])) + f" > {outfile}"
-    with subprocess.Popen(
-        args=cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-        shell=True,
-    ) as p:
-        _, err = p.communicate()
-        if bool(p.returncode):
-            raise RuntimeError(f"Freezing Python packages failed: {err}")
+    outfile = safe_path(outfile)
+    try:
+        with open(outfile, "w") as fp:
+            subprocess.run(
+                _pip(["freeze"]),
+                stdout=fp,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+    except (FileNotFoundError, subprocess.CalledProcessError) as err:
+        raise RuntimeError(f"Freezing Python packages failed: {err}")
 
 
 def git_repo_tags(
