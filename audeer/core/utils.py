@@ -12,6 +12,7 @@ import multiprocessing
 import operator
 import os
 import queue
+import shlex
 import subprocess
 import sys
 import threading
@@ -418,8 +419,10 @@ def install_package(
         else:
             name = f"{name}{version}"
 
-    command = _pip(["install", name])
-    subprocess.check_call(command, stdout=subprocess.DEVNULL if silent else None)
+    subprocess.check_call(
+        _pip(["install", shlex.escape(name)]),
+        stdout=subprocess.DEVNULL if silent else None,
+    )
 
     # This function should be called if any modules
     # are created/installed while your program is running
