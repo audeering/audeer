@@ -7,6 +7,15 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.2.2 (2025-06-06)
+--------------------------
+
+* Fixed: ``audeer.install_package()``
+  now supports ``uv`` managed virtual environments
+* Fixed: ``audeer.freeze_requirements()``
+  now supports ``uv`` managed virtual environments
+
+
 Version 2.2.1 (2025-01-10)
 --------------------------
 
