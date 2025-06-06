@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v2.2.1
+                v2.2.2
               </div>
             
           
@@ -150,6 +150,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
@@ -157,6 +158,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">audeer.core.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">safe_path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">audeer.core.tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">progress_bar</span> <span class="k">as</span> <span class="n">audeer_progress_bar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">audeer.core.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">LooseVersion</span>
 
@@ -380,16 +382,17 @@
 <span class="sd">        RuntimeError: if running ``pip freeze`` returns an error</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;pip freeze &gt; </span><span class="si">{</span><span class="n">outfile</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">with</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
-        <span class="n">args</span><span class="o">=</span><span class="n">cmd</span><span class="p">,</span>
-        <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
-        <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
-        <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="k">as</span> <span class="n">p</span><span class="p">:</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Freezing Python packages failed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="n">safe_path</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="n">_pip</span><span class="p">([</span><span class="s2">&quot;freeze&quot;</span><span class="p">]),</span>
+                <span class="n">stdout</span><span class="o">=</span><span class="n">fp</span><span class="p">,</span>
+                <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Freezing Python packages failed: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="git_repo_tags"><a class="viewcode-back" href="../../../api/audeer.git_repo_tags.html#audeer.git_repo_tags">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">git_repo_tags</span><span class="p">(</span>
@@ -556,15 +559,10 @@
             <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="n">subprocess</span><span class="o">.</span><span class="n">check_call</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span>
-            <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;pip&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;install&quot;</span><span class="p">,</span>
-            <span class="n">name</span><span class="p">,</span>
-        <span class="p">],</span>
+        <span class="n">_pip</span><span class="p">([</span><span class="s2">&quot;install&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">]),</span>
         <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span> <span class="k">if</span> <span class="n">silent</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="c1"># This function should be called if any modules</span>
     <span class="c1"># are created/installed while your program is running</span>
     <span class="c1"># to guarantee all finders will notice the new module’s existence.</span>
@@ -1008,6 +1006,40 @@
     <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="n">seen_add</span> <span class="o">=</span> <span class="n">seen</span><span class="o">.</span><span class="n">add</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sequence</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">seen</span> <span class="ow">or</span> <span class="n">seen_add</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_pip</span><span class="p">(</span><span class="n">arguments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pip command in the given virtual environment.</span>
+
+<span class="sd">    The virtual environment can be created with Python,</span>
+<span class="sd">    virtualenv,</span>
+<span class="sd">    or be managed by uv.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        command to run pip in current virtual environment</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">_is_uv</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;uv&quot;</span><span class="p">,</span> <span class="s2">&quot;pip&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">arguments</span>  <span class="c1"># pragma: no pip cover</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;pip&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">arguments</span>  <span class="c1"># pragma: no uv cover</span>
+
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_uv</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if current virtual environment is managed by uv.</span>
+
+<span class="sd">    The result is cached for the same virtual environment,</span>
+<span class="sd">    to avoid unnecessary disk reads.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">current_virtual_env_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">prefix</span>
+    <span class="n">pyenv_cfg</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_virtual_env_path</span><span class="p">,</span> <span class="s2">&quot;pyvenv.cfg&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pyenv_cfg</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pyenv_cfg</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>  <span class="c1"># pragma: no pip cover</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;uv = &quot;</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># pragma: no uv cover</span>
 </pre></div>
 
            </div>
@@ -1023,7 +1055,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/01/10 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/06/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
