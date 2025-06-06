@@ -1,4 +1,4 @@
-name: Documentation
+name: Test with pip
 
 on:
   push:
@@ -23,11 +23,14 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v5
+    - name: Install dependencies
+      run: |
+        python -V
+        python -m pip install --upgrade pip
+        pip install .
+        pip install --group dev
 
-    - name: Test building documentation
-      run: uv run python -m sphinx docs/ docs/_build/ -b html -W
-
-    - name: Check links in documentation
-      run: uv run python -m sphinx docs/ docs/_build/ -b linkcheck -W
+    - name: Test with pytest
+      run: |
+        python -c "import audeer; assert not audeer.core.utils._is_uv()"
+        python -m pytest --cov-config=.coveragerc.pip

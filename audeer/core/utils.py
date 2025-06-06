@@ -10,6 +10,7 @@ import importlib.metadata
 import inspect
 import multiprocessing
 import operator
+import os
 import queue
 import subprocess
 import sys
@@ -17,6 +18,7 @@ import threading
 import uuid
 import warnings
 
+from audeer.core.path import path as safe_path
 from audeer.core.tqdm import progress_bar as audeer_progress_bar
 from audeer.core.version import LooseVersion
 
@@ -240,16 +242,17 @@ def freeze_requirements(outfile: str):
         RuntimeError: if running ``pip freeze`` returns an error
 
     """
-    cmd = f"pip freeze > {outfile}"
-    with subprocess.Popen(
-        args=cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-        shell=True,
-    ) as p:
-        _, err = p.communicate()
-        if bool(p.returncode):
-            raise RuntimeError(f"Freezing Python packages failed: {err}")
+    outfile = safe_path(outfile)
+    try:
+        with open(outfile, "w") as fp:
+            subprocess.run(
+                _pip(["freeze"]),
+                stdout=fp,
+                stderr=subprocess.PIPE,
+                check=True,
+            )
+    except (FileNotFoundError, subprocess.CalledProcessError) as err:
+        raise RuntimeError(f"Freezing Python packages failed: {err}")
 
 
 def git_repo_tags(
@@ -416,15 +419,10 @@ def install_package(
             name = f"{name}{version}"
 
     subprocess.check_call(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            name,
-        ],
+        _pip(["install", name]),
         stdout=subprocess.DEVNULL if silent else None,
     )
+
     # This function should be called if any modules
     # are created/installed while your program is running
     # to guarantee all finders will notice the new module’s existence.
@@ -868,3 +866,37 @@ def unique(sequence: Iterable) -> list:
     seen = set()
     seen_add = seen.add
     return [x for x in sequence if not (x in seen or seen_add(x))]
+
+
+def _pip(arguments: list[str]) -> list[str]:
+    """Pip command in the given virtual environment.
+
+    The virtual environment can be created with Python,
+    virtualenv,
+    or be managed by uv.
+
+    Returns:
+        command to run pip in current virtual environment
+
+    """
+    if _is_uv():
+        return ["uv", "pip"] + arguments  # pragma: no pip cover
+    return [sys.executable, "-m", "pip"] + arguments  # pragma: no uv cover
+
+
+@functools.lru_cache(maxsize=1)
+def _is_uv() -> bool:
+    """Check if current virtual environment is managed by uv.
+
+    The result is cached for the same virtual environment,
+    to avoid unnecessary disk reads.
+
+    """
+    current_virtual_env_path = sys.prefix
+    pyenv_cfg = os.path.join(current_virtual_env_path, "pyvenv.cfg")
+    if os.path.exists(pyenv_cfg):
+        with open(pyenv_cfg) as fp:  # pragma: no pip cover
+            for line in fp:
+                if line.startswith("uv = "):
+                    return True
+    return False  # pragma: no uv cover

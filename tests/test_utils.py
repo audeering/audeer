@@ -230,7 +230,7 @@ def test_freeze_requirements(tmpdir):
     assert any(["pytest" in r for r in requirements])
     assert any(["audeer" in r for r in requirements])
     with pytest.raises(RuntimeError, match=r"Freezing Python packages failed"):
-        outfile = os.path.join(path, "tmp2/requirements.txt.lock")
+        outfile = os.path.join(path, "not-existent/requirements.txt.lock")
         audeer.freeze_requirements(outfile)
 
 
