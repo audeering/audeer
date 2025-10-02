@@ -776,7 +776,7 @@ def sort_versions(
 def suppress_stdout():
     """Suppress stdout output.
 
-    Any code run iside this context manager
+    Any code run inside this context manager
     does not produce stdout output.
 
     Example:
