@@ -2,6 +2,7 @@ from collections.abc import Callable
 from collections.abc import Iterable
 from collections.abc import Sequence
 import concurrent.futures
+from contextlib import contextmanager
 import copy
 import functools
 import hashlib
@@ -769,6 +770,27 @@ def sort_versions(
         return LooseVersion(value)
 
     return sorted(versions, key=sort_key)
+
+
+@contextmanager
+def suppress_stdout():
+    """Suppress stdout output.
+
+    Any code run iside this context manager
+    does not produce stdout output.
+
+    Example:
+        >>> with suppress_stdout():
+        ...     print("Hello")
+
+    """
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
 
 
 def to_list(x: object):

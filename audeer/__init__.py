@@ -33,6 +33,7 @@ from audeer.core.utils import is_uid
 from audeer.core.utils import run_tasks
 from audeer.core.utils import run_worker_threads
 from audeer.core.utils import sort_versions
+from audeer.core.utils import suppress_stdout
 from audeer.core.utils import to_list
 from audeer.core.utils import uid
 from audeer.core.utils import unique
