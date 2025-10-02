@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from collections.abc import Sequence
 import concurrent.futures
 from contextlib import contextmanager
+from contextlib import redirect_stdout
 import copy
 import functools
 import hashlib
@@ -785,12 +786,8 @@ def suppress_stdout():
 
     """
     with open(os.devnull, "w") as devnull:
-        old_stdout = sys.stdout
-        sys.stdout = devnull
-        try:
+        with redirect_stdout(devnull):
             yield
-        finally:
-            sys.stdout = old_stdout
 
 
 def to_list(x: object):
