@@ -41,6 +41,7 @@ audeer
     safe_path
     script_dir
     sort_versions
+    suppress_stdout
     StrictVersion
     to_list
     touch

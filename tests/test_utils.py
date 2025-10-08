@@ -487,6 +487,68 @@ def test_sort_versions_errors(versions, error_message):
         audeer.sort_versions(versions)
 
 
+def test_suppress_stdout(capsys):
+    with audeer.suppress_stdout():
+        print("This should not appear")
+        print("Neither should this")
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+
+def test_suppress_stdout_nested(capsys):
+    with audeer.suppress_stdout():
+        print("Outer suppressed")
+        with audeer.suppress_stdout():
+            print("Inner suppressed")
+        print("Back to outer suppressed")
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+
+def test_suppress_stdout_exception(capsys):
+    try:
+        with audeer.suppress_stdout():
+            print("This should not appear")
+            raise ValueError("Test exception")
+    except ValueError:
+        pass
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
+
+
+def test_suppress_stdout_restores_stdout(capsys):
+    print("Before suppression")
+
+    with audeer.suppress_stdout():
+        print("This should not appear")
+
+    print("After suppression")
+
+    captured = capsys.readouterr()
+    lines = captured.out.strip().split("\n")
+    assert "Before suppression" in lines[0]
+    assert "After suppression" in lines[1]
+    assert len(lines) == 2
+
+
+def test_suppress_stdout_stderr_unaffected(capsys):
+    import sys
+
+    with audeer.suppress_stdout():
+        print("This stdout should not appear")
+        print("This stderr should appear", file=sys.stderr)
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "This stderr should appear" in captured.err
+
+
 @pytest.mark.parametrize(
     "input,expected_output",
     [
