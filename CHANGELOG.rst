@@ -7,6 +7,14 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.3.0 (2025-09-08)
+--------------------------
+
+* Added: ``audeer.suppress_stdout()``
+* Added: support for python 3.14
+* Removed: support for Python 3.9
+
+
 Version 2.2.2 (2025-06-06)
 --------------------------
 
