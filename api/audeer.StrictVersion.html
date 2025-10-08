@@ -32,7 +32,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="to_list()" href="audeer.to_list.html" />
-    <link rel="prev" title="sort_versions()" href="audeer.sort_versions.html" />
+    <link rel="prev" title="suppress_stdout()" href="audeer.suppress_stdout.html" />
     
   
 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v2.2.2
+                v2.3.0
               </div>
             
           
@@ -131,6 +131,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.safe_path.html">safe_path()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.script_dir.html">script_dir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.sort_versions.html">sort_versions()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.suppress_stdout.html">suppress_stdout()</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">StrictVersion</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#eq">__eq__()</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ge">__ge__()</a></li>
@@ -200,7 +201,7 @@
 <dt class="sig sig-object py" id="audeer.StrictVersion">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">StrictVersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#StrictVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.StrictVersion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Version numbering for anal retentives and software idealists.</p>
-<p>This implementation was originally part of <a class="reference external" href="https://docs.python.org/3/library/distutils.html#module-distutils" title="(in Python v3.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distutils</span></code></a>
+<p>This implementation was originally part of <a class="reference external" href="https://docs.python.org/3/library/distutils.html#module-distutils" title="(in Python v3.14)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distutils</span></code></a>
 as <code class="docutils literal notranslate"><span class="pre">version.StrictVersion</span></code>.</p>
 <p>A version number consists of two
 or three dot-separated numeric components,
@@ -236,7 +237,7 @@ by sorting according to the supplied cmp function):
 <dd class="field-odd"><p><strong>version</strong> – version string</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">version</span></code> does not match
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">version</span></code> does not match
     the <code class="docutils literal notranslate"><span class="pre">StrictVersion.version_re</span></code> pattern</p>
 </dd>
 </dl>
@@ -382,7 +383,7 @@ when parsing it.</p>
         <a href="audeer.to_list.html" class="btn btn-neutral float-right" title="to_list()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="audeer.sort_versions.html" class="btn btn-neutral float-left" title="sort_versions()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="audeer.suppress_stdout.html" class="btn btn-neutral float-left" title="suppress_stdout()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -394,7 +395,7 @@ when parsing it.</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/06/06 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/10/08 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

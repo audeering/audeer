@@ -1,0 +1,6 @@
+﻿suppress\_stdout\(\)
+====================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.suppress_stdout
