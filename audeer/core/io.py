@@ -601,7 +601,9 @@ def list_file_names(
         ['.lock', 'album.wav', 'file.wav']
         >>> audeer.list_file_names(dir_path, basenames=True, recursive=True)
         ['album.wav', 'file.wav', 'sub/file.ogg']
-        >>> audeer.list_file_names(dir_path, basenames=True, recursive=True, hidden=True)
+        >>> audeer.list_file_names(
+        ...     dir_path, basenames=True, recursive=True, hidden=True
+        ... )
         ['.lock', 'album.wav', 'file.wav', 'sub/.lock', 'sub/file.ogg']
         >>> audeer.list_file_names(
         ...     os.path.join(dir_path, "f*"), basenames=True, recursive=True
@@ -615,7 +617,9 @@ def list_file_names(
         ...     os.path.join(dir_path, "[!f]*"), basenames=True, recursive=True
         ... )
         ['album.wav']
-        >>> audeer.list_file_names(dir_path, filetype="ogg", basenames=True, recursive=True)
+        >>> audeer.list_file_names(
+        ...     dir_path, filetype="ogg", basenames=True, recursive=True
+        ... )
         ['sub/file.ogg']
 
         .. skip: end
@@ -944,7 +948,7 @@ def replace_file_extension(
     elif not new_extension:
         path = path[: -len(ext) - 1]
     else:
-        path = f"{path[:-len(ext)]}{new_extension}"
+        path = f"{path[: -len(ext)]}{new_extension}"
 
     return path
 

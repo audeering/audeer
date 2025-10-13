@@ -30,7 +30,7 @@ def test_deprecated():
         pass
 
     expected_message = (
-        "deprecated_function is deprecated " "and will be removed with version 2.0.0."
+        "deprecated_function is deprecated and will be removed with version 2.0.0."
     )
     with warnings.catch_warnings(record=True) as w:
         # Cause all warnings to always be triggered.
@@ -45,7 +45,7 @@ def test_deprecated():
         pass
 
     expected_message = (
-        "DeprecatedClass is deprecated " "and will be removed with version 2.0.0."
+        "DeprecatedClass is deprecated and will be removed with version 2.0.0."
     )
     with warnings.catch_warnings(record=True) as w:
         # Cause all warnings to always be triggered.
@@ -66,7 +66,7 @@ def test_deprecated_default_value():
         return foo
 
     expected_message = (
-        "The default of 'foo' will change from " "'foo' to 'bar' " "with version 1.0.0."
+        "The default of 'foo' will change from 'foo' to 'bar' with version 1.0.0."
     )
     default_value = "foo"
     with warnings.catch_warnings():
@@ -117,7 +117,7 @@ def test_deprecated_keyword_argument():
         return 1
 
     expected_message = (
-        "'foo' argument is deprecated " "and will be removed with version 1.0.0."
+        "'foo' argument is deprecated and will be removed with version 1.0.0."
     )
     assert function_with_deprecated_keyword_argument() == 1
     with warnings.catch_warnings(record=True) as w:
@@ -141,7 +141,7 @@ def test_deprecated_keyword_argument():
             return 1
 
     expected_message = (
-        "'foo' argument is deprecated " "and will be removed with version 1.0.0."
+        "'foo' argument is deprecated and will be removed with version 1.0.0."
     )
     assert function_with_deprecated_keyword_argument() == 1
     with warnings.catch_warnings(record=True) as w:

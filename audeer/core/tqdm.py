@@ -40,7 +40,7 @@ def format_display_message(text: str, pbar: bool = False) -> str:
         return text.ljust(n)
     else:
         m = (n - 3) // 2
-        return f"{text[:m]}...{text[len(text) - (n - m - 3):]}"
+        return f"{text[:m]}...{text[len(text) - (n - m - 3) :]}"
 
 
 def progress_bar(
