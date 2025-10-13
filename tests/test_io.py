@@ -33,7 +33,7 @@ def tree(tmpdir, request):
 
 
 @pytest.mark.parametrize(
-    "tree, root, files, archive_create, archive_extract, destination, " "expected",
+    "tree, root, files, archive_create, archive_extract, destination, expected",
     [
         (  # empty
             [],
@@ -434,7 +434,7 @@ def test_basename_wo_ext(path, ext, basename):
                 "~/tmp/covert/operator",
                 "~/tmp/coven/members",
             ],
-            f'{os.path.expanduser("~")}/tmp',
+            f"{os.path.expanduser('~')}/tmp",
         ),
         (
             [
