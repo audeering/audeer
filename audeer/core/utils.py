@@ -603,6 +603,7 @@ def run_tasks(
         else:
             executor = concurrent.futures.ThreadPoolExecutor
         with executor(max_workers=num_workers) as pool:
+            futures = []
             try:
                 with audeer_progress_bar(
                     total=len(params),
