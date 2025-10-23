@@ -603,20 +603,28 @@ def run_tasks(
         else:
             executor = concurrent.futures.ThreadPoolExecutor
         with executor(max_workers=num_workers) as pool:
-            with audeer_progress_bar(
-                total=len(params),
-                desc=task_description,
-                maximum_refresh_time=maximum_refresh_time,
-                disable=not progress_bar,
-            ) as pbar:
-                futures = []
-                for param in params:
-                    future = pool.submit(task_func, *param[0], **param[1])
-                    future.add_done_callback(lambda p: pbar.update())
-                    futures.append(future)
-                for idx, future in enumerate(futures):
-                    result = future.result()
-                    results[idx] = result
+            try:
+                with audeer_progress_bar(
+                    total=len(params),
+                    desc=task_description,
+                    maximum_refresh_time=maximum_refresh_time,
+                    disable=not progress_bar,
+                ) as pbar:
+                    futures = []
+                    for param in params:
+                        future = pool.submit(task_func, *param[0], **param[1])
+                        future.add_done_callback(lambda p: pbar.update())
+                        futures.append(future)
+                    for idx, future in enumerate(futures):
+                        result = future.result()
+                        results[idx] = result
+            except KeyboardInterrupt:
+                # Cancel all pending futures
+                for future in futures:
+                    future.cancel()
+                # Shutdown executor immediately
+                pool.shutdown(wait=False, cancel_futures=True)
+                raise
 
     return results
 
