@@ -622,6 +622,7 @@ def run_tasks(
                 # Ensure all jobs are canceled immediately
                 for future in futures:
                     future.cancel()
+                pool.shutdown(wait=False, cancel_futures=True)
                 raise
 
     return results
