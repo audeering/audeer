@@ -619,10 +619,9 @@ def run_tasks(
                         result = future.result()
                         results[idx] = result
             except KeyboardInterrupt:  # pragma: no cover
-                # Cancel all pending futures
+                # Ensure all jobs are canceled immediatly
                 for future in futures:
                     future.cancel()
-                # Shutdown executor immediately
                 pool.shutdown(wait=False, cancel_futures=True)
                 raise
 
