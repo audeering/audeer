@@ -611,7 +611,6 @@ def run_tasks(
                     maximum_refresh_time=maximum_refresh_time,
                     disable=not progress_bar,
                 ) as pbar:
-                    futures = []
                     for param in params:
                         future = pool.submit(task_func, *param[0], **param[1])
                         future.add_done_callback(lambda p: pbar.update())
