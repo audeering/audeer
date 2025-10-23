@@ -619,7 +619,7 @@ def run_tasks(
                     for idx, future in enumerate(futures):
                         result = future.result()
                         results[idx] = result
-            except KeyboardInterrupt:
+            except KeyboardInterrupt:  # pragma: no cover
                 # Cancel all pending futures
                 for future in futures:
                     future.cancel()
