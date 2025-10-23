@@ -619,7 +619,7 @@ def run_tasks(
                         result = future.result()
                         results[idx] = result
             except KeyboardInterrupt:  # pragma: no cover
-                # Ensure all jobs are canceled immediatly
+                # Ensure all jobs are canceled immediately
                 for future in futures:
                     future.cancel()
                 raise
