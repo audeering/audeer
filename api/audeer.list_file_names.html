@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v2.3.0
+                v2.3.1
               </div>
             
           
@@ -233,7 +233,9 @@ compare <a class="reference external" href="https://docs.python.org/3/library/fn
 <span class="go">[&#39;.lock&#39;, &#39;album.wav&#39;, &#39;file.wav&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="go">[&#39;album.wav&#39;, &#39;file.wav&#39;, &#39;sub/file.ogg&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">dir_path</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="go">[&#39;.lock&#39;, &#39;album.wav&#39;, &#39;file.wav&#39;, &#39;sub/.lock&#39;, &#39;sub/file.ogg&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;f*&quot;</span><span class="p">),</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span>
@@ -247,7 +249,9 @@ compare <a class="reference external" href="https://docs.python.org/3/library/fn
 <span class="gp">... </span>    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s2">&quot;[!f]*&quot;</span><span class="p">),</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="go">[&#39;album.wav&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s2">&quot;ogg&quot;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">list_file_names</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">dir_path</span><span class="p">,</span> <span class="n">filetype</span><span class="o">=</span><span class="s2">&quot;ogg&quot;</span><span class="p">,</span> <span class="n">basenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="go">[&#39;sub/file.ogg&#39;]</span>
 </pre></div>
 </div>
@@ -278,7 +282,7 @@ compare <a class="reference external" href="https://docs.python.org/3/library/fn
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/10/08 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/10/27 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
