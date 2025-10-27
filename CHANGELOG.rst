@@ -7,6 +7,14 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.3.1 (2025-10-27)
+--------------------------
+
+* Fixed: ensure ``audeer.run_tasks()`` stops immediately
+  when using multiple workers
+  and one process fails or is interrupted by the user
+
+
 Version 2.3.0 (2025-09-08)
 --------------------------
 
