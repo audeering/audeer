@@ -15,6 +15,7 @@ import zipfile
 from audeer.core.path import path as safe_path
 from audeer.core.tqdm import format_display_message
 from audeer.core.tqdm import progress_bar
+from audeer.core.utils import run_tasks
 from audeer.core.utils import to_list
 
 
@@ -291,6 +292,7 @@ def extract_archive(
     destination: str,
     *,
     keep_archive: bool = True,
+    num_workers: int = 1,
     verbose: bool = False,
 ) -> list[str]:
     r"""Extract ZIP or TAR file.
@@ -301,6 +303,7 @@ def extract_archive(
             If the folder does not exists,
             it will be created
         keep_archive: if ``False`` delete archive file after extraction
+        num_workers: number of parallel jobs
         verbose: if ``True`` a progress bar is shown
 
     Returns:
@@ -360,28 +363,35 @@ def extract_archive(
         f"Extract {os.path.basename(archive)}",
         pbar=True,
     )
-    disable = not verbose
 
     def extract_zip(archive: str) -> list:
         with zipfile.ZipFile(archive, "r") as zf:
             members = zf.infolist()
-            for member in progress_bar(members, desc=desc, disable=disable):
-                zf.extract(member, destination)
+            run_tasks(
+                zf.extract,
+                [([member, destination], {}) for member in members],
+                task_description=desc,
+                progress_bar=verbose,
+            )
             return [m.filename for m in members]
 
     def extract_tar(archive: str) -> list:
         with tarfile.open(archive, "r") as tf:
             members = tf.getmembers()
-            for member in progress_bar(members, desc=desc, disable=disable):
-                # In Python 3.12 the `filter` argument was introduced,
-                # and it will be set automatically in Python 3.14,
-                # see
-                # https://docs.python.org/3.12/library/tarfile.html#tarfile-extraction-filter
-                # noqa: E501
-                kwargs = {"numeric_owner": True}
-                if sys.version_info >= (3, 12):  # pragma: no cover
-                    kwargs = kwargs | {"filter": "tar"}
-                tf.extract(member, destination, **kwargs)
+            kwargs = {"numeric_owner": True}
+            # In Python 3.12 the `filter` argument was introduced,
+            # and it will be set automatically in Python 3.14,
+            # see
+            # https://docs.python.org/3.12/library/tarfile.html#tarfile-extraction-filter
+            # noqa: E501
+            if sys.version_info >= (3, 12):  # pragma: no cover
+                kwargs = kwargs | {"filter": "tar"}
+            run_tasks(
+                tf.extract,
+                [([member, destination], kwargs) for member in members],
+                task_description=desc,
+                progress_bar=verbose,
+            )
             return [m.name for m in members]
 
     try:
@@ -415,6 +425,7 @@ def extract_archives(
     destination: str,
     *,
     keep_archive: bool = True,
+    num_workers: int = 1,
     verbose: bool = False,
 ) -> list[str]:
     r"""Extract multiple ZIP or TAR archives at once.
@@ -424,6 +435,7 @@ def extract_archives(
         destination: folder where the files will be extracted.
             If the folder does not exists,
             it will be created
+        num_workers: number of parallel jobs
         keep_archive: if ``False`` delete archive files after extraction
         verbose: if ``True`` a progress bar is shown
 
@@ -450,25 +462,37 @@ def extract_archives(
         ['a.txt', 'b.txt']
 
     """
-    with progress_bar(
-        total=len(archives),
-        disable=not verbose,
-    ) as pbar:
-        member_names = []
-        for archive in archives:
-            desc = format_display_message(
-                f"Extract {os.path.basename(archive)}",
-                pbar=True,
-            )
-            pbar.set_description_str(desc)
-            pbar.refresh()
-            member_names += extract_archive(
-                archive,
-                destination,
-                keep_archive=keep_archive,
-                verbose=False,
-            )
-            pbar.update()
+    # One worker per archive
+    if num_workers < len(archives):
+        with progress_bar(
+            total=len(archives),
+            disable=not verbose,
+        ) as pbar:
+            member_names = []
+            for archive in archives:
+                desc = format_display_message(
+                    f"Extract {os.path.basename(archive)}",
+                    pbar=True,
+                )
+                pbar.set_description_str(desc)
+                pbar.refresh()
+                member_names += extract_archive(
+                    archive,
+                    destination,
+                    keep_archive=keep_archive,
+                    verbose=False,
+                )
+                pbar.update()
+
+    # All workers per archive
+    else:
+        kwargs = {"keep_archive": keep_archive, "verbose": verbose}
+        member_names = run_tasks(
+            extract_archive,
+            [([archive, destination], kwargs) for archive in archives],
+            task_description="Extract archives",
+            progress_bar=verbose,
+        )
 
     return member_names
 
