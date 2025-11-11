@@ -15,6 +15,7 @@ import zipfile
 from audeer.core.path import path as safe_path
 from audeer.core.tqdm import format_display_message
 from audeer.core.tqdm import progress_bar
+from audeer.core.utils import run_tasks
 from audeer.core.utils import to_list
 
 
@@ -292,6 +293,7 @@ def extract_archive(
     *,
     keep_archive: bool = True,
     verbose: bool = False,
+    num_workers: int = 1,
 ) -> list[str]:
     r"""Extract ZIP or TAR file.
 
@@ -302,6 +304,11 @@ def extract_archive(
             it will be created
         keep_archive: if ``False`` delete archive file after extraction
         verbose: if ``True`` a progress bar is shown
+        num_workers: number of parallel jobs or 1 for sequential
+            processing. If ``None`` will be set to the number of
+            processors on the machine multiplied by 5.
+            Multi-threading can significantly speed up extraction
+            for archives with many files
 
     Returns:
         paths of extracted files relative to ``destination``
@@ -362,27 +369,65 @@ def extract_archive(
     )
     disable = not verbose
 
+    def extract_zip_member(member):
+        """Extract a single member from a ZIP archive."""
+        with zipfile.ZipFile(archive, "r") as zf:
+            zf.extract(member, destination)
+
+    def extract_tar_member(member):
+        """Extract a single member from a TAR archive."""
+        with tarfile.open(archive, "r") as tf:
+            # In Python 3.12 the `filter` argument was introduced,
+            # and it will be set automatically in Python 3.14,
+            # see
+            # https://docs.python.org/3.12/library/tarfile.html#tarfile-extraction-filter
+            # noqa: E501
+            kwargs = {"numeric_owner": True}
+            if sys.version_info >= (3, 12):  # pragma: no cover
+                kwargs = kwargs | {"filter": "tar"}
+            tf.extract(member, destination, **kwargs)
+
     def extract_zip(archive: str) -> list:
         with zipfile.ZipFile(archive, "r") as zf:
             members = zf.infolist()
+
+        if num_workers == 1:
+            # Sequential extraction with progress bar
             for member in progress_bar(members, desc=desc, disable=disable):
-                zf.extract(member, destination)
-            return [m.filename for m in members]
+                extract_zip_member(member)
+        else:
+            # Parallel extraction with progress bar
+            params = [([member], {}) for member in members]
+            run_tasks(
+                extract_zip_member,
+                params,
+                num_workers=num_workers,
+                progress_bar=verbose,
+                task_description=desc,
+            )
+
+        return [m.filename for m in members]
 
     def extract_tar(archive: str) -> list:
         with tarfile.open(archive, "r") as tf:
             members = tf.getmembers()
+
+        if num_workers == 1:
+            # Sequential extraction with progress bar
             for member in progress_bar(members, desc=desc, disable=disable):
-                # In Python 3.12 the `filter` argument was introduced,
-                # and it will be set automatically in Python 3.14,
-                # see
-                # https://docs.python.org/3.12/library/tarfile.html#tarfile-extraction-filter
-                # noqa: E501
-                kwargs = {"numeric_owner": True}
-                if sys.version_info >= (3, 12):  # pragma: no cover
-                    kwargs = kwargs | {"filter": "tar"}
-                tf.extract(member, destination, **kwargs)
-            return [m.name for m in members]
+                extract_tar_member(member)
+        else:
+            # Parallel extraction with progress bar
+            params = [([member], {}) for member in members]
+            run_tasks(
+                extract_tar_member,
+                params,
+                num_workers=num_workers,
+                progress_bar=verbose,
+                task_description=desc,
+            )
+
+        return [m.name for m in members]
 
     try:
         if archive.endswith("zip"):

@@ -1620,3 +1620,61 @@ def test_touch(tmpdir):
     new_stat = os.stat(path)
     assert stat.st_atime < new_stat.st_atime
     assert stat.st_mtime < new_stat.st_mtime
+
+
+@pytest.mark.parametrize(
+    "archive_type",
+    [
+        "zip",
+        "tar.gz",
+    ],
+)
+def test_extract_archive_multithread(tmpdir, archive_type):
+    """Test multi-threaded extraction of archives."""
+    # Create test files
+    root = audeer.mkdir(tmpdir, "root")
+    files = []
+    for i in range(20):
+        file = audeer.touch(root, f"file{i:02d}.txt")
+        with open(file, "w") as f:
+            f.write(f"Content of file {i}")
+        files.append(f"file{i:02d}.txt")
+
+    # Create archive
+    archive = audeer.path(tmpdir, f"archive.{archive_type}")
+    audeer.create_archive(root, None, archive)
+
+    # Extract with single thread (default)
+    dest_single = audeer.mkdir(tmpdir, "dest_single")
+    result_single = audeer.extract_archive(
+        archive,
+        dest_single,
+        num_workers=1,
+    )
+
+    # Extract with multiple threads
+    dest_multi = audeer.mkdir(tmpdir, "dest_multi")
+    result_multi = audeer.extract_archive(
+        archive,
+        dest_multi,
+        num_workers=4,
+    )
+
+    # Verify results are identical
+    assert result_single == result_multi
+    assert len(result_single) == 20
+
+    # Verify all files were extracted correctly in both cases
+    for file in files:
+        single_file = audeer.path(dest_single, file)
+        multi_file = audeer.path(dest_multi, file)
+
+        assert os.path.exists(single_file)
+        assert os.path.exists(multi_file)
+
+        with open(single_file) as f:
+            content_single = f.read()
+        with open(multi_file) as f:
+            content_multi = f.read()
+
+        assert content_single == content_multi
