@@ -369,31 +369,14 @@ def extract_archive(
     )
     disable = not verbose
 
-    def extract_zip(archive: str) -> list:
+    def extract_zip_member(member):
+        """Extract a single member from a ZIP archive."""
         with zipfile.ZipFile(archive, "r") as zf:
-            members = zf.infolist()
+            zf.extract(member, destination)
 
-            if num_workers == 1:
-                # Sequential extraction with progress bar
-                for member in progress_bar(members, desc=desc, disable=disable):
-                    zf.extract(member, destination)
-            else:
-                # Parallel extraction with progress bar
-                params = [([member, destination], {}) for member in members]
-                run_tasks(
-                    zf.extract,
-                    params,
-                    num_workers=num_workers,
-                    progress_bar=verbose,
-                    task_description=desc,
-                )
-
-        return [m.filename for m in members]
-
-    def extract_tar(archive: str) -> list:
+    def extract_tar_member(member):
+        """Extract a single member from a TAR archive."""
         with tarfile.open(archive, "r") as tf:
-            members = tf.getmembers()
-
             # In Python 3.12 the `filter` argument was introduced,
             # and it will be set automatically in Python 3.14,
             # see
@@ -402,21 +385,47 @@ def extract_archive(
             kwargs = {"numeric_owner": True}
             if sys.version_info >= (3, 12):  # pragma: no cover
                 kwargs = kwargs | {"filter": "tar"}
+            tf.extract(member, destination, **kwargs)
 
-            if num_workers == 1:
-                # Sequential extraction with progress bar
-                for member in progress_bar(members, desc=desc, disable=disable):
-                    tf.extract(member, destination, **kwargs)
-            else:
-                # Parallel extraction with progress bar
-                params = [([member, destination], kwargs) for member in members]
-                run_tasks(
-                    tf.extract,
-                    params,
-                    num_workers=num_workers,
-                    progress_bar=verbose,
-                    task_description=desc,
-                )
+    def extract_zip(archive: str) -> list:
+        with zipfile.ZipFile(archive, "r") as zf:
+            members = zf.infolist()
+
+        if num_workers == 1:
+            # Sequential extraction with progress bar
+            for member in progress_bar(members, desc=desc, disable=disable):
+                extract_zip_member(member)
+        else:
+            # Parallel extraction with progress bar
+            params = [([member], {}) for member in members]
+            run_tasks(
+                extract_zip_member,
+                params,
+                num_workers=num_workers,
+                progress_bar=verbose,
+                task_description=desc,
+            )
+
+        return [m.filename for m in members]
+
+    def extract_tar(archive: str) -> list:
+        with tarfile.open(archive, "r") as tf:
+            members = tf.getmembers()
+
+        if num_workers == 1:
+            # Sequential extraction with progress bar
+            for member in progress_bar(members, desc=desc, disable=disable):
+                extract_tar_member(member)
+        else:
+            # Parallel extraction with progress bar
+            params = [([member], {}) for member in members]
+            run_tasks(
+                extract_tar_member,
+                params,
+                num_workers=num_workers,
+                progress_bar=verbose,
+                task_description=desc,
+            )
 
         return [m.name for m in members]
 
