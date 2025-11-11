@@ -293,7 +293,7 @@ def extract_archive(
     *,
     keep_archive: bool = True,
     verbose: bool = False,
-    num_workers: int = 1,
+    num_workers: int | None = 1,
 ) -> list[str]:
     r"""Extract ZIP or TAR file.
 
