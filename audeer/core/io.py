@@ -369,10 +369,26 @@ def extract_archive(
     )
     disable = not verbose
 
-    def extract_zip_member(member):
-        """Extract a single member from a ZIP archive."""
+    def extract_zip(archive: str) -> list:
         with zipfile.ZipFile(archive, "r") as zf:
-            zf.extract(member, destination)
+            members = zf.infolist()
+
+            if num_workers == 1:
+                # Sequential extraction with progress bar
+                for member in progress_bar(members, desc=desc, disable=disable):
+                    zf.extract(member, destination)
+            else:
+                # Parallel extraction with progress bar
+                params = [([member, destination], {}) for member in members]
+                run_tasks(
+                    zf.extract,
+                    params,
+                    num_workers=num_workers,
+                    progress_bar=verbose,
+                    task_description=desc,
+                )
+
+            return [m.filename for m in members]
 
     def extract_tar_member(member):
         """Extract a single member from a TAR archive."""
@@ -386,27 +402,6 @@ def extract_archive(
             if sys.version_info >= (3, 12):  # pragma: no cover
                 kwargs = kwargs | {"filter": "tar"}
             tf.extract(member, destination, **kwargs)
-
-    def extract_zip(archive: str) -> list:
-        with zipfile.ZipFile(archive, "r") as zf:
-            members = zf.infolist()
-
-        if num_workers == 1:
-            # Sequential extraction with progress bar
-            for member in progress_bar(members, desc=desc, disable=disable):
-                extract_zip_member(member)
-        else:
-            # Parallel extraction with progress bar
-            params = [([member], {}) for member in members]
-            run_tasks(
-                extract_zip_member,
-                params,
-                num_workers=num_workers,
-                progress_bar=verbose,
-                task_description=desc,
-            )
-
-        return [m.filename for m in members]
 
     def extract_tar(archive: str) -> list:
         with tarfile.open(archive, "r") as tf:
