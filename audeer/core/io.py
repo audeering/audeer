@@ -15,7 +15,6 @@ import zipfile
 from audeer.core.path import path as safe_path
 from audeer.core.tqdm import format_display_message
 from audeer.core.tqdm import progress_bar
-from audeer.core.utils import flatten_list
 from audeer.core.utils import run_tasks
 from audeer.core.utils import to_list
 
@@ -304,15 +303,9 @@ def extract_archive(
             If the folder does not exists,
             it will be created
         keep_archive: if ``False`` delete archive file after extraction
-        keep_archive: if ``False`` delete archive file after extraction
         verbose: if ``True`` a progress bar is shown
-        num_workers: number of workers to use for extraction.
-            If ``num_workers > 1``,
-            the archive is split into chunks
-            and extracted in parallel.
-            This is only supported for ZIP and TAR files.
-            If ``num_workers = 1``,
-            the archive is extracted sequentially
+        num_workers: number of parallel workers for extraction.
+            Must be at least 1
 
     Returns:
         paths of extracted files relative to ``destination``
@@ -324,6 +317,7 @@ def extract_archive(
         NotADirectoryError: if ``destination`` is not a directory
         RuntimeError: if ``archive`` is not a ZIP or TAR file
         RuntimeError: if ``archive`` is malformed
+        ValueError: if ``num_workers`` is less than 1
 
     Examples:
         >>> folder = audeer.path(".")
@@ -338,6 +332,9 @@ def extract_archive(
     """
     archive = safe_path(archive)
     destination = safe_path(destination)
+
+    if num_workers < 1:
+        raise ValueError(f"num_workers must be at least 1, got {num_workers}")
 
     if not os.path.exists(archive):
         raise FileNotFoundError(
@@ -375,7 +372,7 @@ def extract_archive(
 
     def extract_zip(
         archive: str,
-        members: Sequence[str] | None = None,
+        members: Sequence[str | zipfile.ZipInfo] | None = None,
     ) -> list:
         with zipfile.ZipFile(archive, "r") as zf:
             if members is None:
@@ -388,13 +385,17 @@ def extract_archive(
 
     def extract_tar(
         archive: str,
-        members: Sequence[str] | None = None,
+        members: Sequence[str | tarfile.TarInfo] | None = None,
     ) -> list:
         with tarfile.open(archive, "r") as tf:
             if members is None:
                 members = tf.getmembers()
             else:
-                members = [tf.getmember(m) for m in members]
+                resolved_members = []
+                for m in members:
+                    member = tf.getmember(m)
+                    resolved_members.append(member)
+                members = resolved_members
             for member in progress_bar(members, desc=desc, disable=disable):
                 # In Python 3.12 the `filter` argument was introduced,
                 # and it will be set automatically in Python 3.14,
@@ -437,25 +438,45 @@ def extract_archive(
             raise RuntimeError(f"You can only extract ZIP and TAR files, not {archive}")
 
         if num_workers > 1:
-            # Split members into chunks
-            chunk_size = len(members) // num_workers + 1
-            chunks = [
-                members[i : i + chunk_size] for i in range(0, len(members), chunk_size)
-            ]
-            params = [
-                ([archive, chunk, destination, extension], {}) for chunk in chunks
-            ]
-            files = run_tasks(
-                extract_chunk,
-                params,
-                num_workers=num_workers,
-                progress_bar=verbose,
-                task_description=f"Extract {os.path.basename(archive)}",
-            )
-            files = flatten_list(files)
+            # Handle empty archives
+            if not members:
+                files = []
+            else:
+                # Use round-robin distribution for better load balancing
+                # Track original indices to preserve order after extraction
+                chunks = [[] for _ in range(num_workers)]
+                indices = [[] for _ in range(num_workers)]
+                for i, member in enumerate(members):
+                    worker_idx = i % num_workers
+                    chunks[worker_idx].append(member)
+                    indices[worker_idx].append(i)
+
+                # Filter out empty chunks (when num_workers > len(members))
+                non_empty = [(c, idx) for c, idx in zip(chunks, indices) if c]
+                chunks = [c for c, _ in non_empty]
+                indices = [idx for _, idx in non_empty]
+
+                params = [
+                    ([archive, chunk, destination, extension], {}) for chunk in chunks
+                ]
+                chunk_results = run_tasks(
+                    extract_chunk,
+                    params,
+                    num_workers=len(chunks),
+                    progress_bar=verbose,
+                    task_description=f"Extract {os.path.basename(archive)}",
+                )
+
+                # Reconstruct files in original order
+                files = [None] * len(members)
+                for chunk_indices, chunk_files in zip(indices, chunk_results):
+                    for idx, file in zip(chunk_indices, chunk_files):
+                        files[idx] = file
 
     except (EOFError, zipfile.BadZipFile, tarfile.ReadError):
         raise RuntimeError(f"Broken archive: {archive}")
+    except KeyError as e:
+        raise RuntimeError(f"Member not found in archive {archive}: {e}")
     except (KeyboardInterrupt, Exception):  # pragma: no cover
         # Clean up broken extraction files
         if destination_created:
@@ -489,15 +510,9 @@ def extract_archives(
             If the folder does not exists,
             it will be created
         keep_archive: if ``False`` delete archive files after extraction
-        keep_archive: if ``False`` delete archive files after extraction
         verbose: if ``True`` a progress bar is shown
-        num_workers: number of workers to use for extraction.
-            If ``num_workers > 1``,
-            the archive is split into chunks
-            and extracted in parallel.
-            This is only supported for ZIP and TAR files.
-            If ``num_workers = 1``,
-            the archive is extracted sequentially
+        num_workers: number of parallel workers for extraction.
+            Must be at least 1
 
     Returns:
         paths of extracted files relative to ``destination``
@@ -509,6 +524,7 @@ def extract_archives(
         NotADirectoryError: if ``destination`` is not a directory
         RuntimeError: if an archive is not a ZIP or TAR file
         RuntimeError: if an archive file is malformed
+        ValueError: if ``num_workers`` is less than 1
 
     Examples:
         >>> folder = audeer.path(".")
