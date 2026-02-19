@@ -690,7 +690,7 @@ def list_file_names(
 
 
 def load_json(
-    file: str | os.PathLike[str],
+    file: str | bytes,
 ) -> object:
     """Load object from JSON file.
 
@@ -1019,7 +1019,7 @@ def rmdir(
 
 
 def save_json(
-    file: str | os.PathLike[str],
+    file: str | bytes,
     obj: object,
 ):
     """Save object to JSON file.
