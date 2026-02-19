@@ -1078,7 +1078,7 @@ def test_save_json(tmpdir):
     assert os.path.exists(file)
 
     # Test formatting (indent=2)
-    with open(file, "r") as fp:
+    with open(file, "r", encoding="utf-8") as fp:
         content = fp.read()
     expected = '{\n  "a": 1,\n  "b": 2\n}'
     assert content == expected
