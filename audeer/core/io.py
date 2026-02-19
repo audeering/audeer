@@ -5,6 +5,7 @@ import hashlib
 import inspect
 import io
 import itertools
+import json
 import os
 import shutil
 import sys
@@ -688,6 +689,29 @@ def list_file_names(
     return sorted(paths)
 
 
+def load_json(
+    file: str | bytes,
+) -> object:
+    """Load object from JSON file.
+
+    Args:
+        file: path to JSON file
+
+    Returns:
+        object stored in JSON file
+
+    Examples:
+        >>> file = audeer.path("test.json")
+        >>> audeer.save_json(file, {"a": 1})
+        >>> audeer.load_json(file)
+        {'a': 1}
+
+    """
+    file = safe_path(file)
+    with open(file, "r", encoding="utf-8") as fp:
+        return json.load(fp)
+
+
 def mkdir(
     path: str | bytes,
     *paths: Sequence[str | bytes],
@@ -992,6 +1016,37 @@ def rmdir(
     path = safe_path(path, *paths, follow_symlink=follow_symlink)
     if os.path.exists(path):
         shutil.rmtree(path)
+
+
+def save_json(
+    file: str | bytes,
+    obj: object,
+    *,
+    indent: int | None = None,
+    separators: tuple[str, str] | None = None,
+):
+    """Save object to JSON file.
+
+    Args:
+        file: path to JSON file
+        obj: object to store in JSON file
+        indent: indentation level in number of spaces.
+            If ``None`` the JSON will be compact
+            without line breaks
+        separators: tuple of item and key separators.
+            If ``None`` defaults to ``(", ", ": ")`` when ``indent`` is ``None``,
+            and ``(",", ": ")`` otherwise
+
+    Examples:
+        >>> file = audeer.path("test.json")
+        >>> audeer.save_json(file, {"a": 1})
+        >>> audeer.load_json(file)
+        {'a': 1}
+
+    """
+    file = safe_path(file)
+    with open(file, "w", encoding="utf-8") as fp:
+        json.dump(obj, fp, ensure_ascii=False, indent=indent, separators=separators)
 
 
 def script_dir() -> str:

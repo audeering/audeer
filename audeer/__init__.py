@@ -8,12 +8,14 @@ from audeer.core.io import extract_archives
 from audeer.core.io import file_extension
 from audeer.core.io import list_dir_names
 from audeer.core.io import list_file_names
+from audeer.core.io import load_json
 from audeer.core.io import md5
 from audeer.core.io import mkdir
 from audeer.core.io import move
 from audeer.core.io import move_file
 from audeer.core.io import replace_file_extension
 from audeer.core.io import rmdir
+from audeer.core.io import save_json
 from audeer.core.io import script_dir
 from audeer.core.io import touch
 from audeer.core.path import path

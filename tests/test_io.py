@@ -1040,6 +1040,93 @@ def test_list_file_names_symlinks(tmpdir):
     ]
 
 
+@pytest.mark.parametrize(
+    "obj",
+    [
+        {},
+        {"a": 1},
+        {"a": 1, "b": [1, 2, 3]},
+        {"a": {"b": {"c": 1}}},
+        [1, 2, 3],
+        "string",
+        123,
+        12.5,
+        True,
+        None,
+        ["a", "b", "c"],
+        {"key": "value with unicode: äöü ß"},
+    ],
+)
+def test_load_json(tmpdir, obj):
+    file = audeer.path(tmpdir, "test.json")
+    audeer.save_json(file, obj)
+    result = audeer.load_json(file)
+    assert result == obj
+
+
+def test_load_json_errors(tmpdir):
+    # Non-existent file
+    with pytest.raises(FileNotFoundError):
+        audeer.load_json("does-not-exist.json")
+
+
+def test_save_json(tmpdir):
+    # Test that file is created
+    file = audeer.path(tmpdir, "test.json")
+    obj = {"a": 1, "b": 2}
+    audeer.save_json(file, obj)
+    assert os.path.exists(file)
+
+    # Test default formatting (compact, indent=None)
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{"a": 1, "b": 2}'
+    assert content == expected
+
+    # Test unicode is preserved (ensure_ascii=False)
+    file = audeer.path(tmpdir, "unicode.json")
+    obj = {"text": "äöü ß 日本語"}
+    audeer.save_json(file, obj)
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    assert "äöü ß 日本語" in content
+    assert "\\u" not in content  # Not escaped
+
+    # Test custom indent
+    file = audeer.path(tmpdir, "indent4.json")
+    obj = {"a": 1}
+    audeer.save_json(file, obj, indent=4)
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{\n    "a": 1\n}'
+    assert content == expected
+
+    # Test no indent (compact)
+    file = audeer.path(tmpdir, "compact.json")
+    audeer.save_json(file, obj, indent=None)
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{"a": 1}'
+    assert content == expected
+
+    # Test custom separators with indent
+    file = audeer.path(tmpdir, "separators.json")
+    obj = {"a": 1, "b": 2}
+    audeer.save_json(file, obj, indent=2, separators=(",", ":"))
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{\n  "a":1,\n  "b":2\n}'
+    assert content == expected
+
+    # Test custom separators without indent (compact)
+    file = audeer.path(tmpdir, "separators_compact.json")
+    audeer.save_json(file, obj, indent=None, separators=(",", ":"))
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{"a":1,"b":2}'
+    assert content == expected
+
+
 def test_md5_errors():
     with pytest.raises(FileNotFoundError):
         audeer.md5("does/not/exist")
