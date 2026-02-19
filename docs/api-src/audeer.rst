@@ -28,6 +28,7 @@ audeer
     is_uid
     list_dir_names
     list_file_names
+    load_json
     LooseVersion
     md5
     mkdir
@@ -39,6 +40,7 @@ audeer
     rmdir
     run_tasks
     safe_path
+    save_json
     script_dir
     sort_versions
     suppress_stdout

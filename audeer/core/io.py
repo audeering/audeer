@@ -5,6 +5,7 @@ import hashlib
 import inspect
 import io
 import itertools
+import json
 import os
 import shutil
 import sys
@@ -688,6 +689,29 @@ def list_file_names(
     return sorted(paths)
 
 
+def load_json(
+    file: str,
+) -> object:
+    """Load object from JSON file.
+
+    Args:
+        file: path to JSON file
+
+    Returns:
+        object stored in JSON file
+
+    Examples:
+        >>> file = audeer.path("test.json")
+        >>> audeer.save_json(file, {"a": 1})
+        >>> audeer.load_json(file)
+        {'a': 1}
+
+    """
+    file = safe_path(file)
+    with open(file, "r") as fp:
+        return json.load(fp)
+
+
 def mkdir(
     path: str | bytes,
     *paths: Sequence[str | bytes],
@@ -992,6 +1016,28 @@ def rmdir(
     path = safe_path(path, *paths, follow_symlink=follow_symlink)
     if os.path.exists(path):
         shutil.rmtree(path)
+
+
+def save_json(
+    file: str,
+    obj: object,
+):
+    """Save object to JSON file.
+
+    Args:
+        file: path to JSON file
+        obj: object to store in JSON file
+
+    Examples:
+        >>> file = audeer.path("test.json")
+        >>> audeer.save_json(file, {"a": 1})
+        >>> audeer.load_json(file)
+        {'a': 1}
+
+    """
+    file = safe_path(file)
+    with open(file, "w", encoding="utf-8") as fp:
+        json.dump(obj, fp, ensure_ascii=False, indent=2)
 
 
 def script_dir() -> str:
