@@ -1023,6 +1023,7 @@ def save_json(
     obj: object,
     *,
     indent: int | None = 2,
+    separators: tuple[str, str] | None = None,
 ):
     """Save object to JSON file.
 
@@ -1032,6 +1033,9 @@ def save_json(
         indent: indentation level in number of spaces.
             If ``None`` the JSON will be compact
             without line breaks
+        separators: tuple of item and key separators.
+            If ``None`` defaults to ``(", ", ": ")`` when ``indent`` is ``None``,
+            and ``(",", ": ")`` otherwise
 
     Examples:
         >>> file = audeer.path("test.json")
@@ -1042,7 +1046,7 @@ def save_json(
     """
     file = safe_path(file)
     with open(file, "w", encoding="utf-8") as fp:
-        json.dump(obj, fp, ensure_ascii=False, indent=indent)
+        json.dump(obj, fp, ensure_ascii=False, indent=indent, separators=separators)
 
 
 def script_dir() -> str:

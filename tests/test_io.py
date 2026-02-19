@@ -1109,6 +1109,23 @@ def test_save_json(tmpdir):
     expected = '{"a": 1}'
     assert content == expected
 
+    # Test custom separators with indent
+    file = audeer.path(tmpdir, "separators.json")
+    obj = {"a": 1, "b": 2}
+    audeer.save_json(file, obj, separators=(",", ":"))
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{\n  "a":1,\n  "b":2\n}'
+    assert content == expected
+
+    # Test custom separators without indent (compact)
+    file = audeer.path(tmpdir, "separators_compact.json")
+    audeer.save_json(file, obj, indent=None, separators=(",", ":"))
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{"a":1,"b":2}'
+    assert content == expected
+
 
 def test_md5_errors():
     with pytest.raises(FileNotFoundError):
