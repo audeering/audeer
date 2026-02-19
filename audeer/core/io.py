@@ -1022,7 +1022,7 @@ def save_json(
     file: str | bytes,
     obj: object,
     *,
-    indent: int | None = 2,
+    indent: int | None = None,
     separators: tuple[str, str] | None = None,
 ):
     """Save object to JSON file.

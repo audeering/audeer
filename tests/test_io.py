@@ -1077,10 +1077,10 @@ def test_save_json(tmpdir):
     audeer.save_json(file, obj)
     assert os.path.exists(file)
 
-    # Test formatting (indent=2)
+    # Test default formatting (compact, indent=None)
     with open(file, "r", encoding="utf-8") as fp:
         content = fp.read()
-    expected = '{\n  "a": 1,\n  "b": 2\n}'
+    expected = '{"a": 1, "b": 2}'
     assert content == expected
 
     # Test unicode is preserved (ensure_ascii=False)
@@ -1112,7 +1112,7 @@ def test_save_json(tmpdir):
     # Test custom separators with indent
     file = audeer.path(tmpdir, "separators.json")
     obj = {"a": 1, "b": 2}
-    audeer.save_json(file, obj, separators=(",", ":"))
+    audeer.save_json(file, obj, indent=2, separators=(",", ":"))
     with open(file, "r", encoding="utf-8") as fp:
         content = fp.read()
     expected = '{\n  "a":1,\n  "b":2\n}'
