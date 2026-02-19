@@ -1092,6 +1092,23 @@ def test_save_json(tmpdir):
     assert "äöü ß 日本語" in content
     assert "\\u" not in content  # Not escaped
 
+    # Test custom indent
+    file = audeer.path(tmpdir, "indent4.json")
+    obj = {"a": 1}
+    audeer.save_json(file, obj, indent=4)
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{\n    "a": 1\n}'
+    assert content == expected
+
+    # Test no indent (compact)
+    file = audeer.path(tmpdir, "compact.json")
+    audeer.save_json(file, obj, indent=None)
+    with open(file, "r", encoding="utf-8") as fp:
+        content = fp.read()
+    expected = '{"a": 1}'
+    assert content == expected
+
 
 def test_md5_errors():
     with pytest.raises(FileNotFoundError):

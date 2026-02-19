@@ -1021,12 +1021,17 @@ def rmdir(
 def save_json(
     file: str | bytes,
     obj: object,
+    *,
+    indent: int | None = 2,
 ):
     """Save object to JSON file.
 
     Args:
         file: path to JSON file
         obj: object to store in JSON file
+        indent: indentation level in number of spaces.
+            If ``None`` the JSON will be compact
+            without line breaks
 
     Examples:
         >>> file = audeer.path("test.json")
@@ -1037,7 +1042,7 @@ def save_json(
     """
     file = safe_path(file)
     with open(file, "w", encoding="utf-8") as fp:
-        json.dump(obj, fp, ensure_ascii=False, indent=2)
+        json.dump(obj, fp, ensure_ascii=False, indent=indent)
 
 
 def script_dir() -> str:
