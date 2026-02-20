@@ -1,0 +1,6 @@
+﻿load\_json\(\)
+==============
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.load_json

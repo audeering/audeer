@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>is_semantic_version() &mdash; audeer Documentation</title>
@@ -65,7 +66,7 @@
             
             
               <div class="version">
-                v2.3.1
+                v2.4.0
               </div>
             
           
@@ -118,6 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.is_uid.html">is_uid()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_file_names.html">list_file_names()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.load_json.html">load_json()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.mkdir.html">mkdir()</a></li>
@@ -129,6 +131,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.rmdir.html">rmdir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.run_tasks.html">run_tasks()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.safe_path.html">safe_path()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.save_json.html">save_json()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.script_dir.html">script_dir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.sort_versions.html">sort_versions()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.suppress_stdout.html">suppress_stdout()</a></li>
@@ -182,11 +185,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="is-semantic-version">
-<h1>is_semantic_version()<a class="headerlink" href="#is-semantic-version" title="Permalink to this heading">¶</a></h1>
+  <section id="is-semantic-version">
+<h1>is_semantic_version()<a class="headerlink" href="#is-semantic-version" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.is_semantic_version">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">is_semantic_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/utils.html#is_semantic_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.is_semantic_version" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">is_semantic_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/utils.html#is_semantic_version"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.is_semantic_version" title="Link to this definition">¶</a></dt>
 <dd><p>Check if given string represents a semantic version.</p>
 <p>To be a <a class="reference external" href="https://semver.org">semantic version</a>
 your version has to comply to <code class="docutils literal notranslate"><span class="pre">X.Y.Z</span></code> or <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code>,
@@ -195,13 +198,13 @@ Additional version information, like <code class="docutils literal notranslate">
 has to be added using a <code class="docutils literal notranslate"><span class="pre">-</span></code> or <code class="docutils literal notranslate"><span class="pre">+</span></code>,
 e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – version string</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>version</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – version string</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if version is a semantic version</p>
 </dd>
 </dl>
@@ -216,7 +219,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
@@ -241,7 +244,7 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/10/27 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/02/20 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -273,14 +276,11 @@ e.g. <code class="docutils literal notranslate"><span class="pre">X.Y.Z-beta</sp
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+        <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=e57ba844"></script>
     
 
   

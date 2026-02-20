@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>LooseVersion &mdash; audeer Documentation</title>
@@ -32,7 +33,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="md5()" href="audeer.md5.html" />
-    <link rel="prev" title="list_file_names()" href="audeer.list_file_names.html" />
+    <link rel="prev" title="load_json()" href="audeer.load_json.html" />
     
   
 
@@ -65,7 +66,7 @@
             
             
               <div class="version">
-                v2.3.1
+                v2.4.0
               </div>
             
           
@@ -118,6 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.is_uid.html">is_uid()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_file_names.html">list_file_names()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.load_json.html">load_json()</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">LooseVersion</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#eq">__eq__()</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#ge">__ge__()</a></li>
@@ -141,6 +143,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.rmdir.html">rmdir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.run_tasks.html">run_tasks()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.safe_path.html">safe_path()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.save_json.html">save_json()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.script_dir.html">script_dir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.sort_versions.html">sort_versions()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.suppress_stdout.html">suppress_stdout()</a></li>
@@ -194,11 +197,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="looseversion">
-<h1>LooseVersion<a class="headerlink" href="#looseversion" title="Permalink to this heading">¶</a></h1>
+  <section id="looseversion">
+<h1>LooseVersion<a class="headerlink" href="#looseversion" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="audeer.LooseVersion">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">LooseVersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion" title="Permalink to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">LooseVersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion" title="Link to this definition">¶</a></dt>
 <dd><p>Version numbering for anarchists and software realists.</p>
 <p>This implementation was originally part of <a class="reference external" href="https://docs.python.org/3/library/distutils.html#module-distutils" title="(in Python v3.14)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distutils</span></code></a>
 as <code class="docutils literal notranslate"><span class="pre">version.LooseVersion</span></code>.</p>
@@ -226,7 +229,7 @@ in no particular order:
 <code class="docutils literal notranslate"><span class="pre">'5.5.kw'</span></code>,
 <code class="docutils literal notranslate"><span class="pre">'2.0b1pl0'</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>version</strong> – version string</p>
 </dd>
 </dl>
@@ -243,107 +246,107 @@ in no particular order:
 </div>
 </dd></dl>
 
-<div class="section" id="eq">
-<h2>__eq__()<a class="headerlink" href="#eq" title="Permalink to this heading">¶</a></h2>
+<section id="eq">
+<h2>__eq__()<a class="headerlink" href="#eq" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.LooseVersion.__eq__">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__eq__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__eq__" title="Link to this definition">¶</a></dt>
 <dd><p>Check if version equals another version.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="ge">
-<h2>__ge__()<a class="headerlink" href="#ge" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="ge">
+<h2>__ge__()<a class="headerlink" href="#ge" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.LooseVersion.__ge__">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__ge__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__ge__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__ge__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__ge__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__ge__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__ge__" title="Link to this definition">¶</a></dt>
 <dd><p>Check if version is greater or equal another version.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="gt">
-<h2>__gt__()<a class="headerlink" href="#gt" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="gt">
+<h2>__gt__()<a class="headerlink" href="#gt" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.LooseVersion.__gt__">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__gt__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__gt__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__gt__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__gt__" title="Link to this definition">¶</a></dt>
 <dd><p>Check if version is greater than another version.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="le">
-<h2>__le__()<a class="headerlink" href="#le" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="le">
+<h2>__le__()<a class="headerlink" href="#le" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.LooseVersion.__le__">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__le__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__le__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__le__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__le__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__le__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__le__" title="Link to this definition">¶</a></dt>
 <dd><p>Check if version is less or equal another version.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="lt">
-<h2>__lt__()<a class="headerlink" href="#lt" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="lt">
+<h2>__lt__()<a class="headerlink" href="#lt" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.LooseVersion.__lt__">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__lt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__lt__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__lt__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__lt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__lt__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__lt__" title="Link to this definition">¶</a></dt>
 <dd><p>Check if version is less than another version.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="repr">
-<h2>__repr__()<a class="headerlink" href="#repr" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="repr">
+<h2>__repr__()<a class="headerlink" href="#repr" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.LooseVersion.__repr__">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audeer.LooseVersion.__repr__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audeer.LooseVersion.__repr__" title="Link to this definition">¶</a></dt>
 <dd><p>Python code to recreate instance.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="str">
-<h2>__str__()<a class="headerlink" href="#str" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="str">
+<h2>__str__()<a class="headerlink" href="#str" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.LooseVersion.__str__">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__str__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.__str__" title="Link to this definition">¶</a></dt>
 <dd><p>String representation of version.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="parse">
-<h2>parse()<a class="headerlink" href="#parse" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="parse">
+<h2>parse()<a class="headerlink" href="#parse" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.LooseVersion.parse">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.parse" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/version.html#LooseVersion.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.LooseVersion.parse" title="Link to this definition">¶</a></dt>
 <dd><p>Parse a version string.</p>
 <p>When called this updates the stored version
 under <code class="docutils literal notranslate"><span class="pre">self.version</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>version</strong> – version string</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="version">
-<h2>version<a class="headerlink" href="#version" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="version">
+<h2>version<a class="headerlink" href="#version" title="Link to this heading">¶</a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="audeer.LooseVersion.version">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#audeer.LooseVersion.version" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#audeer.LooseVersion.version" title="Link to this definition">¶</a></dt>
 <dd><p>Parsed version.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="version-re">
-<h2>version_re<a class="headerlink" href="#version-re" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="version-re">
+<h2>version_re<a class="headerlink" href="#version-re" title="Link to this heading">¶</a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="audeer.LooseVersion.version_re">
-<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">version_re</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('(\\d+</span> <span class="pre">|</span> <span class="pre">[a-z]+</span> <span class="pre">|</span> <span class="pre">\\.)',</span> <span class="pre">re.VERBOSE)</span></em><a class="headerlink" href="#audeer.LooseVersion.version_re" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">LooseVersion.</span></span><span class="sig-name descname"><span class="pre">version_re</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('(\\d+</span> <span class="pre">|</span> <span class="pre">[a-z]+</span> <span class="pre">|</span> <span class="pre">\\.)',</span> <span class="pre">re.VERBOSE)</span></span><a class="headerlink" href="#audeer.LooseVersion.version_re" title="Link to this definition">¶</a></dt>
 <dd><p>Version regexp pattern.</p>
 <p>The regexp pattern is used to split the version
 into single components
 when parsing it.</p>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -356,7 +359,7 @@ when parsing it.</p>
         <a href="audeer.md5.html" class="btn btn-neutral float-right" title="md5()" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="audeer.list_file_names.html" class="btn btn-neutral float-left" title="list_file_names()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="audeer.load_json.html" class="btn btn-neutral float-left" title="load_json()" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -368,7 +371,7 @@ when parsing it.</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/10/27 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/02/20 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -400,14 +403,11 @@ when parsing it.</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+        <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=e57ba844"></script>
     
 
   

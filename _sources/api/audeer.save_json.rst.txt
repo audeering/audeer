@@ -1,0 +1,6 @@
+﻿save\_json\(\)
+==============
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.save_json

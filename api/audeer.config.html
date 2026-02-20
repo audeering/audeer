@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>config &mdash; audeer Documentation</title>
@@ -65,7 +66,7 @@
             
             
               <div class="version">
-                v2.3.1
+                v2.4.0
               </div>
             
           
@@ -131,6 +132,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.is_uid.html">is_uid()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_file_names.html">list_file_names()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.load_json.html">load_json()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.mkdir.html">mkdir()</a></li>
@@ -142,6 +144,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.rmdir.html">rmdir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.run_tasks.html">run_tasks()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.safe_path.html">safe_path()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.save_json.html">save_json()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.script_dir.html">script_dir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.sort_versions.html">sort_versions()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.suppress_stdout.html">suppress_stdout()</a></li>
@@ -195,11 +198,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="config">
-<h1>config<a class="headerlink" href="#config" title="Permalink to this heading">¶</a></h1>
+  <section id="config">
+<h1>config<a class="headerlink" href="#config" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="audeer.config">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">config</span></span><a class="reference internal" href="../_modules/audeer/core/config.html#config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.config" title="Permalink to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">config</span></span><a class="reference internal" href="../_modules/audeer/core/config.html#config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.config" title="Link to this definition">¶</a></dt>
 <dd><p>Get/set defaults for <a class="reference internal" href="audeer.html#module-audeer" title="audeer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">audeer</span></code></a>.</p>
 <p>For example, when you want to change the default number of columns
 for the progress bar:</p>
@@ -210,106 +213,106 @@ for the progress bar:</p>
 </div>
 </dd></dl>
 
-<div class="section" id="eq">
-<h2>__eq__()<a class="headerlink" href="#eq" title="Permalink to this heading">¶</a></h2>
+<section id="eq">
+<h2>__eq__()<a class="headerlink" href="#eq" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.config.__eq__">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__eq__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__eq__" title="Link to this definition">¶</a></dt>
 <dd><p>Return self==value.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="ge">
-<h2>__ge__()<a class="headerlink" href="#ge" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="ge">
+<h2>__ge__()<a class="headerlink" href="#ge" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.config.__ge__">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__ge__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__ge__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__ge__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__ge__" title="Link to this definition">¶</a></dt>
 <dd><p>Return self&gt;=value.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="gt">
-<h2>__gt__()<a class="headerlink" href="#gt" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="gt">
+<h2>__gt__()<a class="headerlink" href="#gt" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.config.__gt__">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__gt__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__gt__" title="Link to this definition">¶</a></dt>
 <dd><p>Return self&gt;value.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="le">
-<h2>__le__()<a class="headerlink" href="#le" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="le">
+<h2>__le__()<a class="headerlink" href="#le" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.config.__le__">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__le__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__le__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__le__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__le__" title="Link to this definition">¶</a></dt>
 <dd><p>Return self&lt;=value.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="lt">
-<h2>__lt__()<a class="headerlink" href="#lt" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="lt">
+<h2>__lt__()<a class="headerlink" href="#lt" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.config.__lt__">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__lt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__lt__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__lt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__lt__" title="Link to this definition">¶</a></dt>
 <dd><p>Return self&lt;value.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="repr">
-<h2>__repr__()<a class="headerlink" href="#repr" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="repr">
+<h2>__repr__()<a class="headerlink" href="#repr" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.config.__repr__">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__repr__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__repr__" title="Link to this definition">¶</a></dt>
 <dd><p>Return repr(self).</p>
 </dd></dl>
 
-</div>
-<div class="section" id="str">
-<h2>__str__()<a class="headerlink" href="#str" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="str">
+<h2>__str__()<a class="headerlink" href="#str" title="Link to this heading">¶</a></h2>
 <dl class="py method">
 <dt class="sig sig-object py" id="audeer.config.__str__">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__str__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audeer.config.__str__" title="Link to this definition">¶</a></dt>
 <dd><p>Return str(self).</p>
 </dd></dl>
 
-</div>
-<div class="section" id="tqdm-columns">
-<h2>TQDM_COLUMNS<a class="headerlink" href="#tqdm-columns" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="tqdm-columns">
+<h2>TQDM_COLUMNS<a class="headerlink" href="#tqdm-columns" title="Link to this heading">¶</a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="audeer.config.TQDM_COLUMNS">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">TQDM_COLUMNS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#audeer.config.TQDM_COLUMNS" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">TQDM_COLUMNS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></span><a class="headerlink" href="#audeer.config.TQDM_COLUMNS" title="Link to this definition">¶</a></dt>
 <dd><p>Number of columns of progress bars.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="tqdm-desclen">
-<h2>TQDM_DESCLEN<a class="headerlink" href="#tqdm-desclen" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="tqdm-desclen">
+<h2>TQDM_DESCLEN<a class="headerlink" href="#tqdm-desclen" title="Link to this heading">¶</a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="audeer.config.TQDM_DESCLEN">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">TQDM_DESCLEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="headerlink" href="#audeer.config.TQDM_DESCLEN" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">TQDM_DESCLEN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></span><a class="headerlink" href="#audeer.config.TQDM_DESCLEN" title="Link to this definition">¶</a></dt>
 <dd><p>Length of progress bar description.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="tqdm-format">
-<h2>TQDM_FORMAT<a class="headerlink" href="#tqdm-format" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="tqdm-format">
+<h2>TQDM_FORMAT<a class="headerlink" href="#tqdm-format" title="Link to this heading">¶</a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="audeer.config.TQDM_FORMAT">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">TQDM_FORMAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'{percentage:3.0f}%|{bar}</span> <span class="pre">[{elapsed}&lt;{remaining}]</span> <span class="pre">{desc:60}'</span></em><a class="headerlink" href="#audeer.config.TQDM_FORMAT" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">TQDM_FORMAT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'{percentage:3.0f}%|{bar}</span> <span class="pre">[{elapsed}&lt;{remaining}]</span> <span class="pre">{desc:60}'</span></span><a class="headerlink" href="#audeer.config.TQDM_FORMAT" title="Link to this definition">¶</a></dt>
 <dd><p>Format of progress bars.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="tqdm-leave">
-<h2>TQDM_LEAVE<a class="headerlink" href="#tqdm-leave" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="tqdm-leave">
+<h2>TQDM_LEAVE<a class="headerlink" href="#tqdm-leave" title="Link to this heading">¶</a></h2>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="audeer.config.TQDM_LEAVE">
-<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">TQDM_LEAVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#audeer.config.TQDM_LEAVE" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">config.</span></span><span class="sig-name descname"><span class="pre">TQDM_LEAVE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#audeer.config.TQDM_LEAVE" title="Link to this definition">¶</a></dt>
 <dd><p>Leave progress bar on screen after finishing.</p>
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
@@ -334,7 +337,7 @@ for the progress bar:</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/10/27 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/02/20 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -366,14 +369,11 @@ for the progress bar:</p>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+        <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=e57ba844"></script>
     
 
   

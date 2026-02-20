@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>to_list() &mdash; audeer Documentation</title>
@@ -65,7 +66,7 @@
             
             
               <div class="version">
-                v2.3.1
+                v2.4.0
               </div>
             
           
@@ -118,6 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.is_uid.html">is_uid()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_file_names.html">list_file_names()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.load_json.html">load_json()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.mkdir.html">mkdir()</a></li>
@@ -129,6 +131,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.rmdir.html">rmdir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.run_tasks.html">run_tasks()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.safe_path.html">safe_path()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.save_json.html">save_json()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.script_dir.html">script_dir()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.sort_versions.html">sort_versions()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.suppress_stdout.html">suppress_stdout()</a></li>
@@ -182,20 +185,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="to-list">
-<h1>to_list()<a class="headerlink" href="#to-list" title="Permalink to this heading">¶</a></h1>
+  <section id="to-list">
+<h1>to_list()<a class="headerlink" href="#to-list" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.to_list">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/utils.html#to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.to_list" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/utils.html#to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.to_list" title="Link to this definition">¶</a></dt>
 <dd><p>Convert to list.</p>
 <p>If an iterable is passed,
 that is not a string it will be converted using <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>.
 Otherwise, <code class="docutils literal notranslate"><span class="pre">x</span></code> is converted by <code class="docutils literal notranslate"><span class="pre">[x]</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a>) – input to be converted to a list</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></span>) – input to be converted to a list</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>input as a list</p>
 </dd>
 </dl>
@@ -208,7 +211,7 @@ Otherwise, <code class="docutils literal notranslate"><span class="pre">x</span>
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
@@ -233,7 +236,7 @@ Otherwise, <code class="docutils literal notranslate"><span class="pre">x</span>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2025/10/27 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/02/20 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -265,14 +268,11 @@ Otherwise, <code class="docutils literal notranslate"><span class="pre">x</span>
     
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+        <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=e57ba844"></script>
     
 
   
