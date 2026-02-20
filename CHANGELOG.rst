@@ -7,6 +7,13 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.4.0 (2026-02-20)
+--------------------------
+
+* Added: ``audeer.load_json()``
+* Added: ``audeer.save_json()``
+
+
 Version 2.3.1 (2025-10-27)
 --------------------------
 
