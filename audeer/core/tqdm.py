@@ -95,7 +95,7 @@ def progress_bar(
     """
     if desc is None:
         desc = ""
-    return tqdm_wrapper(
+    kwargs = dict(
         iterable=iterable,
         maximum_refresh_time=maximum_refresh_time,
         ncols=config.TQDM_COLUMNS,
@@ -106,6 +106,11 @@ def progress_bar(
         leave=config.TQDM_LEAVE,
         smoothing=0,
     )
+    if config.TQDM_BAR is not None:
+        kwargs["ascii"] = config.TQDM_BAR
+    if config.TQDM_COLOUR is not None:
+        kwargs["colour"] = config.TQDM_COLOUR
+    return tqdm_wrapper(**kwargs)
 
 
 def tqdm_wrapper(

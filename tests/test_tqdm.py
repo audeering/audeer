@@ -29,6 +29,8 @@ def test_format_display_message(text):
 
 
 def test_progress_bar():
+    assert audeer.config.TQDM_BAR == "─╸━"
+    assert audeer.config.TQDM_COLOUR == "green"
     assert audeer.config.TQDM_DESCLEN == 60
     assert audeer.config.TQDM_FORMAT == (
         "{percentage:3.0f}%|{bar} [{elapsed}<{remaining}] "
