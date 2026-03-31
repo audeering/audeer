@@ -181,7 +181,7 @@ def progress_bar(
         kwargs["cls"]._uc = _ansi_colour(config.TQDM_BG_COLOUR)
     else:
         if config.TQDM_BAR is not None:
-            kwargs["ascii"] = config.TQDM_BAR
+            kwargs["ascii"] = f" {config.TQDM_BAR}"
         if config.TQDM_COLOUR is not None:
             kwargs["colour"] = config.TQDM_COLOUR
     return tqdm_wrapper(**kwargs)
