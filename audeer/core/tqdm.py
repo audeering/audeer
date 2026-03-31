@@ -26,7 +26,7 @@ _ANSI_COLOURS = {
     "bright_cyan": 96,
     "bright_white": 97,
 }
-_ANSI_RESET = "\033[0m"
+_ANSI_COLOR_RESET = "\033[39m"
 
 # Placeholder characters used internally for the bar.
 # These are replaced with coloured bar characters in _ColouredTqdm.
@@ -58,7 +58,7 @@ class _ColouredTqdm(tqdm):
         filled = s.count(_PLACEHOLDER_FULL)
         unfilled = s.count(_PLACEHOLDER_EMPTY)
         bc = self._bar_char
-        colored = f"{self._fc}{bc * filled}{self._uc}{bc * unfilled}{_ANSI_RESET}"
+        colored = f"{self._fc}{bc * filled}{self._uc}{bc * unfilled}{_ANSI_COLOR_RESET}"
         start = s.find(_PLACEHOLDER_FULL) if filled else s.find(_PLACEHOLDER_EMPTY)
         if start >= 0:
             end = (
