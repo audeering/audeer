@@ -551,9 +551,33 @@ def run_tasks(
 
     .. note:: Result values are returned in order of ``params``.
 
+    When ``multiprocessing`` is ``True``,
+    ``task_func`` and all values in ``params``
+    must be picklable,
+    and ``task_func`` must not depend
+    on runtime-modified global state.
+    Worker processes are created
+    using the start method returned by
+    :func:`multiprocessing.get_start_method`.
+    If you have called
+    :func:`multiprocessing.set_start_method`
+    beforehand,
+    that choice is respected;
+    otherwise the interpreter's
+    platform-specific default is used
+    (see :func:`multiprocessing.get_start_method`
+    for details).
+    With ``"spawn"``,
+    each worker re-imports the module
+    containing ``task_func``,
+    so any global state modified after import
+    will not be visible to workers.
+
     Args:
         task_func: task function with one or more
-            parameters, e.g. ``x, y, z``, and optionally returning a value
+            parameters, e.g. ``x, y, z``, and optionally returning a value.
+            When ``multiprocessing`` is ``True``,
+            this must be a picklable top-level function
         params: sequence of tuples holding parameters for each task.
             Each tuple contains a sequence of positional arguments and a
             dictionary with keyword arguments, e.g.:
