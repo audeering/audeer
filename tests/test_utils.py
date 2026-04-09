@@ -348,11 +348,8 @@ def test_is_uid(uid, expected):
     assert audeer.is_uid(uid) == expected
 
 
-_shared_state = {}
-
-
-def _task_reads_shared_state(key):
-    return _shared_state.get(key)
+def _task_lookup(data, key):
+    return data.get(key)
 
 
 def power(a: int = 0, *, b: int = 1):
@@ -395,30 +392,27 @@ def test_run_tasks(multiprocessing, num_workers, task_fun, params):
     assert expected == results
 
 
-def test_run_tasks_multiprocessing_shared_state():
-    """Test multiprocessing with runtime-modified shared state.
+def test_run_tasks_multiprocessing_spawn_safe():
+    """Test multiprocessing works with spawn start method.
 
-    With fork (default on Linux before Python 3.14),
-    child processes inherit the parent's memory,
-    so runtime modifications to module-level state are visible.
-    With spawn (default on Linux from Python 3.14),
-    child processes re-import the module fresh
-    and runtime modifications are lost.
+    Data is passed as arguments instead of relying
+    on runtime-modified global state,
+    which would not be visible to workers
+    under the spawn start method
+    (default on Linux from Python 3.14).
     """
-    _shared_state["x"] = 42
-    _shared_state["y"] = 99
+    data = {"x": 42, "y": 99}
     params = [
-        (["x"], {}),
-        (["y"], {}),
+        ([data, "x"], {}),
+        ([data, "y"], {}),
     ]
     results = audeer.run_tasks(
-        _task_reads_shared_state,
+        _task_lookup,
         params,
         num_workers=2,
         multiprocessing=True,
     )
     assert results == [42, 99]
-    _shared_state.clear()
 
 
 @pytest.mark.parametrize(
