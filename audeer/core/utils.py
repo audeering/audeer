@@ -557,11 +557,16 @@ def run_tasks(
     and ``task_func`` must not depend
     on runtime-modified global state.
     Worker processes are created
-    using the default start method
-    of :mod:`multiprocessing`
-    (``"fork"`` on Linux before Python 3.14,
-    ``"spawn"`` from Python 3.14 onwards
-    and on all other platforms).
+    using the start method returned by
+    :func:`multiprocessing.get_start_method`.
+    If you have called
+    :func:`multiprocessing.set_start_method`
+    beforehand,
+    that choice is respected;
+    otherwise the interpreter's
+    platform-specific default is used
+    (see :func:`multiprocessing.get_start_method`
+    for details).
     With ``"spawn"``,
     each worker re-imports the module
     containing ``task_func``,
