@@ -7,6 +7,71 @@ from tqdm import tqdm
 from audeer.core.config import config
 
 
+_ANSI_COLOURS = {
+    "black": 30,
+    "red": 31,
+    "green": 32,
+    "yellow": 33,
+    "blue": 34,
+    "magenta": 35,
+    "cyan": 36,
+    "white": 37,
+    "dark_grey": 90,
+    "dark_gray": 90,
+    "bright_red": 91,
+    "bright_green": 92,
+    "bright_yellow": 93,
+    "bright_blue": 94,
+    "bright_magenta": 95,
+    "bright_cyan": 96,
+    "bright_white": 97,
+}
+_ANSI_COLOR_RESET = "\033[39m"
+
+# Placeholder characters used internally for the bar.
+# These are replaced with coloured bar characters in _ColouredTqdm.
+_PLACEHOLDER_FULL = "\u2588"  # █ (full block)
+_PLACEHOLDER_EMPTY = "\u2800"  # ⠀ (braille pattern blank)
+
+
+def _ansi_colour(colour):
+    """Convert a colour name or hex string to an ANSI escape code."""
+    if colour in _ANSI_COLOURS:
+        return f"\033[{_ANSI_COLOURS[colour]}m"
+    if isinstance(colour, str) and colour.startswith("#") and len(colour) == 7:
+        r = int(colour[1:3], 16)
+        g = int(colour[3:5], 16)
+        b = int(colour[5:7], 16)
+        return f"\033[38;2;{r};{g};{b}m"
+    return ""
+
+
+class _ColouredTqdm(tqdm):
+    """Tqdm subclass with dual-coloured bar."""
+
+    _bar_char = "\u2588"
+    _fc = ""
+    _uc = ""
+
+    def __str__(self):
+        s = super().__str__()
+        filled = s.count(_PLACEHOLDER_FULL)
+        unfilled = s.count(_PLACEHOLDER_EMPTY)
+        bc = self._bar_char
+        colored = f"{self._fc}{bc * filled}{self._uc}{bc * unfilled}{_ANSI_COLOR_RESET}"
+        start = s.find(_PLACEHOLDER_FULL) if filled else s.find(_PLACEHOLDER_EMPTY)
+        if start >= 0:
+            end = (
+                max(
+                    s.rfind(_PLACEHOLDER_FULL),
+                    s.rfind(_PLACEHOLDER_EMPTY),
+                )
+                + 1
+            )
+            s = s[:start] + colored + s[end:]
+        return s
+
+
 def format_display_message(text: str, pbar: bool = False) -> str:
     """Ensure a fixed length of text printed to screen.
 
@@ -95,7 +160,7 @@ def progress_bar(
     """
     if desc is None:
         desc = ""
-    return tqdm_wrapper(
+    kwargs = dict(
         iterable=iterable,
         maximum_refresh_time=maximum_refresh_time,
         ncols=config.TQDM_COLUMNS,
@@ -106,12 +171,27 @@ def progress_bar(
         leave=config.TQDM_LEAVE,
         smoothing=0,
     )
+    if config.TQDM_COLOUR is not None and config.TQDM_BG_COLOUR is not None:
+        # Dual-colour mode: use placeholder ascii chars
+        # that get replaced with coloured bar chars in _ColouredTqdm
+        kwargs["ascii"] = f"{_PLACEHOLDER_EMPTY}{_PLACEHOLDER_FULL}"
+        kwargs["cls"] = _ColouredTqdm
+        kwargs["cls"]._bar_char = config.TQDM_BAR or _PLACEHOLDER_FULL
+        kwargs["cls"]._fc = _ansi_colour(config.TQDM_COLOUR)
+        kwargs["cls"]._uc = _ansi_colour(config.TQDM_BG_COLOUR)
+    else:
+        if config.TQDM_BAR is not None:
+            kwargs["ascii"] = f" {config.TQDM_BAR}"
+        if config.TQDM_COLOUR is not None:
+            kwargs["colour"] = config.TQDM_COLOUR
+    return tqdm_wrapper(**kwargs)
 
 
 def tqdm_wrapper(
     iterable: Sequence,
     maximum_refresh_time: float,
     *args,
+    cls: type = tqdm,
     **kwargs,
 ) -> tqdm:
     r"""Tqdm progress bar wrapper to enforce update once a second.
@@ -130,13 +210,14 @@ def tqdm_wrapper(
             If ``None``,
             no refreshing is enforced
         args: arguments passed on to ``tqdm``
+        cls: tqdm class to instantiate
         kwargs: keyword arguments passed on to ``tqdm``
 
     Returns:
         progress bar object
 
     """
-    pbar = tqdm(iterable, *args, **kwargs)
+    pbar = cls(iterable, *args, **kwargs)
 
     def refresh():
         while not pbar.disable:
