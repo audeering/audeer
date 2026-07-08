@@ -16,7 +16,7 @@ def load_configuration(
     in order of increasing precedence:
 
     1. ``default_config_file``,
-       the configuration file shipped with a package
+       e.g. the configuration file shipped with a package
     2. ``user_config_files``,
        applied in the given order
        (a later file overrides an earlier one)
@@ -39,11 +39,10 @@ def load_configuration(
     Missing or empty configuration files are skipped.
 
     Reading configuration files requires ``pyyaml``,
-    which is installed with ``pip install audeer[yaml]``.
+    which is installed when depending on ``audeer[yaml]``.
 
     Args:
-        default_config_file: path to the configuration file
-            shipped with a package.
+        default_config_file: path to default configuration file.
             The file does not have to exist
         user_config_files: path(s) to user configuration file(s),
             applied in the given order.
@@ -103,14 +102,13 @@ def _load_configuration_file(config_file: str) -> dict:
     if not os.path.exists(config_file):
         return {}
 
-    # ``pyyaml`` is an optional dependency (``audeer[yaml]``),
-    # imported lazily so that audeer's base install stays dependency-light
+    # Import lazily as ``pyyaml`` is an optional dependency
     try:
         import yaml
     except ImportError:  # pragma: no cover
         raise ImportError(
             "Reading configuration files requires 'pyyaml'. "
-            "Install it with: pip install audeer[yaml]"
+            "Install it with: uv pip install audeer[yaml]"
         )
 
     with open(config_file) as cf:
