@@ -1,4 +1,5 @@
 from audeer.core.config import config
+from audeer.core.config import load_configuration
 from audeer.core.io import basename_wo_ext
 from audeer.core.io import common_directory
 from audeer.core.io import create_archive

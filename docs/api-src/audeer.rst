@@ -28,6 +28,7 @@ audeer
     is_uid
     list_dir_names
     list_file_names
+    load_configuration
     load_json
     LooseVersion
     md5
