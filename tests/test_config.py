@@ -114,6 +114,37 @@ def test_load_configuration_environment_bool_false(tmpdir, monkeypatch):
     assert config == {"enabled": False}
 
 
+def test_load_configuration_non_mapping(tmpdir):
+    # A file that does not contain a mapping raises an error
+    config_file = write_config(
+        audeer.path(tmpdir, "list.yaml"),
+        "- a\n- b\n",
+    )
+    with pytest.raises(ValueError, match="must contain a mapping"):
+        audeer.load_configuration(config_file)
+
+
+@pytest.mark.parametrize(
+    "content, name, value",
+    [
+        ("count: 1\n", "PKG_COUNT", "not-an-int"),
+        ("ratio: 1.5\n", "PKG_RATIO", "not-a-float"),
+        ("items:\n  - a\n", "PKG_ITEMS", "not-json"),
+    ],
+)
+def test_load_configuration_environment_invalid(
+    tmpdir,
+    monkeypatch,
+    content,
+    name,
+    value,
+):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    monkeypatch.setenv(name, value)
+    with pytest.raises(ValueError, match="could not be converted to the type"):
+        audeer.load_configuration(config_file, env_prefix="PKG")
+
+
 def test_load_configuration_validate(tmpdir):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

@@ -1,14 +1,17 @@
+from collections.abc import Callable
+from collections.abc import Mapping
 from collections.abc import Sequence
 import json
 import os
+from typing import Any
 
 
 def load_configuration(
     default_config_file: str,
-    user_config_files: str | Sequence[str] = None,
+    user_config_files: str | Sequence[str] | None = None,
     *,
-    env_prefix: str = None,
-    validate: callable = None,
+    env_prefix: str | None = None,
+    validate: Callable[[dict], Any] | None = None,
 ) -> dict:
     r"""Load configuration from files and environment variables.
 
@@ -61,6 +64,11 @@ def load_configuration(
     Raises:
         ImportError: if ``pyyaml`` is not installed,
             and a configuration file exists
+        ValueError: if a configuration file
+            does not contain a mapping of key-value pairs
+        ValueError: if an environment variable
+            cannot be converted to the type
+            of the corresponding default value
 
     Examples:
         >>> import tempfile
@@ -114,7 +122,15 @@ def _load_configuration_file(config_file: str) -> dict:
     with open(config_file) as cf:
         config = yaml.load(cf, Loader=yaml.SafeLoader)
 
-    return config or {}
+    if config is None:
+        return {}
+    if not isinstance(config, Mapping):
+        raise ValueError(
+            f"The configuration file '{config_file}' "
+            f"must contain a mapping of key-value pairs, "
+            f"but contains a '{type(config).__name__}'."
+        )
+    return dict(config)
 
 
 def _override_with_environment(
@@ -126,22 +142,36 @@ def _override_with_environment(
         name = f"{env_prefix}_{key.upper()}"
         if name in os.environ:
             config[key] = _parse_environment_value(
+                name,
                 os.environ[name],
                 default_value,
             )
 
 
-def _parse_environment_value(value: str, default_value: object) -> object:
+def _parse_environment_value(
+    name: str,
+    value: str,
+    default_value: object,
+) -> object:
     r"""Convert an environment variable to the type of the default value."""
-    # ``bool`` has to be checked before ``int``
-    if isinstance(default_value, bool):
-        return value.lower() in ("1", "true", "yes", "on")
-    if isinstance(default_value, int):
-        return int(value)
-    if isinstance(default_value, float):
-        return float(value)
-    if isinstance(default_value, (list, dict)):
-        return json.loads(value)
+    try:
+        # ``bool`` has to be checked before ``int``
+        if isinstance(default_value, bool):
+            return value.lower() in ("1", "true", "yes", "on")
+        if isinstance(default_value, int):
+            return int(value)
+        if isinstance(default_value, float):
+            return float(value)
+        # ``json.JSONDecodeError`` is a subclass of ``ValueError``
+        if isinstance(default_value, (list, dict)):
+            return json.loads(value)
+    except ValueError as ex:
+        raise ValueError(
+            f"The environment variable '{name}={value}' "
+            f"could not be converted to the type "
+            f"'{type(default_value).__name__}' "
+            f"of the corresponding configuration value."
+        ) from ex
     return value
 
 
