@@ -85,21 +85,21 @@ def load_configuration(
         {'cache_root': '~/cache'}
 
     """
-    config = _load_configuration_file(default_config_file)
+    cfg = _load_configuration_file(default_config_file)
 
     if user_config_files is not None:
         if isinstance(user_config_files, str):
             user_config_files = [user_config_files]
         for user_config_file in user_config_files:
-            config.update(_load_configuration_file(user_config_file))
+            cfg.update(_load_configuration_file(user_config_file))
 
     if env_prefix is not None:
-        _override_with_environment(config, env_prefix)
+        _override_with_environment(cfg, env_prefix)
 
     if validate is not None:
-        validate(config)
+        validate(cfg)
 
-    return config
+    return cfg
 
 
 def _load_configuration_file(config_file: str) -> dict:
@@ -128,29 +128,29 @@ def _load_configuration_file(config_file: str) -> dict:
         )
 
     with open(config_file) as cf:
-        config = yaml.load(cf, Loader=yaml.SafeLoader)
+        cfg = yaml.load(cf, Loader=yaml.SafeLoader)
 
     # A file with only comments or whitespace also yields ``None``
-    if config is None:
+    if cfg is None:
         return {}
-    if not isinstance(config, Mapping):
+    if not isinstance(cfg, Mapping):
         raise ValueError(
             f"The configuration file '{config_file}' "
             f"must contain a mapping of key-value pairs, "
-            f"but contains a '{type(config).__name__}'."
+            f"but contains a '{type(cfg).__name__}'."
         )
-    return dict(config)
+    return dict(cfg)
 
 
 def _override_with_environment(
-    config: dict,
+    cfg: dict,
     env_prefix: str,
 ) -> None:
     r"""Override configuration values with environment variables in place."""
-    for key, default_value in config.items():
+    for key, default_value in cfg.items():
         name = f"{env_prefix}_{key.upper()}"
         if name in os.environ:
-            config[key] = _parse_environment_value(
+            cfg[key] = _parse_environment_value(
                 name,
                 os.environ[name],
                 default_value,
