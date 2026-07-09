@@ -3,7 +3,6 @@ from collections.abc import Mapping
 from collections.abc import Sequence
 import json
 import os
-from typing import Any
 
 
 def load_configuration(
@@ -11,7 +10,7 @@ def load_configuration(
     user_config_files: str | Sequence[str] | None = None,
     *,
     env_prefix: str | None = None,
-    validate: Callable[[dict], Any] | None = None,
+    validate: Callable[[dict], None] | None = None,
 ) -> dict:
     r"""Load configuration from files and environment variables.
 
