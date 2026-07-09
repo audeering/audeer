@@ -7,8 +7,12 @@ import pytest
 import audeer
 
 
-PACKAGE = "wrapt"
-MODULE = "wrapt"
+# Package whose distribution name (``attrs``)
+# differs from its import name (``attr``),
+# has no dependencies,
+# and is not a dependency of audeer
+PACKAGE = "attrs"
+MODULE = "attr"
 
 
 def uninstall():
@@ -48,25 +52,25 @@ def test():
     # install package
     audeer.install_package(
         PACKAGE,
-        version="<=1.16.0",
+        version="<=24.2.0",
     )
 
     # installed version satisfies requested version
     audeer.install_package(
         PACKAGE,
-        version=">=1.16.0",
+        version=">=24.2.0",
     )
     audeer.install_package(
         PACKAGE,
-        version=">1.15.0",
+        version=">24.1.0",
     )
     audeer.install_package(
         PACKAGE,
-        version="<=1.17.0",
+        version="<=24.3.0",
     )
     audeer.install_package(
         PACKAGE,
-        version="  <   1.17.0  ",  # whitespace will be ignored
+        version="  <   24.3.0  ",  # whitespace will be ignored
     )
     audeer.install_package(
         PACKAGE,
@@ -77,20 +81,20 @@ def test():
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version=">=1.17.0",
+            version=">=24.3.0",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version=">1.16.0",
+            version=">24.2.0",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version="<=1.15.0",
+            version="<=24.1.0",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version="<1.16.0",
+            version="<24.2.0",
         )
