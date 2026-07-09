@@ -7,12 +7,8 @@ import pytest
 import audeer
 
 
-# Package whose distribution name (``attrs``)
-# differs from its import name (``attr``),
-# has no dependencies,
-# and is not a dependency of audeer
-PACKAGE = "attrs"
-MODULE = "attr"
+PACKAGE = "python-dotenv"
+MODULE = "dotenv"
 
 
 def uninstall():
@@ -52,25 +48,25 @@ def test():
     # install package
     audeer.install_package(
         PACKAGE,
-        version="<=24.2.0",
+        version="<=1.1.0",
     )
 
     # installed version satisfies requested version
     audeer.install_package(
         PACKAGE,
-        version=">=24.2.0",
+        version=">=1.1.0",
     )
     audeer.install_package(
         PACKAGE,
-        version=">24.1.0",
+        version=">1.0.1",
     )
     audeer.install_package(
         PACKAGE,
-        version="<=24.3.0",
+        version="<=1.2.0",
     )
     audeer.install_package(
         PACKAGE,
-        version="  <   24.3.0  ",  # whitespace will be ignored
+        version="  <   1.2.0  ",  # whitespace will be ignored
     )
     audeer.install_package(
         PACKAGE,
@@ -81,20 +77,20 @@ def test():
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version=">=24.3.0",
+            version=">=1.2.0",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version=">24.2.0",
+            version=">1.1.0",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version="<=24.1.0",
+            version="<=1.0.1",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version="<24.2.0",
+            version="<1.1.0",
         )
