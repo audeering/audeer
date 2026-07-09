@@ -57,6 +57,19 @@ def test_load_configuration_user_file(tmpdir):
     }
 
 
+def test_load_configuration_missing_user_file(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    user_file = audeer.path(tmpdir, "missing.yaml")
+    # A non-existing user file is skipped,
+    # the default configuration is kept
+    assert audeer.load_configuration(default_file, user_file) == {
+        "cache_root": "~/cache",
+    }
+
+
 def test_load_configuration_multiple_user_files(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
