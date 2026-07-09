@@ -22,6 +22,16 @@ def test_load_configuration_empty_file(tmpdir):
     assert audeer.load_configuration(config_file) == {}
 
 
+def test_load_configuration_comments_only_file(tmpdir):
+    # A non-empty file that only contains comments or whitespace
+    # is parsed as ``None`` and returns an empty dictionary
+    config_file = write_config(
+        audeer.path(tmpdir, "comment.yaml"),
+        "# only a comment\n",
+    )
+    assert audeer.load_configuration(config_file) == {}
+
+
 def test_load_configuration_default(tmpdir):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

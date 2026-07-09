@@ -107,7 +107,8 @@ def _load_configuration_file(config_file: str) -> dict:
         empty if the file is missing or empty
 
     """
-    if not os.path.exists(config_file):
+    # Skip missing or empty files
+    if not os.path.exists(config_file) or os.path.getsize(config_file) == 0:
         return {}
 
     # Import lazily as ``pyyaml`` is an optional dependency
@@ -122,6 +123,7 @@ def _load_configuration_file(config_file: str) -> dict:
     with open(config_file) as cf:
         config = yaml.load(cf, Loader=yaml.SafeLoader)
 
+    # A file with only comments or whitespace also yields ``None``
     if config is None:
         return {}
     if not isinstance(config, Mapping):
