@@ -34,8 +34,15 @@ def load_configuration(
     The value of an environment variable is converted
     to the type of the corresponding default value:
     ``str`` values are used as they are,
-    ``bool``/``int``/``float`` values are cast,
+    ``int``/``float`` values are cast,
     and ``list``/``dict`` values are parsed as JSON.
+    A ``bool`` value is ``True``
+    for ``"1"``, ``"true"``, ``"yes"``, ``"on"``
+    (case insensitive)
+    and ``False`` for any other value;
+    a boolean is therefore never rejected,
+    whereas ``int``, ``float`` and JSON conversions
+    raise a ``ValueError`` on invalid input.
     Only keys already present in the configuration files
     can be overridden by environment variables.
 
@@ -157,7 +164,9 @@ def _parse_environment_value(
 ) -> object:
     r"""Convert an environment variable to the type of the default value."""
     try:
-        # ``bool`` has to be checked before ``int``
+        # ``bool`` has to be checked before ``int``.
+        # A boolean never fails conversion:
+        # any value other than the truthy ones becomes ``False``
         if isinstance(default_value, bool):
             return value.lower() in ("1", "true", "yes", "on")
         if isinstance(default_value, int):
