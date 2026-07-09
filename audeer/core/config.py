@@ -80,7 +80,8 @@ def load_configuration(
     Examples:
         >>> import tempfile
         >>> config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")
-        >>> _ = open(config_file, "w").write("cache_root: ~/cache\n")
+        >>> with open(config_file, "w") as file:
+        ...     _ = file.write("cache_root: ~/cache\n")
         >>> audeer.load_configuration(config_file)
         {'cache_root': '~/cache'}
 
