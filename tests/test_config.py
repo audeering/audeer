@@ -262,6 +262,37 @@ def test_load_configuration_environment_types_invalid_value(tmpdir, monkeypatch)
         )
 
 
+def test_load_configuration_types_not_a_mapping(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: null\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "2.5")
+    # ``types`` itself must be a mapping
+    with pytest.raises(ValueError, match="must be a mapping"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types=["timeout"],
+        )
+
+
+def test_load_configuration_types_section_not_a_mapping(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "audio:\n  activity_preroll_s: null\n",
+    )
+    monkeypatch.setenv("PKG_AUDIO__ACTIVITY_PREROLL_S", "0.5")
+    # A ``types`` entry for a nested section must itself be a mapping,
+    # otherwise the misconfiguration would be silently ignored
+    with pytest.raises(ValueError, match="must be a mapping"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"audio": float},
+        )
+
+
 def test_load_configuration_environment_types_not_a_type(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

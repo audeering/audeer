@@ -23,6 +23,8 @@ def load_configuration(
     2. ``user_config_files``,
        applied in the given order
        (a later file overrides an earlier one)
+    3. environment variables,
+       if ``env_prefix`` is given
 
     Configuration files are deep-merged:
     nested mappings are merged key by key,
@@ -31,8 +33,6 @@ def load_configuration(
     and keeps the remaining keys from the default.
     Any non-mapping value (including a list)
     replaces the previous value as a whole.
-    3. environment variables,
-       if ``env_prefix`` is given
 
     Environment variables are matched
     against the upper-cased configuration keys,
@@ -104,6 +104,9 @@ def load_configuration(
             of the corresponding default value
         ValueError: if a type declared in ``types``
             is not a class
+        ValueError: if ``types``,
+            or a ``types`` entry for a nested section,
+            is not a mapping
 
     Examples:
         >>> import tempfile
@@ -121,6 +124,9 @@ def load_configuration(
             user_config_files = [user_config_files]
         for user_config_file in user_config_files:
             _deep_merge(cfg, _load_configuration_file(user_config_file))
+
+    if types is not None and not isinstance(types, Mapping):
+        raise ValueError(f"'types' must be a mapping, but is '{type(types).__name__}'.")
 
     if env_prefix is not None:
         _override_with_environment(cfg, env_prefix, types=types or {})
@@ -223,8 +229,12 @@ def _override_with_environment(
         name = f"{env_prefix}{separator}{key.upper()}"
         key_type = types.get(key)
         if isinstance(default_value, Mapping):
-            nested_types = key_type if isinstance(key_type, Mapping) else {}
-            _override_with_environment(default_value, name, nested_types, "__")
+            if key_type is not None and not isinstance(key_type, Mapping):
+                raise ValueError(
+                    f"The 'types' entry for the nested section '{key}' "
+                    f"must be a mapping, but is '{type(key_type).__name__}'."
+                )
+            _override_with_environment(default_value, name, key_type or {}, "__")
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,
