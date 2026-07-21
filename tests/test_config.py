@@ -57,6 +57,23 @@ def test_load_configuration_user_file(tmpdir):
     }
 
 
+def test_load_configuration_deep_merge(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n  lora: false\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model:\n  lora: true\n",
+    )
+    # Nested sections are deep-merged:
+    # a key set only in the default section is kept,
+    # instead of the whole section being replaced
+    assert audeer.load_configuration(default_file, user_file) == {
+        "model": {"device": "cuda", "lora": True},
+    }
+
+
 def test_load_configuration_missing_user_file(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

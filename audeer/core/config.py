@@ -22,6 +22,14 @@ def load_configuration(
     2. ``user_config_files``,
        applied in the given order
        (a later file overrides an earlier one)
+
+    Configuration files are deep-merged:
+    nested mappings are merged key by key,
+    so a section in a user file
+    only overrides the keys it defines
+    and keeps the remaining keys from the default.
+    Any non-mapping value (including a list)
+    replaces the previous value as a whole.
     3. environment variables,
        if ``env_prefix`` is given
 
@@ -91,7 +99,7 @@ def load_configuration(
         if isinstance(user_config_files, str):
             user_config_files = [user_config_files]
         for user_config_file in user_config_files:
-            cfg.update(_load_configuration_file(user_config_file))
+            _deep_merge(cfg, _load_configuration_file(user_config_file))
 
     if env_prefix is not None:
         _override_with_environment(cfg, env_prefix)
@@ -100,6 +108,31 @@ def load_configuration(
         validate(cfg)
 
     return cfg
+
+
+def _deep_merge(base: dict, update: dict) -> None:
+    r"""Recursively merge ``update`` into ``base`` in place.
+
+    Nested mappings are merged key by key,
+    so a key present only in ``base``
+    is kept when ``update`` provides the same section.
+    Any non-mapping value (including lists)
+    replaces the corresponding value in ``base``.
+
+    Args:
+        base: dictionary to merge into
+        update: dictionary whose values take precedence
+
+    """
+    for key, value in update.items():
+        if (
+            key in base
+            and isinstance(base[key], Mapping)
+            and isinstance(value, Mapping)
+        ):
+            _deep_merge(base[key], value)
+        else:
+            base[key] = value
 
 
 def _load_configuration_file(config_file: str) -> dict:
