@@ -38,6 +38,10 @@ def load_configuration(
     prefixed with ``env_prefix`` and an underscore,
     e.g. the key ``cache_root``
     is overridden by ``<env_prefix>_CACHE_ROOT``.
+    Keys inside nested mappings are addressed
+    by joining the levels with ``__``,
+    e.g. ``model.device``
+    is overridden by ``<env_prefix>_MODEL__DEVICE``.
     The value of an environment variable is converted
     to the type of the corresponding default value:
     ``str`` values are used as they are,
@@ -178,11 +182,28 @@ def _load_configuration_file(config_file: str) -> dict:
 def _override_with_environment(
     cfg: dict,
     env_prefix: str,
+    separator: str = "_",
 ) -> None:
-    r"""Override configuration values with environment variables in place."""
+    r"""Override configuration values with environment variables in place.
+
+    Nested mappings are traversed recursively.
+    The environment variable name of a nested key
+    joins the levels with ``__``,
+    e.g. ``model.device`` with prefix ``PKG``
+    is overridden by ``PKG_MODEL__DEVICE``.
+
+    Args:
+        cfg: configuration dictionary, modified in place
+        env_prefix: name prefix accumulated so far
+        separator: string joining ``env_prefix`` and the current key
+            (``"_"`` at the top level, ``"__"`` for nested levels)
+
+    """
     for key, default_value in cfg.items():
-        name = f"{env_prefix}_{key.upper()}"
-        if name in os.environ:
+        name = f"{env_prefix}{separator}{key.upper()}"
+        if isinstance(default_value, Mapping):
+            _override_with_environment(default_value, name, "__")
+        elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,
                 os.environ[name],

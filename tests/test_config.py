@@ -144,6 +144,23 @@ def test_load_configuration_environment(tmpdir, monkeypatch):
     }
 
 
+def test_load_configuration_environment_nested(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        ("model:\n  device: cuda\n  lora: false\ngeneration:\n  top_k: 20\n"),
+    )
+    # Nested keys are addressed with '__' between the levels,
+    # and the value is cast to the type of the nested default
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cpu")
+    monkeypatch.setenv("PKG_MODEL__LORA", "true")
+    monkeypatch.setenv("PKG_GENERATION__TOP_K", "40")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {
+        "model": {"device": "cpu", "lora": True},
+        "generation": {"top_k": 40},
+    }
+
+
 def test_load_configuration_environment_bool_false(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
