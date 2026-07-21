@@ -74,6 +74,22 @@ def test_load_configuration_deep_merge(tmpdir):
     }
 
 
+def test_load_configuration_deep_merge_list_replaced(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "hosts:\n  - a\n  - b\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "hosts:\n  - c\n",
+    )
+    # A list value is replaced as a whole,
+    # it is not merged element-wise
+    assert audeer.load_configuration(default_file, user_file) == {
+        "hosts": ["c"],
+    }
+
+
 def test_load_configuration_missing_user_file(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
@@ -161,6 +177,18 @@ def test_load_configuration_environment_nested(tmpdir, monkeypatch):
     }
 
 
+def test_load_configuration_environment_nested_unknown_key(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n",
+    )
+    # Only keys present in the defaults can be overridden:
+    # an unknown nested key does not create a new entry
+    monkeypatch.setenv("PKG_MODEL__UNKNOWN", "something")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": "cuda"}}
+
+
 def test_load_configuration_environment_bool_false(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
@@ -188,6 +216,22 @@ def test_load_configuration_environment_types_none_default(tmpdir, monkeypatch):
     assert isinstance(config["timeout"], float)
 
 
+def test_load_configuration_environment_types_override_default(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        'timeout: "1"\n',
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "2")
+    # ``types`` overrides the type inferred from the (str) default value
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"timeout": int},
+    )
+    assert config == {"timeout": 2}
+    assert isinstance(config["timeout"], int)
+
+
 def test_load_configuration_environment_types_nested(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
@@ -201,6 +245,37 @@ def test_load_configuration_environment_types_nested(tmpdir, monkeypatch):
         types={"audio": {"activity_preroll_s": float}},
     )
     assert config == {"audio": {"activity_preroll_s": 0.5}}
+
+
+def test_load_configuration_environment_types_invalid_value(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "audio:\n  activity_preroll_s: null\n",
+    )
+    # A value that cannot be cast to the declared type raises
+    monkeypatch.setenv("PKG_AUDIO__ACTIVITY_PREROLL_S", "not-a-float")
+    with pytest.raises(ValueError, match="could not be converted to the type"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"audio": {"activity_preroll_s": float}},
+        )
+
+
+def test_load_configuration_environment_types_not_a_type(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: null\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "2.5")
+    # A declared type that is not a class
+    # raises a clear error instead of a TypeError from issubclass()
+    with pytest.raises(ValueError, match="is not a type"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"timeout": "float"},
+        )
 
 
 def test_load_configuration_non_mapping(tmpdir):

@@ -102,6 +102,8 @@ def load_configuration(
         ValueError: if an environment variable
             cannot be converted to the type
             of the corresponding default value
+        ValueError: if a type declared in ``types``
+            is not a class
 
     Examples:
         >>> import tempfile
@@ -247,6 +249,11 @@ def _parse_environment_value(
     """
     if target_type is None:
         target_type = type(default_value)
+    if not isinstance(target_type, type):
+        raise ValueError(
+            f"The type declared for the value overridden by '{name}' "
+            f"is not a type: {target_type!r}."
+        )
     try:
         # ``bool`` has to be checked before ``int``,
         # as ``bool`` is a subclass of ``int``.
