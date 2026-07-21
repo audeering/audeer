@@ -36,6 +36,10 @@ dependencies = [
 # (needs setuptools_scm tools config below)
 dynamic = ['version']
 
+[project.optional-dependencies]
+# Reading configuration files with audeer.load_configuration()
+yaml = ['pyyaml']
+
 [project.urls]
 repository = 'https://github.com/audeering/audeer/'
 documentation = 'https://audeering.github.io/audeer/'
@@ -46,6 +50,7 @@ documentation = 'https://audeering.github.io/audeer/'
 dev = [
     'pytest !=9.0.0',  # https://github.com/simplistix/sybil/issues/157
     'pytest-cov',
+    'pyyaml',  # for audeer.load_configuration()
     'sphinx >=3.0.0',
     'sphinx-apipages >=0.1.2',
     'sphinx-audeering-theme >=1.1.4',

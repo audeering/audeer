@@ -7,8 +7,8 @@ import pytest
 import audeer
 
 
-PACKAGE = "PyYaml"
-MODULE = "yaml"
+PACKAGE = "python-dotenv"
+MODULE = "dotenv"
 
 
 def uninstall():
@@ -48,25 +48,25 @@ def test():
     # install package
     audeer.install_package(
         PACKAGE,
-        version="<=5.3",
+        version="<=1.1.0",
     )
 
     # installed version satisfies requested version
     audeer.install_package(
         PACKAGE,
-        version=">=5.3",
+        version=">=1.1.0",
     )
     audeer.install_package(
         PACKAGE,
-        version=">5.2",
+        version=">1.0.1",
     )
     audeer.install_package(
         PACKAGE,
-        version="<=6.0",
+        version="<=1.2.0",
     )
     audeer.install_package(
         PACKAGE,
-        version="  <   5.4  ",  # whitespace will be ignored
+        version="  <   1.2.0  ",  # whitespace will be ignored
     )
     audeer.install_package(
         PACKAGE,
@@ -77,20 +77,20 @@ def test():
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version=">=5.4",
+            version=">=1.2.0",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version=">5.3",
+            version=">1.1.0",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version="<=5.2",
+            version="<=1.0.1",
         )
     with pytest.raises(RuntimeError):
         audeer.install_package(
             PACKAGE,
-            version="<5.3",
+            version="<1.1.0",
         )
