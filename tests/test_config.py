@@ -171,6 +171,38 @@ def test_load_configuration_environment_bool_false(tmpdir, monkeypatch):
     assert config == {"enabled": False}
 
 
+def test_load_configuration_environment_types_none_default(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: null\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "2.5")
+    # A None default carries no type,
+    # so ``types`` declares the target type for the cast
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"timeout": float},
+    )
+    assert config == {"timeout": 2.5}
+    assert isinstance(config["timeout"], float)
+
+
+def test_load_configuration_environment_types_nested(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "audio:\n  activity_preroll_s: null\n",
+    )
+    monkeypatch.setenv("PKG_AUDIO__ACTIVITY_PREROLL_S", "0.5")
+    # ``types`` mirrors the nested structure of the configuration
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"audio": {"activity_preroll_s": float}},
+    )
+    assert config == {"audio": {"activity_preroll_s": 0.5}}
+
+
 def test_load_configuration_non_mapping(tmpdir):
     # A file that does not contain a mapping raises an error
     config_file = write_config(

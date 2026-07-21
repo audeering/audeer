@@ -10,6 +10,7 @@ def load_configuration(
     user_config_files: str | Sequence[str] | None = None,
     *,
     env_prefix: str | None = None,
+    types: Mapping | None = None,
     validate: Callable[[dict], None] | None = None,
 ) -> dict:
     r"""Load configuration from files and environment variables.
@@ -57,6 +58,14 @@ def load_configuration(
     Only keys already present in the configuration files
     can be overridden by environment variables.
 
+    A default value of ``None`` carries no type,
+    so an environment variable would be kept as a string.
+    Use ``types`` to declare the intended type
+    for such keys,
+    or to override the inferred type of any key.
+    ``types`` mirrors the (possibly nested) structure
+    of the configuration.
+
     Missing or empty configuration files are skipped.
 
     Reading configuration files requires ``pyyaml``,
@@ -71,6 +80,12 @@ def load_configuration(
         env_prefix: prefix of environment variables
             used to override configuration values.
             If ``None``, environment variables are ignored
+        types: mapping that declares the type
+            of configuration values,
+            mirroring the (possibly nested) configuration structure.
+            Used to cast environment variable overrides
+            for keys whose default value is ``None``,
+            or to override the type inferred from the default value
         validate: callable that receives the merged configuration
             dictionary and raises an error if it is invalid.
             It is applied once,
@@ -106,7 +121,7 @@ def load_configuration(
             _deep_merge(cfg, _load_configuration_file(user_config_file))
 
     if env_prefix is not None:
-        _override_with_environment(cfg, env_prefix)
+        _override_with_environment(cfg, env_prefix, types=types or {})
 
     if validate is not None:
         validate(cfg)
@@ -182,6 +197,7 @@ def _load_configuration_file(config_file: str) -> dict:
 def _override_with_environment(
     cfg: dict,
     env_prefix: str,
+    types: Mapping,
     separator: str = "_",
 ) -> None:
     r"""Override configuration values with environment variables in place.
@@ -195,19 +211,24 @@ def _override_with_environment(
     Args:
         cfg: configuration dictionary, modified in place
         env_prefix: name prefix accumulated so far
+        types: declared types mirroring ``cfg``,
+            used to cast values whose default is ``None``
         separator: string joining ``env_prefix`` and the current key
             (``"_"`` at the top level, ``"__"`` for nested levels)
 
     """
     for key, default_value in cfg.items():
         name = f"{env_prefix}{separator}{key.upper()}"
+        key_type = types.get(key)
         if isinstance(default_value, Mapping):
-            _override_with_environment(default_value, name, "__")
+            nested_types = key_type if isinstance(key_type, Mapping) else {}
+            _override_with_environment(default_value, name, nested_types, "__")
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,
                 os.environ[name],
                 default_value,
+                key_type,
             )
 
 
@@ -215,26 +236,36 @@ def _parse_environment_value(
     name: str,
     value: str,
     default_value: object,
+    target_type: type | None = None,
 ) -> object:
-    r"""Convert an environment variable to the type of the default value."""
+    r"""Convert an environment variable to the wanted type.
+
+    The target type is ``target_type`` if given,
+    otherwise the type of ``default_value``.
+    A ``None`` default without a declared type
+    leaves the value unchanged as a string.
+    """
+    if target_type is None:
+        target_type = type(default_value)
     try:
-        # ``bool`` has to be checked before ``int``.
+        # ``bool`` has to be checked before ``int``,
+        # as ``bool`` is a subclass of ``int``.
         # A boolean never fails conversion:
         # any value other than the truthy ones becomes ``False``
-        if isinstance(default_value, bool):
+        if issubclass(target_type, bool):
             return value.lower() in ("1", "true", "yes", "on")
-        if isinstance(default_value, int):
+        if issubclass(target_type, int):
             return int(value)
-        if isinstance(default_value, float):
+        if issubclass(target_type, float):
             return float(value)
         # ``json.JSONDecodeError`` is a subclass of ``ValueError``
-        if isinstance(default_value, (list, dict)):
+        if issubclass(target_type, (list, dict)):
             return json.loads(value)
     except ValueError as ex:
         raise ValueError(
             f"The environment variable '{name}={value}' "
             f"could not be converted to the type "
-            f"'{type(default_value).__name__}' "
+            f"'{target_type.__name__}' "
             f"of the corresponding configuration value."
         ) from ex
     return value
