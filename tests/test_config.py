@@ -262,6 +262,22 @@ def test_load_configuration_environment_types_invalid_value(tmpdir, monkeypatch)
         )
 
 
+def test_load_configuration_environment_types_json_wrong_type(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "hosts: []\n",
+    )
+    # A valid JSON list is accepted
+    monkeypatch.setenv("PKG_HOSTS", '["a", "b"]')
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config["hosts"] == ["a", "b"]
+    # A JSON scalar parses, but is not a list,
+    # so it must raise instead of silently returning the wrong type
+    monkeypatch.setenv("PKG_HOSTS", "123")
+    with pytest.raises(ValueError, match="could not be converted to the type"):
+        audeer.load_configuration(config_file, env_prefix="PKG")
+
+
 def test_load_configuration_types_not_a_mapping(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

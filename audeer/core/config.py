@@ -277,7 +277,13 @@ def _parse_environment_value(
             return float(value)
         # ``json.JSONDecodeError`` is a subclass of ``ValueError``
         if issubclass(target_type, (list, dict)):
-            return json.loads(value)
+            parsed = json.loads(value)
+            # ``json.loads`` accepts any JSON value,
+            # so a scalar like ``"123"`` parses without
+            # being the requested ``list``/``dict``.
+            if not isinstance(parsed, target_type):
+                raise ValueError
+            return parsed
     except ValueError as ex:
         raise ValueError(
             f"The environment variable '{name}={value}' "
