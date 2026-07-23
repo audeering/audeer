@@ -374,19 +374,23 @@ def test_load_configuration_types_not_a_mapping(tmpdir, monkeypatch):
         )
 
 
-def test_load_configuration_types_section_not_a_mapping(tmpdir, monkeypatch):
+@pytest.mark.parametrize("section_type", [float, dict])
+def test_load_configuration_types_section_not_a_mapping(
+    tmpdir, monkeypatch, section_type
+):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "audio:\n  activity_preroll_s: null\n",
     )
     monkeypatch.setenv("PKG_AUDIO__ACTIVITY_PREROLL_S", "0.5")
-    # A ``types`` entry for a nested section must itself be a mapping,
+    # A ``types`` entry for a nested section must itself be a mapping;
+    # a bare type such as ``float`` or ``dict`` is rejected,
     # otherwise the misconfiguration would be silently ignored
     with pytest.raises(ValueError, match="must be a mapping"):
         audeer.load_configuration(
             config_file,
             env_prefix="PKG",
-            types={"audio": float},
+            types={"audio": section_type},
         )
 
 
