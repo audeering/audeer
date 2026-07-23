@@ -118,9 +118,6 @@ def load_configuration(
 
         A key that defaults to ``None`` has no inferred type,
         so declare it in ``types``.
-        The environment variable then holds
-        the JSON representation of the value,
-        e.g. a JSON array for a ``list``:
 
         >>> import os
         >>> config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")
