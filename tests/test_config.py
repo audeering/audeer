@@ -74,6 +74,20 @@ def test_load_configuration_deep_merge(tmpdir):
     }
 
 
+def test_load_configuration_deep_merge_user_adds_new_key(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n  lora: false\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model:\n  uid: abcdefg-1.0.0\n",
+    )
+    assert audeer.load_configuration(default_file, user_file) == {
+        "model": {"device": "cuda", "lora": False, "uid": "abcdefg-1.0.0"},
+    }
+
+
 def test_load_configuration_deep_merge_list_replaced(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
