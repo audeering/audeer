@@ -250,6 +250,10 @@ def _override_with_environment(
 
     """
     for key, default_value in cfg.items():
+        # Environment variables can only address string keys;
+        # non-string keys (e.g. integers) are left untouched.
+        if not isinstance(key, str):
+            continue
         name = f"{env_prefix}{separator}{key.upper()}"
         key_type = types.get(key)
         if isinstance(default_value, Mapping):

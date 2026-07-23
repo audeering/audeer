@@ -189,6 +189,18 @@ def test_load_configuration_environment_nested_unknown_key(tmpdir, monkeypatch):
     assert config == {"model": {"device": "cuda"}}
 
 
+def test_load_configuration_environment_non_string_keys(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "status:\n  200: ok\n",
+    )
+    # Non-string keys (e.g. numeric YAML keys) cannot be addressed by an
+    # environment variable and must not crash when env_prefix is set
+    monkeypatch.setenv("PKG_OTHER", "x")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"status": {200: "ok"}}
+
+
 def test_load_configuration_environment_partial_override(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
