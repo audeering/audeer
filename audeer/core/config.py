@@ -43,6 +43,16 @@ def load_configuration(
     by joining the levels with ``__``,
     e.g. ``model.device``
     is overridden by ``<env_prefix>_MODEL__DEVICE``.
+    A whole nested mapping can instead be replaced
+    by a single variable holding a JSON object,
+    e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``;
+    the object replaces the mapping as a whole
+    (keys it omits are dropped)
+    and may introduce keys not present in the files.
+    Nested variables are applied afterwards
+    and therefore take precedence,
+    e.g. ``<env_prefix>_MODEL__DEVICE``
+    overrides ``device`` from ``<env_prefix>_MODEL``.
     The value of an environment variable is converted
     to the type of the corresponding default value:
     ``str`` values are used as they are,
@@ -248,7 +258,17 @@ def _override_with_environment(
                     f"The 'types' entry for the nested section '{key}' "
                     f"must be a mapping, but is '{type(key_type).__name__}'."
                 )
-            _override_with_environment(default_value, name, key_type or {}, "__")
+            # A whole-section variable (e.g. PKG_MODEL) replaces the mapping
+            # as a JSON object; nested variables (e.g. PKG_MODEL__DEVICE) are
+            # applied afterwards and therefore take precedence.
+            if name in os.environ:
+                cfg[key] = _parse_environment_value(
+                    name,
+                    os.environ[name],
+                    default_value,
+                    dict,
+                )
+            _override_with_environment(cfg[key], name, key_type or {}, "__")
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,
