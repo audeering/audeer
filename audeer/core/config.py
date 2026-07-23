@@ -116,6 +116,23 @@ def load_configuration(
         >>> audeer.load_configuration(config_file)
         {'cache_root': '~/cache'}
 
+        A key that defaults to ``None`` has no inferred type,
+        so declare it in ``types``.
+        The environment variable then holds
+        the JSON representation of the value,
+        e.g. a JSON array for a ``list``:
+
+        >>> import os
+        >>> config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")
+        >>> with open(config_file, "w") as file:
+        ...     _ = file.write("hosts: null\n")
+        >>> os.environ["APP_HOSTS"] = '["host1", "host2"]'
+        >>> audeer.load_configuration(
+        ...     config_file, env_prefix="APP", types={"hosts": list}
+        ... )
+        {'hosts': ['host1', 'host2']}
+        >>> del os.environ["APP_HOSTS"]
+
     """
     cfg = _load_configuration_file(default_config_file)
 
