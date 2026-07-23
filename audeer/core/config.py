@@ -265,14 +265,21 @@ def _override_with_environment(
             # A whole-section variable (e.g. PKG_MODEL) replaces the mapping
             # as a JSON object; nested variables (e.g. PKG_MODEL__DEVICE) are
             # applied afterwards and therefore take precedence.
+            nested_types = dict(key_type or {})
             if name in os.environ:
+                # The JSON replacement loses the default types, so remember
+                # the original leaf types and reuse them when casting the
+                # nested overrides below (an explicit ``types`` entry wins).
+                for nested_key, nested_default in default_value.items():
+                    if not isinstance(nested_default, Mapping):
+                        nested_types.setdefault(nested_key, type(nested_default))
                 cfg[key] = _parse_environment_value(
                     name,
                     os.environ[name],
                     default_value,
                     dict,
                 )
-            _override_with_environment(cfg[key], name, key_type or {}, "__")
+            _override_with_environment(cfg[key], name, nested_types, "__")
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,

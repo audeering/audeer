@@ -226,6 +226,20 @@ def test_load_configuration_environment_partial_override(tmpdir, monkeypatch):
     assert config == {"model": {"device": "cuda", "lora": False}}
 
 
+def test_load_configuration_environment_whole_dict_preserves_type(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  count: 1\n",
+    )
+    # After a whole-dict replace, a nested override still casts to the
+    # original default's type (int), not the replacement value's (str)
+    monkeypatch.setenv("PKG_MODEL", '{"count": "one"}')
+    monkeypatch.setenv("PKG_MODEL__COUNT", "2")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"count": 2}}
+    assert isinstance(config["model"]["count"], int)
+
+
 def test_load_configuration_environment_whole_dict_replace(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
