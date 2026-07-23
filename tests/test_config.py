@@ -189,6 +189,64 @@ def test_load_configuration_environment_nested_unknown_key(tmpdir, monkeypatch):
     assert config == {"model": {"device": "cuda"}}
 
 
+def test_load_configuration_environment_partial_override(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\n",
+    )
+    # Only one nested key is overridden; the other stays as in the file
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": "cuda", "lora": False}}
+
+
+def test_load_configuration_environment_whole_dict_replace(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\n",
+    )
+    # A whole-section variable replaces the mapping as a JSON object,
+    # so a key it omits (``lora``) is dropped
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda"}')
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": "cuda"}}
+
+
+def test_load_configuration_environment_whole_dict_introduces_key(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n",
+    )
+    # A whole-dict replace may introduce a key not present in the file
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda", "batch": 8}')
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": "cuda", "batch": 8}}
+
+
+def test_load_configuration_environment_whole_dict_then_nested(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\n",
+    )
+    # The whole-section variable is applied first,
+    # then the nested variable on top (higher precedence)
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda"}')
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "mps")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": "mps"}}
+
+
+def test_load_configuration_environment_whole_dict_not_object(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n",
+    )
+    # A whole-section variable must be a JSON object
+    monkeypatch.setenv("PKG_MODEL", "5")
+    with pytest.raises(ValueError, match="could not be converted to the type"):
+        audeer.load_configuration(config_file, env_prefix="PKG")
+
+
 def test_load_configuration_environment_bool_false(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
