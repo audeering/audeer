@@ -67,6 +67,9 @@ def load_configuration(
     raise a ``ValueError`` on invalid input.
     Only keys already present in the configuration files
     can be overridden by environment variables.
+    Only string keys are matched;
+    a non-string key (e.g. a numeric YAML key)
+    is left untouched.
 
     A default value of ``None`` carries no type,
     so an environment variable would be kept as a string.
