@@ -203,6 +203,18 @@ def test_load_configuration_environment_nested_unknown_key(tmpdir, monkeypatch):
     assert config == {"model": {"device": "cuda"}}
 
 
+def test_load_configuration_environment_deeply_nested(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "a:\n  b:\n    c: default\n",
+    )
+    # The nested delimiter is a fixed '__' at every level below the top,
+    # so overrides also reach three levels deep
+    monkeypatch.setenv("PKG_A__B__C", "deep")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"a": {"b": {"c": "deep"}}}
+
+
 def test_load_configuration_environment_non_string_keys(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
