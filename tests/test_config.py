@@ -88,6 +88,22 @@ def test_load_configuration_deep_merge_user_adds_new_key(tmpdir):
     }
 
 
+def test_load_configuration_deep_merge_user_adds_new_top_level(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n  lora: false\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "tts:\n  vendor: iva-tts\n",
+    )
+    # A user config file may introduce a new top-level key
+    assert audeer.load_configuration(default_file, user_file) == {
+        "model": {"device": "cuda", "lora": False},
+        "tts": {"vendor": "iva-tts"},
+    }
+
+
 def test_load_configuration_deep_merge_list_replaced(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
