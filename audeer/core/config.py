@@ -149,8 +149,12 @@ def load_configuration(
         for user_config_file in user_config_files:
             _deep_merge(cfg, _load_configuration_file(user_config_file))
 
-    if types is not None and not isinstance(types, Mapping):
-        raise ValueError(f"'types' must be a mapping, but is '{type(types).__name__}'.")
+    if types is not None:
+        if not isinstance(types, Mapping):
+            raise ValueError(
+                f"'types' must be a mapping, but is '{type(types).__name__}'."
+            )
+        _validate_types(cfg, types)
 
     if env_prefix is not None:
         _override_with_environment(cfg, env_prefix, types=types or {})
@@ -226,6 +230,39 @@ def _load_configuration_file(config_file: str) -> dict:
     return dict(cfg)
 
 
+def _validate_types(cfg: Mapping, types: Mapping) -> None:
+    r"""Validate declared ``types`` against the configuration structure.
+
+    Checks, independent of which environment variables are set, that a declared
+    leaf type is a class and a declared section type is a mapping. Only entries
+    that mirror the configuration are considered.
+
+    Args:
+        cfg: configuration dictionary
+        types: declared types mirroring ``cfg``
+
+    Raises:
+        ValueError: if a declared section type is not a mapping
+        ValueError: if a declared leaf type is not a class
+
+    """
+    for key, value in cfg.items():
+        declared = types.get(key)
+        if declared is None:
+            continue
+        if isinstance(value, Mapping):
+            if not isinstance(declared, Mapping):
+                raise ValueError(
+                    f"The 'types' entry for the nested section '{key}' "
+                    f"must be a mapping, but is '{type(declared).__name__}'."
+                )
+            _validate_types(value, declared)
+        elif not isinstance(declared, type):
+            raise ValueError(
+                f"The 'types' entry for '{key}' is not a type: {declared!r}."
+            )
+
+
 def _override_with_environment(
     cfg: dict,
     env_prefix: str,
@@ -257,11 +294,6 @@ def _override_with_environment(
         name = f"{env_prefix}{separator}{key.upper()}"
         key_type = types.get(key)
         if isinstance(default_value, Mapping):
-            if key_type is not None and not isinstance(key_type, Mapping):
-                raise ValueError(
-                    f"The 'types' entry for the nested section '{key}' "
-                    f"must be a mapping, but is '{type(key_type).__name__}'."
-                )
             # A whole-section variable (e.g. PKG_MODEL) replaces the mapping
             # as a JSON object; nested variables (e.g. PKG_MODEL__DEVICE) are
             # applied afterwards and therefore take precedence.
@@ -304,11 +336,6 @@ def _parse_environment_value(
     """
     if target_type is None:
         target_type = type(default_value)
-    if not isinstance(target_type, type):
-        raise ValueError(
-            f"The type declared for the value overridden by '{name}' "
-            f"is not a type: {target_type!r}."
-        )
     try:
         # ``bool`` has to be checked before ``int``,
         # as ``bool`` is a subclass of ``int``.

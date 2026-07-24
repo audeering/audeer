@@ -446,6 +446,37 @@ def test_load_configuration_types_section_not_a_mapping(
         )
 
 
+def test_load_configuration_types_ignores_unlisted_keys(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\ntimeout: null\n",
+    )
+    # A config key without a ``types`` entry is left untouched
+    monkeypatch.setenv("PKG_TIMEOUT", "2.5")
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"timeout": float},
+    )
+    assert config == {"name": "default", "timeout": 2.5}
+
+
+def test_load_configuration_types_not_a_type_without_env(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: null\n",
+    )
+    # A malformed declared type is rejected up front,
+    # even when the matching environment variable is not set
+    monkeypatch.delenv("PKG_TIMEOUT", raising=False)
+    with pytest.raises(ValueError, match="is not a type"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"timeout": "float"},
+        )
+
+
 def test_load_configuration_environment_types_not_a_type(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
