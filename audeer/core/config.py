@@ -160,7 +160,7 @@ def load_configuration(
         _validate_types(cfg, types)
 
     if env_prefix is not None:
-        _override_with_environment(cfg, env_prefix, types=types or {})
+        _override_with_environment(cfg, f"{env_prefix}_", types or {})
 
     if validate is not None:
         validate(cfg)
@@ -270,7 +270,6 @@ def _override_with_environment(
     cfg: dict,
     env_prefix: str,
     types: Mapping,
-    separator: str = "_",
 ) -> None:
     r"""Override configuration values with environment variables in place.
 
@@ -282,11 +281,11 @@ def _override_with_environment(
 
     Args:
         cfg: configuration dictionary, modified in place
-        env_prefix: name prefix accumulated so far
+        env_prefix: name prefix accumulated so far,
+            including the trailing separator
+            (``PKG_`` at the top level, ``PKG_MODEL__`` below)
         types: declared types mirroring ``cfg``,
             used to cast values whose default is ``None``
-        separator: string joining ``env_prefix`` and the current key
-            (``"_"`` at the top level, ``"__"`` for nested levels)
 
     """
     for key, default_value in cfg.items():
@@ -294,7 +293,7 @@ def _override_with_environment(
         # non-string keys (e.g. integers) are left untouched.
         if not isinstance(key, str):
             continue
-        name = f"{env_prefix}{separator}{key.upper()}"
+        name = f"{env_prefix}{key.upper()}"
         key_type = types.get(key)
         if isinstance(default_value, Mapping):
             # A whole-section variable (e.g. PKG_MODEL) replaces the mapping
@@ -314,7 +313,7 @@ def _override_with_environment(
                     default_value,
                     dict,
                 )
-            _override_with_environment(cfg[key], name, nested_types, "__")
+            _override_with_environment(cfg[key], f"{name}__", nested_types)
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,
