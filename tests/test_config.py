@@ -1,3 +1,5 @@
+import pathlib
+
 import pytest
 
 import audeer
@@ -506,6 +508,26 @@ def test_load_configuration_environment_types_not_a_type(tmpdir, monkeypatch):
             config_file,
             env_prefix="PKG",
             types={"timeout": "float"},
+        )
+
+
+@pytest.mark.parametrize("env_set", [True, False])
+def test_load_configuration_types_unsupported(tmpdir, monkeypatch, env_set):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "path: null\n",
+    )
+    if env_set:
+        monkeypatch.setenv("PKG_PATH", "file.txt")
+    else:
+        monkeypatch.delenv("PKG_PATH", raising=False)
+    # A declared type outside the supported set is rejected up front
+    # instead of silently keeping the value a string
+    with pytest.raises(ValueError, match="is not a supported type"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"path": pathlib.Path},
         )
 
 

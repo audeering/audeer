@@ -98,7 +98,9 @@ def load_configuration(
             mirroring the (possibly nested) configuration structure.
             Used to cast environment variable overrides
             for keys whose default value is ``None``,
-            or to override the type inferred from the default value
+            or to override the type inferred from the default value.
+            Supported types are
+            ``bool``, ``int``, ``float``, ``str``, ``list``, ``dict``
         validate: callable that receives the merged configuration
             dictionary and raises an error if it is invalid.
             It is applied once,
@@ -116,7 +118,8 @@ def load_configuration(
             cannot be converted to the type
             of the corresponding default value
         ValueError: if a type declared in ``types``
-            is not a class
+            is not a class,
+            or not one of the supported types
         ValueError: if ``types``,
             or a ``types`` entry for a nested section,
             is not a mapping
@@ -265,6 +268,15 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
         elif not isinstance(declared, type):
             raise ValueError(
                 f"The 'types' entry for '{key}' is not a type: {declared!r}."
+            )
+        elif not issubclass(declared, (bool, int, float, str, list, dict)):
+            # Anything else would silently fall through
+            # to keeping the environment variable a string
+            raise ValueError(
+                f"The 'types' entry for '{key}' "
+                f"is not a supported type: '{declared.__name__}'. "
+                f"Supported types are "
+                f"'bool', 'int', 'float', 'str', 'list', 'dict'."
             )
 
 
