@@ -49,6 +49,12 @@ def load_configuration(
     the object replaces the mapping as a whole
     (keys it omits are dropped)
     and may introduce keys not present in the files.
+    Each value of the object must match the type
+    of the default value it replaces
+    (an integer is accepted for a float default),
+    otherwise a ``ValueError`` is raised;
+    introduced keys and keys whose default is ``None``
+    keep their JSON type.
     Nested variables are applied afterwards
     and therefore take precedence,
     e.g. ``<env_prefix>_MODEL__DEVICE``
@@ -280,6 +286,90 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
             )
 
 
+def _validate_json_replacement(
+    name: str,
+    value: str,
+    parsed: dict,
+    defaults: Mapping,
+    types: Mapping,
+    path: str = "",
+) -> None:
+    r"""Validate a JSON section replacement against the default values.
+
+    Each value of the parsed JSON object
+    must match the type of the default value it replaces,
+    mirroring the conversion rules for scalar environment variables.
+    An integer is promoted in place
+    where the default value is a float.
+    Values without a default (introduced keys)
+    or with a ``None`` default keep their JSON type,
+    unless a type is declared in ``types``.
+
+    Args:
+        name: name of the environment variable
+        value: raw string value of the environment variable
+        parsed: JSON object parsed from ``value``, modified in place
+        defaults: section of the configuration the object replaces
+        types: declared types mirroring ``defaults``
+        path: dotted key path accumulated so far
+
+    Raises:
+        ValueError: if a value does not match
+            the type of the corresponding default value
+
+    """
+    for key, json_value in parsed.items():
+        key_path = f"{path}{key}"
+        declared = types.get(key)
+        default_value = defaults.get(key)
+        if isinstance(default_value, Mapping):
+            if not isinstance(json_value, dict):
+                raise ValueError(
+                    f"The environment variable '{name}={value}' "
+                    f"sets '{key_path}' to a value of type "
+                    f"'{type(json_value).__name__}', "
+                    f"but the corresponding configuration value "
+                    f"is a mapping."
+                )
+            _validate_json_replacement(
+                name,
+                value,
+                json_value,
+                default_value,
+                declared if isinstance(declared, Mapping) else {},
+                f"{key_path}.",
+            )
+            continue
+        if isinstance(declared, type):
+            target = declared
+        elif default_value is not None:
+            target = type(default_value)
+        else:
+            continue
+        # ``bool`` has to be checked before ``int``,
+        # as ``bool`` is a subclass of ``int``
+        if issubclass(target, bool):
+            valid = isinstance(json_value, bool)
+        elif issubclass(target, int):
+            valid = isinstance(json_value, int) and not isinstance(json_value, bool)
+        elif issubclass(target, float):
+            valid = isinstance(json_value, (int, float)) and not isinstance(
+                json_value, bool
+            )
+            if valid:
+                parsed[key] = float(json_value)
+        else:
+            valid = isinstance(json_value, target)
+        if not valid:
+            raise ValueError(
+                f"The environment variable '{name}={value}' "
+                f"sets '{key_path}' to a value of type "
+                f"'{type(json_value).__name__}', "
+                f"but the corresponding configuration value "
+                f"has type '{target.__name__}'."
+            )
+
+
 def _override_with_environment(
     cfg: dict,
     env_prefix: str,
@@ -313,21 +403,25 @@ def _override_with_environment(
             # A whole-section variable (e.g. PKG_MODEL) replaces the mapping
             # as a JSON object; nested variables (e.g. PKG_MODEL__DEVICE) are
             # applied afterwards and therefore take precedence.
-            nested_types = dict(key_type or {})
             if name in os.environ:
-                # The JSON replacement loses the default types, so remember
-                # the original leaf types and reuse them when casting the
-                # nested overrides below (an explicit ``types`` entry wins).
-                for nested_key, nested_default in default_value.items():
-                    if not isinstance(nested_default, Mapping):
-                        nested_types.setdefault(nested_key, type(nested_default))
-                cfg[key] = _parse_environment_value(
+                parsed = _parse_environment_value(
                     name,
                     os.environ[name],
                     default_value,
                     dict,
                 )
-            _override_with_environment(cfg[key], f"{name}__", nested_types)
+                # The validation guarantees that the replaced values keep
+                # the types of the defaults, so nested overrides applied
+                # below still cast to the original types
+                _validate_json_replacement(
+                    name,
+                    os.environ[name],
+                    parsed,
+                    default_value,
+                    key_type or {},
+                )
+                cfg[key] = parsed
+            _override_with_environment(cfg[key], f"{name}__", key_type or {})
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,

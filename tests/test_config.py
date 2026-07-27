@@ -262,12 +262,106 @@ def test_load_configuration_environment_whole_dict_preserves_type(tmpdir, monkey
         "model:\n  count: 1\n",
     )
     # After a whole-dict replace, a nested override still casts to the
-    # original default's type (int), not the replacement value's (str)
-    monkeypatch.setenv("PKG_MODEL", '{"count": "one"}')
+    # original default's type (int)
+    monkeypatch.setenv("PKG_MODEL", '{"count": 5}')
     monkeypatch.setenv("PKG_MODEL__COUNT", "2")
     config = audeer.load_configuration(config_file, env_prefix="PKG")
     assert config == {"model": {"count": 2}}
     assert isinstance(config["model"]["count"], int)
+
+
+@pytest.mark.parametrize(
+    "content, value, match",
+    [
+        (  # str value where the default is int
+            "model:\n  count: 1\n",
+            '{"count": "one"}',
+            "has type 'int'",
+        ),
+        (  # same, in a deeper nesting level
+            "model:\n  b:\n    c: 1\n",
+            '{"b": {"c": "bad"}}',
+            "has type 'int'",
+        ),
+        (  # a nested section replaced by a scalar
+            "model:\n  b:\n    c: 1\n",
+            '{"b": 5}',
+            "is a mapping",
+        ),
+        (  # int value where the default is bool
+            "model:\n  lora: false\n",
+            '{"lora": 1}',
+            "has type 'bool'",
+        ),
+        (  # bool value where the default is int
+            "model:\n  count: 1\n",
+            '{"count": true}',
+            "has type 'int'",
+        ),
+    ],
+)
+def test_load_configuration_environment_whole_dict_wrong_value_type(
+    tmpdir, monkeypatch, content, value, match
+):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # A JSON object must match the types of the default values it replaces
+    monkeypatch.setenv("PKG_MODEL", value)
+    with pytest.raises(ValueError, match=match):
+        audeer.load_configuration(config_file, env_prefix="PKG")
+
+
+def test_load_configuration_environment_whole_dict_nested_preserves_type(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "a:\n  b:\n    c: 1\n",
+    )
+    # A nested override on top of a whole-dict replace
+    # keeps the original default's type also in deeper levels
+    monkeypatch.setenv("PKG_A", '{"b": {"c": 3}}')
+    monkeypatch.setenv("PKG_A__B__C", "2")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"a": {"b": {"c": 2}}}
+    assert isinstance(config["a"]["b"]["c"], int)
+
+
+def test_load_configuration_environment_whole_dict_float_promotion(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  ratio: 1.5\n",
+    )
+    # A JSON int is accepted for a float default and promoted
+    monkeypatch.setenv("PKG_MODEL", '{"ratio": 2}')
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"ratio": 2.0}}
+    assert isinstance(config["model"]["ratio"], float)
+
+
+def test_load_configuration_environment_whole_dict_none_default(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: null\n",
+    )
+    # A None default carries no type, so any JSON value is accepted
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda"}')
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": "cuda"}}
+
+
+def test_load_configuration_environment_whole_dict_declared_type(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  count: null\n",
+    )
+    # A ``types`` declaration is also enforced inside a JSON object
+    monkeypatch.setenv("PKG_MODEL", '{"count": "5"}')
+    with pytest.raises(ValueError, match="has type 'int'"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"model": {"count": int}},
+        )
 
 
 def test_load_configuration_environment_whole_dict_replace(tmpdir, monkeypatch):
