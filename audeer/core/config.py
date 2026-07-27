@@ -250,9 +250,11 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
 
     """
     for key, value in cfg.items():
-        declared = types.get(key)
-        if declared is None:
+        # An explicit ``None`` entry is a malformed declaration,
+        # only an absent key means "no type declared"
+        if key not in types:
             continue
+        declared = types[key]
         if isinstance(value, Mapping):
             if not isinstance(declared, Mapping):
                 raise ValueError(

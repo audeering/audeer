@@ -509,6 +509,22 @@ def test_load_configuration_environment_types_not_a_type(tmpdir, monkeypatch):
         )
 
 
+def test_load_configuration_environment_types_none_declared(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: null\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "2.5")
+    # An explicit ``None`` entry is a malformed declaration,
+    # not the same as leaving the key out of ``types``
+    with pytest.raises(ValueError, match="is not a type: None"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"timeout": None},
+        )
+
+
 def test_load_configuration_non_mapping(tmpdir):
     # A file that does not contain a mapping raises an error
     config_file = write_config(
