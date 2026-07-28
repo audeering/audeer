@@ -979,12 +979,16 @@ def test_load_configuration_validate_passes_with_environment(tmpdir, monkeypatch
         "count: 1\n",
     )
     monkeypatch.setenv("PKG_COUNT", "5")
-
     calls = []
+
+    def validate(config):
+        # Snapshot: load_configuration() mutates and returns this very object
+        calls.append(dict(config))
+
     config = audeer.load_configuration(
         config_file,
         env_prefix="PKG",
-        validate=calls.append,
+        validate=validate,
     )
     # validate() received the configuration
     # after environment variables were applied,
