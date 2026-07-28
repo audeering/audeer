@@ -685,11 +685,11 @@ def test_load_configuration_types_subclass(tmpdir, monkeypatch):
     [
         (  # misspelled top-level entry
             "timeout: null\n",
-            {"tiemout": float},
+            {"tiemout": float},  # codespell:ignore tiemout
         ),
         (  # misspelled entry inside a nested section
             "connection:\n  timeout: null\n",
-            {"connection": {"tiemout": float}},
+            {"connection": {"tiemout": float}},  # codespell:ignore tiemout
         ),
     ],
 )
