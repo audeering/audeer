@@ -557,6 +557,7 @@ def test_load_configuration_environment_bool_false(tmpdir, monkeypatch):
         ("off", False),
         ("false", False),
         ("", False),
+        ("no", False),
     ],
 )
 def test_load_configuration_environment_bool_values(
@@ -564,7 +565,7 @@ def test_load_configuration_environment_bool_values(
 ):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "enabled: false\n",
+        f"enabled: {str(not expected).lower()}\n",
     )
     # The truthy values are matched case insensitively,
     # any other value becomes False
