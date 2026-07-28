@@ -577,6 +577,22 @@ def test_load_configuration_types_section_not_a_mapping(
         )
 
 
+def test_load_configuration_types_section_for_scalar_value(tmpdir):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model: null\n",
+    )
+    # A nested ``types`` section requires
+    # a matching mapping in the configuration;
+    # the error names the mismatch instead of dumping a repr
+    with pytest.raises(ValueError, match="declares a nested section"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"model": {"device": str}},
+        )
+
+
 def test_load_configuration_types_ignores_unlisted_keys(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

@@ -287,6 +287,11 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
                     f"must be a mapping, but is '{type(declared).__name__}'."
                 )
             _validate_types(value, declared)
+        elif isinstance(declared, Mapping):
+            raise ValueError(
+                f"The 'types' entry for '{key}' declares a nested section, "
+                f"but the corresponding configuration value is not a mapping."
+            )
         elif not isinstance(declared, type):
             raise ValueError(
                 f"The 'types' entry for '{key}' is not a type: {declared!r}."
