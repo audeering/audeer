@@ -83,7 +83,9 @@ def load_configuration(
     for such keys,
     or to override the inferred type of any key.
     ``types`` mirrors the (possibly nested) structure
-    of the configuration.
+    of the configuration;
+    an entry that does not match a configuration key
+    raises a ``ValueError`` to catch misspellings.
 
     Missing or empty configuration files are skipped.
 
@@ -129,6 +131,8 @@ def load_configuration(
         ValueError: if ``types``,
             or a ``types`` entry for a nested section,
             is not a mapping
+        ValueError: if a ``types`` entry
+            does not match any configuration key
 
     Examples:
         >>> import tempfile
@@ -258,6 +262,13 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
         ValueError: if a declared leaf type is not a class
 
     """
+    # Reject entries without a matching configuration key
+    # to catch misspellings
+    for key in types:
+        if key not in cfg:
+            raise ValueError(
+                f"The 'types' entry '{key}' does not match any configuration key."
+            )
     for key, value in cfg.items():
         # An explicit ``None`` entry is a malformed declaration,
         # only an absent key means "no type declared"

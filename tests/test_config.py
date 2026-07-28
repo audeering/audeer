@@ -645,6 +645,32 @@ def test_load_configuration_types_subclass(tmpdir, monkeypatch):
         )
 
 
+@pytest.mark.parametrize(
+    "content, types",
+    [
+        (  # misspelled top-level entry
+            "timeout: null\n",
+            {"tiemout": float},
+        ),
+        (  # misspelled entry inside a nested section
+            "connection:\n  timeout: null\n",
+            {"connection": {"tiemout": float}},
+        ),
+    ],
+)
+def test_load_configuration_types_unknown_key(tmpdir, content, types):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # A ``types`` entry that does not match a configuration key
+    # is rejected to catch misspellings,
+    # also when no environment variable is set
+    with pytest.raises(ValueError, match="does not match any configuration key"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types=types,
+        )
+
+
 def test_load_configuration_environment_types_none_declared(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
