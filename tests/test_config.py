@@ -1,6 +1,8 @@
 import pathlib
+from types import MappingProxyType
 
 import pytest
+import yaml
 
 import audeer
 
@@ -194,6 +196,260 @@ def test_load_configuration_multiple_user_files(tmpdir):
         default_file,
         [user_file_1, user_file_2],
     ) == {"cache_root": "~/user2"}
+
+
+def test_load_configuration_user_mapping(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n  lora: false\n",
+    )
+    # An already parsed mapping is accepted instead of a file path,
+    # and is deep-merged like a file:
+    # a key set only in the default file is kept
+    assert audeer.load_configuration(default_file, {"model": {"device": "cpu"}}) == {
+        "model": {"device": "cpu", "lora": False},
+    }
+
+
+def test_load_configuration_user_mapping_after_file(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "cache_root: ~/user\n",
+    )
+    # A sequence may mix file paths and mappings;
+    # the mapping comes last and wins
+    assert audeer.load_configuration(
+        default_file,
+        [user_file, {"cache_root": "~/mapping"}],
+    ) == {"cache_root": "~/mapping"}
+
+
+def test_load_configuration_user_mapping_before_file(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "cache_root: ~/user\n",
+    )
+    # The file comes last and wins
+    assert audeer.load_configuration(
+        default_file,
+        [{"cache_root": "~/mapping"}, user_file],
+    ) == {"cache_root": "~/user"}
+
+
+def test_load_configuration_user_mapping_empty(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n  lora: false\n",
+    )
+    # An empty mapping keeps the default values
+    assert audeer.load_configuration(default_file, {}) == {
+        "model": {"device": "cuda", "lora": False},
+    }
+
+
+def test_load_configuration_user_mapping_adds_new_key(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n",
+    )
+    user_config = {"model": {"lora": True}, "tts": {"vendor": "iva-tts"}}
+    # A mapping may introduce keys that are not in the default file,
+    # inside a nested section and at the top level
+    assert audeer.load_configuration(default_file, user_config) == {
+        "model": {"device": "cuda", "lora": True},
+        "tts": {"vendor": "iva-tts"},
+    }
+
+
+def test_load_configuration_user_mapping_list_replaced(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "hosts:\n  - a\n  - b\n",
+    )
+    # A list value of the mapping replaces the default list as a whole
+    assert audeer.load_configuration(default_file, {"hosts": ["c"]}) == {
+        "hosts": ["c"],
+    }
+
+
+def test_load_configuration_user_mapping_list_not_modified(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "hosts:\n  - a\n",
+    )
+    user_config = {"hosts": ["b"], "repositories": [{"name": "r1"}]}
+    config = audeer.load_configuration(default_file, user_config)
+    # Lists, and the mappings they contain, are copied as well,
+    # so changing them afterwards
+    # does not change the configuration
+    user_config["hosts"].append("c")
+    user_config["repositories"][0]["name"] = "r2"
+    assert config == {"hosts": ["b"], "repositories": [{"name": "r1"}]}
+
+
+def test_load_configuration_user_mapping_two_mappings(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\n",
+    )
+    user_config_1 = {"model": {"device": "cpu"}}
+    user_config_2 = {"model": {"lora": True}}
+    # Two mappings are deep-merged with each other,
+    # and merging the second one
+    # does not modify the first one
+    config = audeer.load_configuration(default_file, [user_config_1, user_config_2])
+    assert config == {
+        "name": "default",
+        "model": {"device": "cpu", "lora": True},
+    }
+    assert user_config_1 == {"model": {"device": "cpu"}}
+
+
+def test_load_configuration_user_mapping_not_modified(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\n",
+    )
+    # The section is present in the mapping only,
+    # so it would become part of the configuration by reference,
+    # if it was not copied
+    user_config = {"model": {"device": "cpu", "lora": False}}
+    # The mapping given by the caller is not modified,
+    # not even by the environment overrides applied afterwards
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "mps")
+    config = audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+    assert config == {
+        "name": "default",
+        "model": {"device": "mps", "lora": False},
+    }
+    assert user_config == {"model": {"device": "cpu", "lora": False}}
+
+    # The returned configuration is not aliased to the mapping either
+    user_config["model"]["device"] = "xpu"
+    assert config["model"]["device"] == "mps"
+
+
+def test_load_configuration_user_mapping_environment(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\n",
+    )
+    user_config = {"count": 1, "model": {"device": "cpu"}}
+    # A key introduced by the mapping can be overridden
+    # by an environment variable,
+    # also with the nested '__' form,
+    # and is cast to the type of the mapping's value
+    monkeypatch.setenv("PKG_COUNT", "5")
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    config = audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+    assert config == {
+        "name": "default",
+        "count": 5,
+        "model": {"device": "cuda"},
+    }
+    assert isinstance(config["count"], int)
+
+
+def test_load_configuration_user_mapping_environment_json(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\n",
+    )
+    user_config = {"model": {"device": "cpu"}}
+    # A section introduced by the mapping
+    # can be replaced by a JSON environment variable,
+    # and the values of the mapping provide the types for it
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda"}')
+    config = audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+    assert config == {"name": "default", "model": {"device": "cuda"}}
+    monkeypatch.setenv("PKG_MODEL", '{"device": 5}')
+    with pytest.raises(ValueError, match="has type 'str'"):
+        audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+
+
+def test_load_configuration_user_mapping_types(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\n",
+    )
+    user_config = {"timeout": None}
+    # ``types`` is validated after merging,
+    # so it may declare a key that only the mapping introduced
+    monkeypatch.setenv("PKG_TIMEOUT", "2.5")
+    config = audeer.load_configuration(
+        default_file,
+        user_config,
+        env_prefix="PKG",
+        types={"timeout": float},
+    )
+    assert config == {"name": "default", "timeout": 2.5}
+
+
+def test_load_configuration_user_mapping_immutable(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\n",
+    )
+    user_config = MappingProxyType(
+        {"model": MappingProxyType({"device": "cpu", "lora": False})},
+    )
+    # Any mapping is accepted, not only a dictionary.
+    # It is copied into plain dictionaries,
+    # so a nested section can still be overridden
+    # by an environment variable
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    config = audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+    assert config == {
+        "name": "default",
+        "model": {"device": "cuda", "lora": False},
+    }
+
+
+def test_load_configuration_user_mapping_shared_file(tmpdir, monkeypatch):
+    default_file_a = write_config(
+        audeer.path(tmpdir, "default_a.yaml"),
+        "cache_root: ~/cache-a\ntimeout: null\n",
+    )
+    default_file_b = write_config(
+        audeer.path(tmpdir, "default_b.yaml"),
+        "cache_root: ~/cache-b\n",
+    )
+    shared_file = write_config(
+        audeer.path(tmpdir, "shared.yaml"),
+        "lib-a:\n  cache_root: ~/shared-a\nlib-b:\n  cache_root: ~/shared-b\n",
+    )
+    with open(shared_file) as fp:
+        data = yaml.load(fp, Loader=yaml.SafeLoader)
+    # An application parses a shared configuration file itself
+    # and hands each section to the package that owns it,
+    # every package keeping its own defaults, prefix and types
+    monkeypatch.setenv("LIB_A_TIMEOUT", "2.5")
+    monkeypatch.setenv("LIB_B_CACHE_ROOT", "~/env-b")
+    config_a = audeer.load_configuration(
+        default_file_a,
+        data["lib-a"],
+        env_prefix="LIB_A",
+        types={"timeout": float},
+    )
+    config_b = audeer.load_configuration(
+        default_file_b,
+        data["lib-b"],
+        env_prefix="LIB_B",
+    )
+    assert config_a == {"cache_root": "~/shared-a", "timeout": 2.5}
+    assert config_b == {"cache_root": "~/env-b"}
+    assert data == {
+        "lib-a": {"cache_root": "~/shared-a"},
+        "lib-b": {"cache_root": "~/shared-b"},
+    }
 
 
 def test_load_configuration_environment(tmpdir, monkeypatch):

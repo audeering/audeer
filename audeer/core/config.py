@@ -7,7 +7,7 @@ import os
 
 def load_configuration(
     default_config_file: str,
-    user_config_files: str | Sequence[str] | None = None,
+    user_config_files: str | Mapping | Sequence[str | Mapping] | None = None,
     *,
     env_prefix: str | None = None,
     types: Mapping | None = None,
@@ -22,7 +22,7 @@ def load_configuration(
        e.g. the configuration file shipped with a package
     2. ``user_config_files``,
        applied in the given order
-       (a later file overrides an earlier one)
+       (a later entry overrides an earlier one)
     3. environment variables,
        if ``env_prefix`` is given
 
@@ -33,6 +33,16 @@ def load_configuration(
     and keeps the remaining keys from the default.
     Any non-mapping value (including a list)
     replaces the previous value as a whole.
+
+    A user configuration
+    may also be given as an already parsed mapping
+    instead of a file path,
+    e.g. a single section
+    of a configuration file
+    that the application has parsed itself
+    and that is shared by several packages.
+    It is deep-merged in the same way as a file,
+    and the given mapping is not modified.
 
     Environment variables are matched
     against the upper-cased configuration keys,
@@ -101,7 +111,11 @@ def load_configuration(
             The file does not have to exist
         user_config_files: path(s) to user configuration file(s),
             applied in the given order.
-            Files do not have to exist
+            Files do not have to exist.
+            An already parsed mapping
+            can be given instead of a file path,
+            also as part of the sequence.
+            It is not modified
         env_prefix: prefix of environment variables
             used to override configuration values.
             If ``None``, environment variables are ignored
@@ -147,6 +161,15 @@ def load_configuration(
         >>> audeer.load_configuration(config_file)
         {'cache_root': '~/cache'}
 
+        A user configuration can also be given
+        as an already parsed mapping.
+
+        >>> config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")
+        >>> with open(config_file, "w") as file:
+        ...     _ = file.write("model:\n  device: cpu\n  lora: false\n")
+        >>> audeer.load_configuration(config_file, {"model": {"device": "cuda"}})
+        {'model': {'device': 'cuda', 'lora': False}}
+
         A key that defaults to ``None`` has no inferred type,
         so declare it in ``types``.
 
@@ -165,10 +188,13 @@ def load_configuration(
     cfg = _load_configuration_file(default_config_file)
 
     if user_config_files is not None:
-        if isinstance(user_config_files, str):
+        if isinstance(user_config_files, (str, Mapping)):
             user_config_files = [user_config_files]
         for user_config_file in user_config_files:
-            _deep_merge(cfg, _load_configuration_file(user_config_file))
+            if isinstance(user_config_file, Mapping):
+                _deep_merge(cfg, _copy_mapping(user_config_file))
+            else:
+                _deep_merge(cfg, _load_configuration_file(user_config_file))
 
     if types is not None:
         if not isinstance(types, Mapping):
@@ -184,6 +210,34 @@ def load_configuration(
         validate(cfg)
 
     return cfg
+
+
+def _copy_mapping(mapping: Mapping) -> dict:
+    r"""Copy a mapping into plain dictionaries.
+
+    Nested mappings and lists are copied as well,
+    so merging and environment overrides
+    cannot modify the mapping given by the user.
+    All other values are immutable
+    or are never modified in place.
+
+    Args:
+        mapping: mapping to copy
+
+    Returns:
+        copy of ``mapping``, using ``dict`` at every level
+
+    """
+    return {key: _copy_value(value) for key, value in mapping.items()}
+
+
+def _copy_value(value: object) -> object:
+    r"""Copy a configuration value, see :func:`_copy_mapping`."""
+    if isinstance(value, Mapping):
+        return _copy_mapping(value)
+    if isinstance(value, list):
+        return [_copy_value(item) for item in value]
+    return value
 
 
 def _deep_merge(base: dict, update: dict) -> None:
