@@ -443,6 +443,11 @@ def _override_with_environment(
                 default_value,
                 key_type,
             )
+            if isinstance(cfg[key], Mapping):
+                # A mapping introduced via a declared ``dict`` type
+                # behaves like a section, so nested variables
+                # are applied on top of it as well
+                _override_with_environment(cfg[key], f"{name}__", {})
 
 
 def _parse_environment_value(

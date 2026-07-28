@@ -434,6 +434,25 @@ def test_load_configuration_environment_whole_dict_nested_omitted_key(
     assert config == {"model": {"device": "cuda"}}
 
 
+def test_load_configuration_environment_declared_dict_then_nested(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model: null\n",
+    )
+    # A None default declared as ``dict`` accepts a JSON object,
+    # and nested variables are applied on top of it afterwards,
+    # like for any other section
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cpu", "batch": 8}')
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"model": dict},
+    )
+    assert config == {"model": {"device": "cuda", "batch": 8}}
+    assert isinstance(config["model"]["batch"], int)
+
+
 def test_load_configuration_environment_bool_false(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
