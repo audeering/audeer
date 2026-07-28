@@ -706,6 +706,26 @@ def test_load_configuration_types_unknown_key(tmpdir, content, types):
         )
 
 
+def test_load_configuration_types_unknown_key_json_introduced(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "connection:\n  timeout: null\n",
+    )
+    # A ``types`` entry for a key that would only enter
+    # the configuration via a JSON environment variable
+    # is rejected as well
+    monkeypatch.setenv(
+        "PKG_CONNECTION",
+        '{"tiemout": 2}',  # codespell:ignore tiemout
+    )
+    with pytest.raises(ValueError, match="does not match any configuration key"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"connection": {"tiemout": float}},  # codespell:ignore tiemout
+        )
+
+
 @pytest.mark.parametrize(
     "content, name, value",
     [
