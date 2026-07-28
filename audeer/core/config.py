@@ -89,7 +89,7 @@ def load_configuration(
     ``types`` mirrors the (possibly nested) structure
     of the configuration;
     an entry that does not match a configuration key
-    raises a ``ValueError`` to catch misspellings.
+    raises a ``ValueError``.
 
     Missing or empty configuration files are skipped.
 
