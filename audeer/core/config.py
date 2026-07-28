@@ -275,7 +275,7 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
             raise ValueError(
                 f"The 'types' entry for '{key}' is not a type: {declared!r}."
             )
-        elif not issubclass(declared, (bool, int, float, str, list, dict)):
+        elif declared not in (bool, int, float, str, list, dict):
             # Anything else would silently fall through
             # to keeping the environment variable a string
             raise ValueError(

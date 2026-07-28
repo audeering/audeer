@@ -625,6 +625,26 @@ def test_load_configuration_types_unsupported(tmpdir, monkeypatch, env_set):
         )
 
 
+def test_load_configuration_types_subclass(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "value: null\n",
+    )
+    monkeypatch.setenv("PKG_VALUE", "1")
+
+    # A subclass of a supported type is rejected,
+    # as the cast would return the base type anyway
+    class CustomInt(int):
+        pass
+
+    with pytest.raises(ValueError, match="is not a supported type"):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            types={"value": CustomInt},
+        )
+
+
 def test_load_configuration_environment_types_none_declared(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
