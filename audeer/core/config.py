@@ -71,6 +71,10 @@ def load_configuration(
     a boolean is therefore never rejected,
     whereas ``int``, ``float`` and JSON conversions
     raise a ``ValueError`` on invalid input.
+    A default value of any other type
+    (e.g. a date parsed from YAML)
+    cannot be overridden
+    and raises a ``ValueError`` as well.
     Only keys already present in the configuration files
     can be overridden by environment variables.
     Only string keys are matched;
@@ -124,7 +128,8 @@ def load_configuration(
             does not contain a mapping of key-value pairs
         ValueError: if an environment variable
             cannot be converted to the type
-            of the corresponding default value
+            of the corresponding default value,
+            or that type is not supported
         ValueError: if a type declared in ``types``
             is not a class,
             or not one of the supported types
@@ -357,13 +362,11 @@ def _validate_json_replacement(
             target = type(default_value)
         else:
             continue
-        # ``bool`` has to be checked before ``int``,
-        # as ``bool`` is a subclass of ``int``
-        if issubclass(target, bool):
+        if target is bool:
             valid = isinstance(json_value, bool)
-        elif issubclass(target, int):
+        elif target is int:
             valid = isinstance(json_value, int) and not isinstance(json_value, bool)
-        elif issubclass(target, float):
+        elif target is float:
             valid = isinstance(json_value, (int, float)) and not isinstance(
                 json_value, bool
             )
@@ -454,22 +457,22 @@ def _parse_environment_value(
     otherwise the type of ``default_value``.
     A ``None`` default without a declared type
     leaves the value unchanged as a string.
+    Any other target type outside the supported set
+    raises a ``ValueError``.
     """
     if target_type is None:
         target_type = type(default_value)
     try:
-        # ``bool`` has to be checked before ``int``,
-        # as ``bool`` is a subclass of ``int``.
         # A boolean never fails conversion:
         # any value other than the truthy ones becomes ``False``
-        if issubclass(target_type, bool):
+        if target_type is bool:
             return value.lower() in ("1", "true", "yes", "on")
-        if issubclass(target_type, int):
+        if target_type is int:
             return int(value)
-        if issubclass(target_type, float):
+        if target_type is float:
             return float(value)
         # ``json.JSONDecodeError`` is a subclass of ``ValueError``
-        if issubclass(target_type, (list, dict)):
+        if target_type in (list, dict):
             parsed = json.loads(value)
             # ``json.loads`` accepts any JSON value,
             # so a scalar like ``"123"`` parses without
@@ -484,7 +487,19 @@ def _parse_environment_value(
             f"'{target_type.__name__}' "
             f"of the corresponding configuration value."
         ) from ex
-    return value
+    # A ``None`` default carries no type information,
+    # so the value is kept as a string (see ``types``)
+    if target_type in (str, type(None)):
+        return value
+    # E.g. a datetime.date default parsed from YAML;
+    # silently keeping the value a string would hide the error
+    raise ValueError(
+        f"The environment variable '{name}={value}' "
+        f"cannot override the corresponding configuration value: "
+        f"its type '{target_type.__name__}' is not supported. "
+        f"Supported types are "
+        f"'bool', 'int', 'float', 'str', 'list', 'dict'."
+    )
 
 
 class config:

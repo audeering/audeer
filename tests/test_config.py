@@ -671,6 +671,45 @@ def test_load_configuration_types_unknown_key(tmpdir, content, types):
         )
 
 
+@pytest.mark.parametrize(
+    "content, name, value",
+    [
+        (  # YAML parses this default as datetime.date
+            "release: 2026-01-01\n",
+            "PKG_RELEASE",
+            "2027-05-05",
+        ),
+        (  # YAML parses this default as datetime.datetime
+            "start: 2026-01-01 10:00:00\n",
+            "PKG_START",
+            "2027-01-01 10:00:00",
+        ),
+    ],
+)
+def test_load_configuration_environment_unsupported_default_type(
+    tmpdir, monkeypatch, content, name, value
+):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # A default value of an unsupported type cannot be overridden;
+    # silently degrading it to a string would hide the error
+    monkeypatch.setenv(name, value)
+    with pytest.raises(ValueError, match="is not supported"):
+        audeer.load_configuration(config_file, env_prefix="PKG")
+
+
+def test_load_configuration_environment_none_default_untyped(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: null\n",
+    )
+    # A None default carries no type,
+    # so without a ``types`` declaration
+    # the environment variable is kept as a string
+    monkeypatch.setenv("PKG_TIMEOUT", "2.5")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"timeout": "2.5"}
+
+
 def test_load_configuration_environment_types_none_declared(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
