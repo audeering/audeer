@@ -106,6 +106,34 @@ def test_load_configuration_deep_merge_user_adds_new_top_level(tmpdir):
     }
 
 
+def test_load_configuration_deep_merge_scalar_replaces_section(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model: none\n",
+    )
+    # A scalar in the user file replaces a whole default section
+    assert audeer.load_configuration(default_file, user_file) == {"model": "none"}
+
+
+def test_load_configuration_deep_merge_section_replaces_scalar(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model: none\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model:\n  device: cuda\n",
+    )
+    # A mapping in the user file replaces a scalar default as a whole
+    assert audeer.load_configuration(default_file, user_file) == {
+        "model": {"device": "cuda"},
+    }
+
+
 def test_load_configuration_deep_merge_list_replaced(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
@@ -132,6 +160,19 @@ def test_load_configuration_missing_user_file(tmpdir):
     # the default configuration is kept
     assert audeer.load_configuration(default_file, user_file) == {
         "cache_root": "~/cache",
+    }
+
+
+def test_load_configuration_missing_default_with_user_file(tmpdir):
+    default_file = audeer.path(tmpdir, "missing.yaml")
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "cache_root: ~/user\n",
+    )
+    # A missing default file yields an empty base,
+    # the user file provides the whole configuration
+    assert audeer.load_configuration(default_file, user_file) == {
+        "cache_root": "~/user",
     }
 
 
@@ -349,6 +390,32 @@ def test_load_configuration_environment_whole_dict_none_default(tmpdir, monkeypa
     assert config == {"model": {"device": "cuda"}}
 
 
+def test_load_configuration_environment_whole_dict_null_for_typed_default(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n",
+    )
+    # JSON null does not match the str type of the default
+    monkeypatch.setenv("PKG_MODEL", '{"device": null}')
+    with pytest.raises(ValueError, match="has type 'str'"):
+        audeer.load_configuration(config_file, env_prefix="PKG")
+
+
+def test_load_configuration_environment_whole_dict_null_for_none_default(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: null\n",
+    )
+    # A None default accepts any JSON value, including null
+    monkeypatch.setenv("PKG_MODEL", '{"device": null}')
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": None}}
+
+
 def test_load_configuration_environment_whole_dict_declared_type(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
@@ -385,6 +452,21 @@ def test_load_configuration_environment_whole_dict_introduces_key(tmpdir, monkey
     monkeypatch.setenv("PKG_MODEL", '{"device": "cuda", "batch": 8}')
     config = audeer.load_configuration(config_file, env_prefix="PKG")
     assert config == {"model": {"device": "cuda", "batch": 8}}
+
+
+def test_load_configuration_environment_whole_dict_introduced_section_then_nested(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n",
+    )
+    # A section introduced by the JSON object behaves like any section:
+    # nested variables are applied on top of it
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda", "sub": {"a": 1}}')
+    monkeypatch.setenv("PKG_MODEL__SUB__A", "2")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": "cuda", "sub": {"a": 2}}}
 
 
 def test_load_configuration_environment_whole_dict_then_nested(tmpdir, monkeypatch):
@@ -463,6 +545,51 @@ def test_load_configuration_environment_bool_false(tmpdir, monkeypatch):
     assert config == {"enabled": False}
 
 
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("1", True),
+        ("true", True),
+        ("TRUE", True),
+        ("Yes", True),
+        ("on", True),
+        ("0", False),
+        ("off", False),
+        ("false", False),
+        ("", False),
+        ("no", False),
+    ],
+)
+def test_load_configuration_environment_bool_values(
+    tmpdir, monkeypatch, value, expected
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        f"enabled: {str(not expected).lower()}\n",
+    )
+    # The truthy values are matched case insensitively,
+    # any other value becomes False
+    monkeypatch.setenv("PKG_ENABLED", value)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"enabled": expected}
+
+
+def test_load_configuration_environment_empty_string(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\ncount: 1\n",
+    )
+    # An empty string is a legal value for a str default
+    monkeypatch.setenv("PKG_NAME", "")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"name": "", "count": 1}
+
+    # But it cannot be cast to an int default
+    monkeypatch.setenv("PKG_COUNT", "")
+    with pytest.raises(ValueError, match="could not be converted to the type"):
+        audeer.load_configuration(config_file, env_prefix="PKG")
+
+
 def test_load_configuration_environment_types_none_default(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
@@ -478,6 +605,21 @@ def test_load_configuration_environment_types_none_default(tmpdir, monkeypatch):
     )
     assert config == {"timeout": 2.5}
     assert isinstance(config["timeout"], float)
+
+
+def test_load_configuration_environment_types_none_default_list(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "hosts: null\n",
+    )
+    monkeypatch.setenv("PKG_HOSTS", '["host1", "host2"]')
+    # A declared ``list`` type parses the value as JSON
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"hosts": list},
+    )
+    assert config == {"hosts": ["host1", "host2"]}
 
 
 def test_load_configuration_environment_types_override_default(tmpdir, monkeypatch):
@@ -830,3 +972,27 @@ def test_load_configuration_validate(tmpdir):
 
     # validate() received the merged configuration
     assert calls == [{"cache_root": "~/cache"}]
+
+
+def test_load_configuration_validate_passes_with_environment(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "count: 1\n",
+    )
+    monkeypatch.setenv("PKG_COUNT", "5")
+    calls = []
+
+    def validate(config):
+        # Snapshot: load_configuration() mutates and returns this very object
+        calls.append(dict(config))
+
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        validate=validate,
+    )
+    # validate() received the configuration
+    # after environment variables were applied,
+    # and the configuration is returned unchanged
+    assert calls == [{"count": 5}]
+    assert config == {"count": 5}
