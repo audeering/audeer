@@ -85,7 +85,8 @@ def load_configuration(
     (e.g. a date parsed from YAML)
     cannot be overridden
     and raises a ``ValueError`` as well.
-    Only keys already present in the configuration files
+    Only keys already present in the merged configuration,
+    whether from a file or a mapping,
     can be overridden by environment variables.
     Only string keys are matched;
     a non-string key (e.g. a numeric YAML key)
@@ -110,12 +111,11 @@ def load_configuration(
         default_config_file: path to default configuration file.
             The file does not have to exist
         user_config_files: path(s) to user configuration file(s),
-            applied in the given order.
-            Files do not have to exist.
-            An already parsed mapping
-            can be given instead of a file path,
-            also as part of the sequence.
-            It is not modified
+            or an already parsed mapping,
+            applied in the given order
+            (a mapping may also appear as part of the sequence).
+            Files do not have to exist,
+            and a given mapping is not modified
         env_prefix: prefix of environment variables
             used to override configuration values.
             If ``None``, environment variables are ignored
