@@ -12,6 +12,7 @@ def load_configuration(
     env_prefix: str | None = None,
     types: Mapping | None = None,
     validate: Callable[[dict], None] | None = None,
+    _provenance_spike: bool = False,
 ) -> dict:
     r"""Load configuration from files and environment variables.
 
@@ -187,14 +188,33 @@ def load_configuration(
     """
     cfg = _load_configuration_file(default_config_file)
 
+    # --- provenance spike: begin ---
+    # Tier 0 raw-chunk collection. Chunk 0 needs an explicit copy because
+    # ``cfg`` (built from the default file) keeps being mutated in place by
+    # later ``_deep_merge`` calls into its nested dicts; chunks 1..N can just
+    # keep the exact dict object handed to ``_deep_merge``, since
+    # ``_deep_merge`` never mutates its ``update`` argument, only ``base``.
+    _spike_chunks: list[tuple[str, dict]] | None = None
+    _spike_env_applications: list[tuple[str, str, object]] | None = None
+    if _provenance_spike:
+        _spike_chunks = [(f"default:{default_config_file}", _copy_mapping(cfg))]
+        _spike_env_applications = []
+    # --- provenance spike: end ---
+
     if user_config_files is not None:
         if isinstance(user_config_files, (str, Mapping)):
             user_config_files = [user_config_files]
-        for user_config_file in user_config_files:
+        for _spike_i, user_config_file in enumerate(user_config_files):
             if isinstance(user_config_file, Mapping):
-                _deep_merge(cfg, _copy_mapping(user_config_file))
+                update = _copy_mapping(user_config_file)
+                _deep_merge(cfg, update)
+                if _provenance_spike:
+                    _spike_chunks.append((f"mapping[{_spike_i}]", update))
             else:
-                _deep_merge(cfg, _load_configuration_file(user_config_file))
+                update = _load_configuration_file(user_config_file)
+                _deep_merge(cfg, update)
+                if _provenance_spike:
+                    _spike_chunks.append((f"file:{user_config_file}", update))
 
     if types is not None:
         if not isinstance(types, Mapping):
@@ -204,10 +224,25 @@ def load_configuration(
         _validate_types(cfg, types)
 
     if env_prefix is not None:
-        _override_with_environment(cfg, f"{env_prefix}_", types or {})
+        _override_with_environment(
+            cfg,
+            f"{env_prefix}_",
+            types or {},
+            env_applications=_spike_env_applications,
+        )
 
     if validate is not None:
         validate(cfg)
+
+    # --- provenance spike: begin ---
+    if _provenance_spike:
+        owner = _resolve_provenance_spike(
+            _spike_chunks,
+            _spike_env_applications,
+            f"{env_prefix}_" if env_prefix is not None else "",
+        )
+        return cfg, owner
+    # --- provenance spike: end ---
 
     return cfg
 
@@ -451,6 +486,7 @@ def _override_with_environment(
     cfg: dict,
     env_prefix: str,
     types: Mapping,
+    env_applications: list[tuple[str, str, object]] | None = None,
 ) -> None:
     r"""Override configuration values with environment variables in place.
 
@@ -498,7 +534,12 @@ def _override_with_environment(
                     key_type or {},
                 )
                 cfg[key] = parsed
-            _override_with_environment(cfg[key], f"{name}__", key_type or {})
+                # --- provenance spike ---
+                if env_applications is not None:
+                    env_applications.append(("section", name, parsed))
+            _override_with_environment(
+                cfg[key], f"{name}__", key_type or {}, env_applications
+            )
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,
@@ -506,11 +547,14 @@ def _override_with_environment(
                 default_value,
                 key_type,
             )
+            # --- provenance spike ---
+            if env_applications is not None:
+                env_applications.append(("scalar", name, cfg[key]))
             if isinstance(cfg[key], Mapping):
                 # A mapping introduced via a declared ``dict`` type
                 # behaves like a section, so nested variables
                 # are applied on top of it as well
-                _override_with_environment(cfg[key], f"{name}__", {})
+                _override_with_environment(cfg[key], f"{name}__", {}, env_applications)
 
 
 def _parse_environment_value(
@@ -568,6 +612,209 @@ def _parse_environment_value(
         f"Supported types are "
         f"'bool', 'int', 'float', 'str', 'list', 'dict'."
     )
+
+
+# =====================================================================
+# Provenance spike (Tier 0): everything below this line is throwaway
+# spike code, never intended to ship. It answers one question: can the
+# per-key "who set the effective value" answer be *derived after the
+# fact* from raw, unresolved per-layer chunks (Dynaconf-style), rather
+# than recorded at each write site (pydantic-settings-style)?
+# =====================================================================
+
+
+def _merge_with_owner(merged: dict, owner: dict, update: dict, label: str) -> None:
+    r"""Replicate ``_deep_merge`` precedence while also tracking ownership.
+
+    Mirrors ``_deep_merge`` exactly: when a key exists in both ``merged``
+    and ``update`` as a mapping, we recurse (so the owner tree grows a
+    nested dict). Otherwise the whole value at that key is replaced
+    wholesale by ``update``, so the whole subtree becomes owned by
+    ``label`` -- even if it is itself a nested mapping several levels
+    deep, because ``_deep_merge`` would have replaced it as one unit too.
+
+    Args:
+        merged: scratch dict replicating the real ``cfg`` merge so far
+        owner: parallel dict, same shape as ``merged``, whose leaves are
+            either a chunk label (a whole subtree owned by that chunk)
+            or a nested dict (a section merged key-by-key from multiple
+            chunks)
+        update: the next raw chunk to merge in
+        label: the chunk's label
+
+    """
+    for key, value in update.items():
+        if (
+            key in merged
+            and isinstance(merged[key], Mapping)
+            and isinstance(value, Mapping)
+        ):
+            if not isinstance(owner.get(key), dict):
+                owner[key] = {}
+            _merge_with_owner(merged[key], owner[key], value, label)
+        else:
+            merged[key] = _copy_value(value)
+            owner[key] = label
+
+
+def _fill_owner_from_merged(
+    owner_dict: dict, merged_value: Mapping, label: str
+) -> None:
+    r"""Expand a coarse "whole subtree owned by ``label``" marker.
+
+    Needed when a later, more specific override (env only) needs to
+    carve a single leaf out of a subtree that a previous chunk replaced
+    wholesale. Without this expansion step, descending into that subtree
+    to set just one leaf would silently destroy the ownership
+    information for its siblings.
+
+    Args:
+        owner_dict: dict to populate, mirroring ``merged_value``'s shape
+        merged_value: the actual (already resolved) subtree
+        label: the label every leaf/section of ``merged_value`` currently
+            has, before the more specific override is applied
+
+    """
+    for key, value in merged_value.items():
+        if isinstance(value, Mapping):
+            child: dict = {}
+            _fill_owner_from_merged(child, value, label)
+            owner_dict[key] = child
+        else:
+            owner_dict[key] = label
+
+
+def _set_owner_and_value(
+    owner_node: dict,
+    merged_node: dict,
+    path: tuple[str, ...],
+    label: str,
+    value: object,
+) -> None:
+    r"""Apply one environment-variable application to ``owner``/``merged``.
+
+    Handles both env application kinds (whole-section JSON replace, and
+    scalar leaf override) with the *same* logic: descend to the parent
+    of the target path, then wholesale-replace the final key -- exactly
+    mirroring what ``_override_with_environment`` actually does to
+    ``cfg`` at that point (a single ``cfg[key] = ...`` assignment).
+
+    The only non-trivial bit is descending through a key that is
+    currently a coarse label (e.g. a previous whole-section JSON
+    replace) rather than a nested owner dict: that label must first be
+    expanded via :func:`_fill_owner_from_merged` so the sibling leaves
+    keep their correct provenance.
+
+    Args:
+        owner_node: owner dict at the current recursion level
+        merged_node: merged dict at the current recursion level,
+            mirroring ``owner_node``'s shape
+        path: remaining key path to the target leaf/section
+        label: label to assign at the end of ``path``
+        value: the resolved value to write into ``merged_node`` (so it
+            stays in sync for any later, deeper expansion)
+
+    """
+    key = path[0]
+    if len(path) == 1:
+        owner_node[key] = label
+        merged_node[key] = value
+        return
+    if not isinstance(owner_node.get(key), dict):
+        expanded: dict = {}
+        _fill_owner_from_merged(expanded, merged_node[key], owner_node.get(key))
+        owner_node[key] = expanded
+    _set_owner_and_value(owner_node[key], merged_node[key], path[1:], label, value)
+
+
+def _env_name_to_path(name: str, env_prefix: str) -> tuple[str, ...]:
+    r"""Reverse ``name = f"{env_prefix}{key.upper()}"`` back to a key path.
+
+    This duplicates the *forward* naming convention from
+    ``_override_with_environment`` in reverse, including its nesting
+    rule (each level joined by ``__``). It is fragile in exactly the
+    way that duplication usually is: if a single, non-nested key
+    happens to contain a literal double underscore in its name (e.g. a
+    YAML key ``foo__bar``), this reversal cannot tell that apart from a
+    section ``foo`` with child ``bar`` -- both produce the environment
+    variable name ``..._FOO__BAR``. ``_override_with_environment`` never
+    has this ambiguity because it always walks ``cfg`` structurally
+    from the top and *constructs* the name; it never has to invert it.
+
+    Args:
+        name: full environment variable name, as it appears in
+            ``os.environ``
+        env_prefix: top-level prefix (including trailing underscore)
+            that ``load_configuration`` originally passed to
+            ``_override_with_environment``
+
+    Returns:
+        key path, e.g. ``("model", "device")``
+
+    """
+    remainder = name[len(env_prefix) :]
+    return tuple(segment.lower() for segment in remainder.split("__"))
+
+
+def _resolve_provenance_spike(
+    chunks: list[tuple[str, dict]],
+    env_applications: list[tuple[str, str, object]],
+    env_prefix: str,
+) -> dict:
+    r"""Derive per-key provenance from raw Tier-0 chunks (after the fact).
+
+    First replays the file/mapping chunks through :func:`_merge_with_owner`
+    (replicating ``_deep_merge``'s precedence), then replays the
+    environment applications *in the order they were recorded* -- which
+    already matches real precedence, since ``_override_with_environment``
+    records a whole-section JSON replace before its own nested overrides
+    are applied.
+
+    Args:
+        chunks: ``(label, raw_chunk_dict)`` pairs, in increasing
+            precedence order (default file first)
+        env_applications: ``(kind, var_name, value)`` triples, in the
+            order they were actually applied
+        env_prefix: top-level environment-variable prefix, including
+            trailing underscore (``""`` if no ``env_prefix`` was given)
+
+    Returns:
+        owner tree, same shape as the final ``cfg``, whose leaves are
+        chunk labels (``"default:...''``, ``"file:...''``,
+        ``"mapping[i]"``, or ``"env:VAR_NAME"``)
+
+    """
+    merged: dict = {}
+    owner: dict = {}
+    for label, chunk in chunks:
+        _merge_with_owner(merged, owner, chunk, label)
+    for kind, name, value in env_applications:
+        path = _env_name_to_path(name, env_prefix)
+        _set_owner_and_value(owner, merged, path, f"env:{name}", value)
+    return owner
+
+
+def _owner_of(owner: dict, path: tuple[str, ...]) -> str | None:
+    r"""Look up the provenance label for a leaf key path.
+
+    Stops early if a coarser node along ``path`` is already a plain
+    label rather than a nested dict: that means the whole subtree,
+    including our leaf, was set wholesale by that one chunk/variable.
+
+    Args:
+        owner: owner tree returned by :func:`_resolve_provenance_spike`
+        path: key path to look up, e.g. ``("model", "device")``
+
+    Returns:
+        the label, or ``None`` if ``path`` does not exist in ``owner``
+
+    """
+    node = owner
+    for segment in path:
+        if not isinstance(node, dict) or segment not in node:
+            return None
+        node = node[segment]
+    return node if isinstance(node, str) else None
 
 
 class config:
