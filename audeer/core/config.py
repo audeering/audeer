@@ -215,11 +215,15 @@ def load_configuration(
 def _copy_mapping(mapping: Mapping) -> dict:
     r"""Copy a mapping into plain dictionaries.
 
-    Nested mappings and lists are copied as well,
+    Nested mappings, lists, and tuples are copied as well,
     so merging and environment overrides
     cannot modify the mapping given by the user.
-    All other values are immutable
-    or are never modified in place.
+    Values of other container types,
+    e.g. a ``set``,
+    are not copied and remain shared with the given mapping.
+    This is not a concern for configuration values
+    parsed from JSON or YAML,
+    which never produce such types.
 
     Args:
         mapping: mapping to copy
@@ -235,8 +239,8 @@ def _copy_value(value: object) -> object:
     r"""Copy a configuration value, see :func:`_copy_mapping`."""
     if isinstance(value, Mapping):
         return _copy_mapping(value)
-    if isinstance(value, list):
-        return [_copy_value(item) for item in value]
+    if isinstance(value, (list, tuple)):
+        return type(value)(_copy_value(item) for item in value)
     return value
 
 

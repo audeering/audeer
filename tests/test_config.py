@@ -295,6 +295,19 @@ def test_load_configuration_user_mapping_list_not_modified(tmpdir):
     assert config == {"hosts": ["b"], "repositories": [{"name": "r1"}]}
 
 
+def test_load_configuration_user_mapping_tuple_not_modified(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\n",
+    )
+    user_config = {"t": ({"k": 1},)}
+    config = audeer.load_configuration(default_file, user_config)
+    # A tuple, and the mappings it contains, are copied as well,
+    # so mutating them afterwards does not change the configuration
+    user_config["t"][0]["k"] = 2
+    assert config == {"name": "default", "t": ({"k": 1},)}
+
+
 def test_load_configuration_user_mapping_two_mappings(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
