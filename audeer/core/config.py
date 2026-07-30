@@ -7,7 +7,7 @@ import os
 
 def load_configuration(
     default_config_file: str,
-    user_config_files: str | Mapping | Sequence[str | Mapping] | None = None,
+    user_configs: str | Mapping | Sequence[str | Mapping] | None = None,
     *,
     env_prefix: str | None = None,
     types: Mapping | None = None,
@@ -20,7 +20,7 @@ def load_configuration(
 
     1. ``default_config_file``,
        e.g. the configuration file shipped with a package
-    2. ``user_config_files``,
+    2. ``user_configs``,
        applied in the given order
        (a later entry overrides an earlier one)
     3. environment variables,
@@ -110,7 +110,7 @@ def load_configuration(
     Args:
         default_config_file: path to default configuration file.
             The file does not have to exist
-        user_config_files: path(s) to user configuration file(s),
+        user_configs: path(s) to user configuration file(s),
             or an already parsed mapping,
             applied in the given order
             (a mapping may also appear as part of the sequence).
@@ -187,14 +187,14 @@ def load_configuration(
     """
     cfg = _load_configuration_file(default_config_file)
 
-    if user_config_files is not None:
-        if isinstance(user_config_files, (str, Mapping)):
-            user_config_files = [user_config_files]
-        for user_config_file in user_config_files:
-            if isinstance(user_config_file, Mapping):
-                _deep_merge(cfg, _copy_mapping(user_config_file))
+    if user_configs is not None:
+        if isinstance(user_configs, (str, Mapping)):
+            user_configs = [user_configs]
+        for user_config in user_configs:
+            if isinstance(user_config, Mapping):
+                _deep_merge(cfg, _copy_mapping(user_config))
             else:
-                _deep_merge(cfg, _load_configuration_file(user_config_file))
+                _deep_merge(cfg, _load_configuration_file(user_config))
 
     if types is not None:
         if not isinstance(types, Mapping):
