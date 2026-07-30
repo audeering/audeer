@@ -7,12 +7,12 @@ import os
 
 def load_configuration(
     default_config_file: str,
-    user_config_files: str | Mapping | Sequence[str | Mapping] | None = None,
+    user_configs: str | Mapping | Sequence[str | Mapping] | None = None,
     *,
     env_prefix: str | None = None,
     types: Mapping | None = None,
     validate: Callable[[dict], None] | None = None,
-    _provenance_spike: bool = False,
+    tracking: dict | None = None,
 ) -> dict:
     r"""Load configuration from files and environment variables.
 
@@ -21,7 +21,7 @@ def load_configuration(
 
     1. ``default_config_file``,
        e.g. the configuration file shipped with a package
-    2. ``user_config_files``,
+    2. ``user_configs``,
        applied in the given order
        (a later entry overrides an earlier one)
     3. environment variables,
@@ -111,7 +111,7 @@ def load_configuration(
     Args:
         default_config_file: path to default configuration file.
             The file does not have to exist
-        user_config_files: path(s) to user configuration file(s),
+        user_configs: path(s) to user configuration file(s),
             or an already parsed mapping,
             applied in the given order
             (a mapping may also appear as part of the sequence).
@@ -132,6 +132,20 @@ def load_configuration(
             dictionary and raises an error if it is invalid.
             It is applied once,
             after files and environment variables are merged
+        tracking: dict that records,
+            for each configuration key,
+            which layer provided its effective value
+            (e.g. ``"default:<file>"``,
+            ``"file:<file>"``,
+            ``"mapping[<i>]"``,
+            or ``"env:<VAR_NAME>"``).
+            Entries are added to it in place,
+            like ``dict.update()``:
+            pass a fresh ``{}`` for a clean view,
+            or reuse the same dict across several calls
+            to accumulate entries from all of them.
+            If ``None`` (the default),
+            no tracking is performed
 
     Returns:
         merged configuration dictionary
@@ -189,32 +203,35 @@ def load_configuration(
     cfg = _load_configuration_file(default_config_file)
 
     # --- provenance spike: begin ---
-    # Tier 0 raw-chunk collection. Chunk 0 needs an explicit copy because
+    # Tier 0 raw-chunk collection, skipped entirely when ``tracking`` is
+    # ``None`` so existing callers (who never pass ``tracking=``) pay zero
+    # cost: no chunk list, no copies, no accumulator threaded through the
+    # merge/override calls below. Chunk 0 needs an explicit copy because
     # ``cfg`` (built from the default file) keeps being mutated in place by
     # later ``_deep_merge`` calls into its nested dicts; chunks 1..N can just
     # keep the exact dict object handed to ``_deep_merge``, since
     # ``_deep_merge`` never mutates its ``update`` argument, only ``base``.
-    _spike_chunks: list[tuple[str, dict]] | None = None
-    _spike_env_applications: list[tuple[str, str, object]] | None = None
-    if _provenance_spike:
-        _spike_chunks = [(f"default:{default_config_file}", _copy_mapping(cfg))]
-        _spike_env_applications = []
+    _chunks: list[tuple[str, dict]] | None = None
+    _env_applications: list[tuple[str, str, object]] | None = None
+    if tracking is not None:
+        _chunks = [(f"default:{default_config_file}", _copy_mapping(cfg))]
+        _env_applications = []
     # --- provenance spike: end ---
 
-    if user_config_files is not None:
-        if isinstance(user_config_files, (str, Mapping)):
-            user_config_files = [user_config_files]
-        for _spike_i, user_config_file in enumerate(user_config_files):
-            if isinstance(user_config_file, Mapping):
-                update = _copy_mapping(user_config_file)
+    if user_configs is not None:
+        if isinstance(user_configs, (str, Mapping)):
+            user_configs = [user_configs]
+        for _i, user_config in enumerate(user_configs):
+            if isinstance(user_config, Mapping):
+                update = _copy_mapping(user_config)
                 _deep_merge(cfg, update)
-                if _provenance_spike:
-                    _spike_chunks.append((f"mapping[{_spike_i}]", update))
+                if _chunks is not None:
+                    _chunks.append((f"mapping[{_i}]", update))
             else:
-                update = _load_configuration_file(user_config_file)
+                update = _load_configuration_file(user_config)
                 _deep_merge(cfg, update)
-                if _provenance_spike:
-                    _spike_chunks.append((f"file:{user_config_file}", update))
+                if _chunks is not None:
+                    _chunks.append((f"file:{user_config}", update))
 
     if types is not None:
         if not isinstance(types, Mapping):
@@ -228,20 +245,25 @@ def load_configuration(
             cfg,
             f"{env_prefix}_",
             types or {},
-            env_applications=_spike_env_applications,
+            env_applications=_env_applications,
         )
 
     if validate is not None:
         validate(cfg)
 
     # --- provenance spike: begin ---
-    if _provenance_spike:
+    # ``tracking`` is populated purely as a side effect: entries are added
+    # into the caller-supplied dict in place (like ``dict.update()``, not
+    # clearing it first), so the same dict can be reused across several
+    # calls to accumulate. The return value stays a plain ``cfg`` dict,
+    # regardless of ``tracking``, exactly as it is today.
+    if tracking is not None:
         owner = _resolve_provenance_spike(
-            _spike_chunks,
-            _spike_env_applications,
+            _chunks,
+            _env_applications,
             f"{env_prefix}_" if env_prefix is not None else "",
         )
-        return cfg, owner
+        tracking.update(owner)
     # --- provenance spike: end ---
 
     return cfg
