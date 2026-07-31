@@ -1,4 +1,5 @@
 import collections
+from collections import UserDict
 import pathlib
 from types import MappingProxyType
 
@@ -1262,14 +1263,26 @@ def test_load_configuration_tracking_none(tmpdir):
     assert type(config) is dict
 
 
-def test_load_configuration_tracking_not_a_dict(tmpdir):
+def test_load_configuration_tracking_not_a_mutable_mapping(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "cache_root: ~/cache\n",
     )
-    # ``tracking`` must be a dict, like ``types`` must be a mapping
-    with pytest.raises(ValueError, match="must be a dict"):
-        audeer.load_configuration(default_file, tracking="not-a-dict")
+    # ``tracking`` must be a mutable mapping, like ``types`` must be a mapping
+    with pytest.raises(ValueError, match="must be a mutable mapping"):
+        audeer.load_configuration(default_file, tracking="not-a-mapping")
+
+
+def test_load_configuration_tracking_user_dict(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    # A ``MutableMapping`` that is not a ``dict`` subclass is accepted too
+    tracking = UserDict()
+    config = audeer.load_configuration(default_file, tracking=tracking)
+    assert config == {"cache_root": "~/cache"}
+    assert dict(tracking) == {"cache_root": "default"}
 
 
 def test_load_configuration_tracking_default_only_key(tmpdir):

@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from collections.abc import Mapping
+from collections.abc import MutableMapping
 from collections.abc import Sequence
 import json
 import os
@@ -12,7 +13,7 @@ def load_configuration(
     env_prefix: str | None = None,
     types: Mapping | None = None,
     validate: Callable[[dict], None] | None = None,
-    tracking: dict | None = None,
+    tracking: MutableMapping | None = None,
 ) -> dict:
     r"""Load configuration from files and environment variables.
 
@@ -121,7 +122,7 @@ def load_configuration(
             dictionary and raises an error if it is invalid.
             It is applied once,
             after files and environment variables are merged
-        tracking: dict that records,
+        tracking: mutable mapping that records,
             for each configuration key,
             which layer set its effective value.
             ``tracking`` mirrors the (possibly nested) structure
@@ -223,9 +224,9 @@ def load_configuration(
     """
     cfg = _load_configuration_file(default_config_file)
 
-    if tracking is not None and not isinstance(tracking, dict):
+    if tracking is not None and not isinstance(tracking, MutableMapping):
         raise ValueError(
-            f"'tracking' must be a dict, but is '{type(tracking).__name__}'."
+            f"'tracking' must be a mutable mapping, but is '{type(tracking).__name__}'."
         )
 
     # Tracking is a genuine structural no-op when off: ``owner`` stays
