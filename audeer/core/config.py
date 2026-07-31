@@ -223,13 +223,17 @@ def load_configuration(
     """
     cfg = _load_configuration_file(default_config_file)
 
+    if tracking is not None and not isinstance(tracking, dict):
+        raise ValueError(
+            f"'tracking' must be a dict, but is '{type(tracking).__name__}'."
+        )
+
     # Tracking is a genuine structural no-op when off: ``owner`` stays
     # ``None``, so ``_deep_merge()``/``_override_with_environment()`` below
     # run exactly the same path they always did, and no tracking tree is
-    # ever built. A non-``dict`` value (e.g. passed in error) is treated the
-    # same as ``None`` rather than crashing on an unrelated ``.update()``.
+    # ever built.
     owner: dict | None = None
-    if isinstance(tracking, dict):
+    if tracking is not None:
         owner = _label_tree(cfg, "default")
 
     if user_configs is not None:

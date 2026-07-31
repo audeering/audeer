@@ -1262,17 +1262,14 @@ def test_load_configuration_tracking_none(tmpdir):
     assert type(config) is dict
 
 
-def test_load_configuration_tracking_off_skips_bookkeeping(tmpdir):
+def test_load_configuration_tracking_not_a_dict(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "cache_root: ~/cache\n",
     )
-    # A non-dict, non-None ``tracking`` value is never touched when the
-    # feature is off: no ``.update()`` (or similar) is attempted on it, so
-    # passing a string does not raise. This shows the tracking-only branch
-    # never executes unless ``tracking`` is a real dict
-    config = audeer.load_configuration(default_file, tracking="not-a-dict")
-    assert config == {"cache_root": "~/cache"}
+    # ``tracking`` must be a dict, like ``types`` must be a mapping
+    with pytest.raises(ValueError, match="must be a dict"):
+        audeer.load_configuration(default_file, tracking="not-a-dict")
 
 
 def test_load_configuration_tracking_default_only_key(tmpdir):
