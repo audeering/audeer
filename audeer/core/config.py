@@ -147,7 +147,7 @@ def load_configuration(
             exactly like ``dict.update()``;
             it is never cleared first.
             Pass a fresh ``{}`` for a clean view of a single call,
-            or reuse the same dict across several calls
+            or reuse the same mapping across several calls
             to accumulate their entries.
             ``tracking`` never influences the returned configuration,
             it only records how it was assembled.
