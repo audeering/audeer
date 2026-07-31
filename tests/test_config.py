@@ -1,3 +1,4 @@
+import collections
 import pathlib
 from types import MappingProxyType
 
@@ -306,6 +307,20 @@ def test_load_configuration_user_mapping_tuple_not_modified(tmpdir):
     # so mutating them afterwards does not change the configuration
     user_config["t"][0]["k"] = 2
     assert config == {"name": "default", "t": ({"k": 1},)}
+
+
+def test_load_configuration_user_mapping_named_tuple_not_copied(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "name: default\n",
+    )
+    Point = collections.namedtuple("Point", ["x", "y"])
+    point = Point(x=1, y=2)
+    # A NamedTuple is a tuple subclass but its constructor does not accept
+    # a single iterable, so it is treated like a set: kept as a leaf value,
+    # not copied
+    config = audeer.load_configuration(default_file, {"position": point})
+    assert config == {"name": "default", "position": point}
 
 
 def test_load_configuration_user_mapping_two_mappings(tmpdir):

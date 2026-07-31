@@ -26,23 +26,13 @@ def load_configuration(
     3. environment variables,
        if ``env_prefix`` is given
 
-    Configuration files are deep-merged:
+    Configuration files or mappings are deep-merged:
     nested mappings are merged key by key,
     so a section in a user file
     only overrides the keys it defines
     and keeps the remaining keys from the default.
     Any non-mapping value (including a list)
     replaces the previous value as a whole.
-
-    A user configuration
-    may also be given as an already parsed mapping
-    instead of a file path,
-    e.g. a single section
-    of a configuration file
-    that the application has parsed itself
-    and that is shared by several packages.
-    It is deep-merged in the same way as a file,
-    and the given mapping is not modified.
 
     Environment variables are matched
     against the upper-cased configuration keys,
@@ -215,12 +205,15 @@ def load_configuration(
 def _copy_mapping(mapping: Mapping) -> dict:
     r"""Copy a mapping into plain dictionaries.
 
-    Nested mappings, lists, and tuples are copied as well,
+    Nested mappings, and plain lists and tuples, are copied as well,
     so merging and environment overrides
     cannot modify the mapping given by the user.
     Values of other container types,
-    e.g. a ``set``,
-    are not copied and remain shared with the given mapping.
+    e.g. a ``set`` or a ``NamedTuple``,
+    are not copied and remain shared with the given mapping:
+    a ``NamedTuple`` is a ``tuple`` subclass
+    whose constructor does not accept a single iterable,
+    so it is kept as a leaf value like a set is.
     This is not a concern for configuration values
     parsed from JSON or YAML,
     which never produce such types.
@@ -239,7 +232,7 @@ def _copy_value(value: object) -> object:
     r"""Copy a configuration value, see :func:`_copy_mapping`."""
     if isinstance(value, Mapping):
         return _copy_mapping(value)
-    if isinstance(value, (list, tuple)):
+    if type(value) in (list, tuple):
         return type(value)(_copy_value(item) for item in value)
     return value
 
