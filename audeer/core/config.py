@@ -192,9 +192,10 @@ def load_configuration(
             user_configs = [user_configs]
         for user_config in user_configs:
             if isinstance(user_config, Mapping):
-                _deep_merge(cfg, _copy_mapping(user_config))
+                update = _copy_mapping(user_config)
             else:
-                _deep_merge(cfg, _load_configuration_file(user_config))
+                update = _load_configuration_file(user_config)
+            _deep_merge(cfg, update)
 
     if types is not None:
         if not isinstance(types, Mapping):
