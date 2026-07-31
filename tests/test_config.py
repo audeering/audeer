@@ -1311,7 +1311,7 @@ def test_load_configuration_tracking_user_file(tmpdir):
     # A user config file is labeled by its own path,
     # the untouched key stays attributed to "default"
     assert config == {"cache_root": "~/user", "shared": "/data"}
-    assert tracking == {"cache_root": user_file, "shared": "default"}
+    assert tracking == {"cache_root": f"file:{user_file}", "shared": "default"}
 
 
 def test_load_configuration_tracking_user_mapping(tmpdir):
@@ -1367,7 +1367,7 @@ def test_load_configuration_tracking_environment_scalar(tmpdir, monkeypatch):
     # A scalar environment override is labeled by the exact variable name
     assert config == {"model": {"device": "cuda", "lora": False}}
     assert tracking == {
-        "model": {"device": "PKG_MODEL__DEVICE", "lora": "default"},
+        "model": {"device": "env:PKG_MODEL__DEVICE", "lora": "default"},
     }
 
 
@@ -1383,7 +1383,7 @@ def test_load_configuration_tracking_environment_whole_dict(tmpdir, monkeypatch)
     # to the one variable that replaced the section
     assert config == {"model": {"device": "cuda", "lora": True}}
     assert tracking == {
-        "model": {"device": "PKG_MODEL", "lora": "PKG_MODEL"},
+        "model": {"device": "env:PKG_MODEL", "lora": "env:PKG_MODEL"},
     }
 
 
@@ -1404,7 +1404,7 @@ def test_load_configuration_tracking_environment_whole_dict_then_nested(
     # "device" is re-attributed to the more specific variable,
     # "lora" (untouched by it) stays attributed to the section variable
     assert tracking == {
-        "model": {"device": "PKG_MODEL__DEVICE", "lora": "PKG_MODEL"},
+        "model": {"device": "env:PKG_MODEL__DEVICE", "lora": "env:PKG_MODEL"},
     }
 
 
@@ -1438,8 +1438,8 @@ def test_load_configuration_tracking_accumulates_across_calls(tmpdir, monkeypatc
     assert config_b == {"pool_size": 8}
     assert tracking == {
         "cache_root": "default",
-        "timeout": "LIB_A_TIMEOUT",
-        "pool_size": "LIB_B_POOL_SIZE",
+        "timeout": "env:LIB_A_TIMEOUT",
+        "pool_size": "env:LIB_B_POOL_SIZE",
     }
 
 
@@ -1461,7 +1461,7 @@ def test_load_configuration_tracking_types_none_default_environment(
         tracking=tracking,
     )
     assert config == {"timeout": 2.5}
-    assert tracking == {"timeout": "PKG_TIMEOUT"}
+    assert tracking == {"timeout": "env:PKG_TIMEOUT"}
 
 
 def test_load_configuration_tracking_environment_declared_dict_then_nested(
@@ -1485,7 +1485,7 @@ def test_load_configuration_tracking_environment_declared_dict_then_nested(
     )
     assert config == {"model": {"device": "cuda", "batch": 8}}
     assert tracking == {
-        "model": {"device": "PKG_MODEL__DEVICE", "batch": "PKG_MODEL"},
+        "model": {"device": "env:PKG_MODEL__DEVICE", "batch": "env:PKG_MODEL"},
     }
 
 

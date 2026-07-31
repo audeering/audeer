@@ -129,14 +129,14 @@ def load_configuration(
             of the returned configuration,
             and each leaf is a label naming its source:
             ``"default"`` for ``default_config_file``,
-            the path of the ``user_configs`` entry
+            ``f"file:{path}"`` for the ``user_configs`` entry
             that provided a file,
             ``"mapping[<i>]"`` for the ``user_configs`` entry
             at index ``<i>`` that provided an already parsed mapping
             (indices count every entry of the sequence,
             file or mapping alike),
-            or the exact environment variable name
-            (e.g. ``"PKG_MODEL__DEVICE"``)
+            or ``f"env:{name}"`` naming the exact environment variable
+            (e.g. ``"env:PKG_MODEL__DEVICE"``)
             for an environment variable override.
             A whole-section JSON environment variable
             labels every key it sets;
@@ -249,7 +249,9 @@ def load_configuration(
                 _deep_merge(cfg, update)
             else:
                 label = (
-                    f"mapping[{i}]" if isinstance(user_config, Mapping) else user_config
+                    f"mapping[{i}]"
+                    if isinstance(user_config, Mapping)
+                    else f"file:{user_config}"
                 )
                 _deep_merge(cfg, update, owner, label)
 
@@ -636,7 +638,7 @@ def _override_with_environment(
                 )
                 cfg[key] = parsed
                 if owner is not None:
-                    owner[key] = _label_tree(parsed, name)
+                    owner[key] = _label_tree(parsed, f"env:{name}")
             _override_with_environment(
                 cfg[key],
                 f"{name}__",
@@ -651,13 +653,13 @@ def _override_with_environment(
                 key_type,
             )
             if owner is not None:
-                owner[key] = name
+                owner[key] = f"env:{name}"
             if isinstance(cfg[key], Mapping):
                 # A mapping introduced via a declared ``dict`` type
                 # behaves like a section, so nested variables
                 # are applied on top of it as well
                 if owner is not None:
-                    owner[key] = _label_tree(cfg[key], name)
+                    owner[key] = _label_tree(cfg[key], f"env:{name}")
                 _override_with_environment(
                     cfg[key],
                     f"{name}__",
