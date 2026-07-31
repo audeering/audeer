@@ -111,9 +111,8 @@ def load_configuration(
         default_config_file: path to default configuration file.
             The file does not have to exist
         user_configs: path(s) to user configuration file(s),
-            or an already parsed mapping,
-            applied in the given order
-            (a mapping may also appear as part of the sequence).
+            or already parsed mapping(s),
+            applied in the given order.
             Files do not have to exist,
             and a given mapping is not modified
         env_prefix: prefix of environment variables
