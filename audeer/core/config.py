@@ -225,6 +225,23 @@ def load_configuration(
         {'model': {'device': 'env:PKG_MODEL__DEVICE', 'lora': 'default'}}
         >>> del os.environ["PKG_MODEL__DEVICE"]
 
+        Passing the same ``tracking`` mapping to a second call
+        accumulates its entries instead of overwriting them.
+
+        >>> default_file_a = audeer.path(tempfile.mkdtemp(), "a.yaml")
+        >>> with open(default_file_a, "w") as file:
+        ...     _ = file.write("cache_root: ~/cache\n")
+        >>> default_file_b = audeer.path(tempfile.mkdtemp(), "b.yaml")
+        >>> with open(default_file_b, "w") as file:
+        ...     _ = file.write("pool_size: 4\n")
+        >>> tracking = {}
+        >>> audeer.load_configuration(default_file_a, tracking=tracking)
+        {'cache_root': '~/cache'}
+        >>> audeer.load_configuration(default_file_b, tracking=tracking)
+        {'pool_size': 4}
+        >>> tracking
+        {'cache_root': 'default', 'pool_size': 'default'}
+
     """
     cfg = _load_configuration_file(default_config_file)
 
