@@ -373,20 +373,16 @@ def _deep_merge(
     replaces the corresponding value in ``base``.
 
     When ``owner`` is given,
-    it is updated in place to mirror ``base``:
-    a key that is merged key by key (recursion)
-    keeps or creates a nested dict in ``owner``,
-    and a key that is replaced wholesale
-    (a scalar, a list, or a mapping introduced fresh)
-    is attributed to ``label`` at every leaf of its subtree.
+    it is updated in place like ``base``.
 
     Args:
         base: dictionary to merge into
         update: dictionary whose values take precedence
-        owner: tracking tree mirroring ``base``,
-            updated in place when given
-        label: label attributed to keys set or replaced by ``update``,
-            used only when ``owner`` is given
+        owner: owner tracking dictionary to merge into
+        label: label attributed to keys set or replaced by ``update``.
+            Every key ``update`` touches in this call gets the same
+            ``label``, since they all come from the same source.
+            Required when ``owner`` is given
 
     """
     for key, value in update.items():
@@ -401,7 +397,7 @@ def _deep_merge(
                 # ``base[key]`` is a mapping, so ``owner[key]`` is
                 # already a matching nested dict: either from the
                 # initial tracking tree, or set by an earlier iteration
-                # of this same loop (see the ``else`` branch below)
+                # of this same loop
                 _deep_merge(base[key], value, owner[key], label)
         else:
             base[key] = value
@@ -607,10 +603,6 @@ def _override_with_environment(
     it is updated in place to mirror ``cfg``:
     a key overridden by an environment variable
     is attributed to that variable's exact name.
-    The key is already known at this point,
-    since it is what the variable name is built from,
-    so no attribution is ever derived
-    by reversing a variable name back into a key.
     A whole-section JSON replacement
     attributes every one of its leaves
     to the section variable;
@@ -625,8 +617,7 @@ def _override_with_environment(
             (``PKG_`` at the top level, ``PKG_MODEL__`` below)
         types: declared types mirroring ``cfg``,
             used to cast values whose default is ``None``
-        owner: tracking tree mirroring ``cfg``,
-            updated in place when given
+        owner: owner tracking dictionary, updated in place when given
 
     """
     for key, default_value in cfg.items():
