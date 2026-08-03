@@ -1511,6 +1511,33 @@ def test_load_configuration_tracking_does_not_affect_cfg(tmpdir, monkeypatch):
     assert config_without == config_with
 
 
+def test_load_configuration_tracking_untouched_on_error(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\ntimeout: null\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "cache_root: ~/user\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "not-a-number")
+    tracking = {"preexisting": "sentinel"}
+    # By the time the environment override raises, the internal tracking
+    # tree already holds real entries built from the default file and
+    # ``user_file``. None of that leaks into the caller's ``tracking``
+    # mapping: it is only ever updated once, as the very last step, after
+    # every other step succeeded
+    with pytest.raises(ValueError, match="could not be converted"):
+        audeer.load_configuration(
+            default_file,
+            user_file,
+            env_prefix="PKG",
+            types={"timeout": float},
+            tracking=tracking,
+        )
+    assert tracking == {"preexisting": "sentinel"}
+
+
 def test_load_configuration_validate(tmpdir):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
