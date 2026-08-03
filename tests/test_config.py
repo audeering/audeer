@@ -1564,6 +1564,32 @@ def test_load_configuration_tracking_key_overridden_by_every_layer(tmpdir, monke
     }
 
 
+def test_load_configuration_tracking_merge_into_freshly_introduced_section(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        [{"tts": {"vendor": "iva-tts"}}, {"tts": {"region": "eu"}}],
+        tracking=tracking,
+    )
+    # The default file has no "tts" section at all: the first mapping
+    # entry introduces it fresh, and the second entry deep-merges an
+    # additional key into that same section. At that point owner["tts"]
+    # was set by the first entry's iteration, not by the initial tracking
+    # tree built from the default file
+    assert config == {
+        "cache_root": "~/cache",
+        "tts": {"vendor": "iva-tts", "region": "eu"},
+    }
+    assert tracking == {
+        "cache_root": "default",
+        "tts": {"vendor": "mapping[0]", "region": "mapping[1]"},
+    }
+
+
 def test_load_configuration_validate(tmpdir):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
