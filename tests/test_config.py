@@ -1282,7 +1282,7 @@ def test_load_configuration_tracking_user_dict(tmpdir):
     tracking = UserDict()
     config = audeer.load_configuration(default_file, tracking=tracking)
     assert config == {"cache_root": "~/cache"}
-    assert dict(tracking) == {"cache_root": "default"}
+    assert dict(tracking) == {"cache_root": f"file:{default_file}"}
 
 
 def test_load_configuration_tracking_default_only_key(tmpdir):
@@ -1292,9 +1292,9 @@ def test_load_configuration_tracking_default_only_key(tmpdir):
     )
     tracking = {}
     config = audeer.load_configuration(default_file, tracking=tracking)
-    # A key that no later layer touches is attributed to "default"
+    # A key that no later layer touches is attributed to the default file
     assert config == {"cache_root": "~/cache"}
-    assert tracking == {"cache_root": "default"}
+    assert tracking == {"cache_root": f"file:{default_file}"}
 
 
 def test_load_configuration_tracking_user_file(tmpdir):
@@ -1309,9 +1309,12 @@ def test_load_configuration_tracking_user_file(tmpdir):
     tracking = {}
     config = audeer.load_configuration(default_file, user_file, tracking=tracking)
     # A user config file is labeled by its own path,
-    # the untouched key stays attributed to "default"
+    # the untouched key stays attributed to the default file's path
     assert config == {"cache_root": "~/user", "shared": "/data"}
-    assert tracking == {"cache_root": f"file:{user_file}", "shared": "default"}
+    assert tracking == {
+        "cache_root": f"file:{user_file}",
+        "shared": f"file:{default_file}",
+    }
 
 
 def test_load_configuration_tracking_user_mapping(tmpdir):
@@ -1329,7 +1332,7 @@ def test_load_configuration_tracking_user_mapping(tmpdir):
     # (normalized) sequence; deep-merged keys keep their own attribution
     assert config == {"model": {"device": "cpu", "lora": False}}
     assert tracking == {
-        "model": {"device": "mapping[0]", "lora": "default"},
+        "model": {"device": "mapping[0]", "lora": f"file:{default_file}"},
     }
 
 
@@ -1367,7 +1370,7 @@ def test_load_configuration_tracking_environment_scalar(tmpdir, monkeypatch):
     # A scalar environment override is labeled by the exact variable name
     assert config == {"model": {"device": "cuda", "lora": False}}
     assert tracking == {
-        "model": {"device": "env:PKG_MODEL__DEVICE", "lora": "default"},
+        "model": {"device": "env:PKG_MODEL__DEVICE", "lora": f"file:{default_file}"},
     }
 
 
@@ -1437,7 +1440,7 @@ def test_load_configuration_tracking_accumulates_across_calls(tmpdir, monkeypatc
     assert config_a == {"cache_root": "~/cache-a", "timeout": 2.5}
     assert config_b == {"pool_size": 8}
     assert tracking == {
-        "cache_root": "default",
+        "cache_root": f"file:{default_file_a}",
         "timeout": "env:LIB_A_TIMEOUT",
         "pool_size": "env:LIB_B_POOL_SIZE",
     }
@@ -1558,7 +1561,7 @@ def test_load_configuration_tracking_key_overridden_by_every_layer(tmpdir, monke
     # touched each key, not an intermediate one
     assert config == {"cache_root": "~/cache", "shared": "/user-data", "timeout": 3}
     assert tracking == {
-        "cache_root": "default",
+        "cache_root": f"file:{default_file}",
         "shared": f"file:{user_file}",
         "timeout": "env:PKG_TIMEOUT",
     }
@@ -1585,7 +1588,7 @@ def test_load_configuration_tracking_merge_into_freshly_introduced_section(tmpdi
         "tts": {"vendor": "iva-tts", "region": "eu"},
     }
     assert tracking == {
-        "cache_root": "default",
+        "cache_root": f"file:{default_file}",
         "tts": {"vendor": "mapping[0]", "region": "mapping[1]"},
     }
 
@@ -1623,10 +1626,15 @@ def test_load_configuration_tracking_three_levels_deep(tmpdir, monkeypatch):
     # This checks the recursion through _label_tree(), _deep_merge(), and
     # _override_with_environment() actually holds three levels deep: the
     # overridden leaf is attributed to its variable, the untouched sibling
-    # at the same depth keeps "default"
+    # at the same depth keeps its "file:" label
     assert config == {"model": {"gpu": {"device": "mps", "memory": 8}}}
     assert tracking == {
-        "model": {"gpu": {"device": "env:PKG_MODEL__GPU__DEVICE", "memory": "default"}},
+        "model": {
+            "gpu": {
+                "device": "env:PKG_MODEL__GPU__DEVICE",
+                "memory": f"file:{default_file}",
+            },
+        },
     }
 
 
@@ -1645,7 +1653,7 @@ def test_load_configuration_tracking_multiple_mapping_entries(tmpdir):
     # counted by sequence position, not just "some mapping touched it"
     assert config == {"cache_root": "~/cache", "a": 1, "b": 2, "c": 3}
     assert tracking == {
-        "cache_root": "default",
+        "cache_root": f"file:{default_file}",
         "a": "mapping[0]",
         "b": "mapping[1]",
         "c": "mapping[2]",

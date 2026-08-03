@@ -128,9 +128,8 @@ def load_configuration(
             ``tracking`` mirrors the (possibly nested) structure
             of the returned configuration,
             and each leaf is a label naming its source:
-            ``"default"`` for ``default_config_file``,
-            ``f"file:{path}"`` for the ``user_configs`` entry
-            that provided a file,
+            ``f"file:{path}"`` for ``default_config_file``
+            or a ``user_configs`` entry that provided a file,
             ``"mapping[<i>]"`` for the ``user_configs`` entry
             at index ``<i>`` that provided an already parsed mapping
             (indices count every entry of the sequence,
@@ -210,9 +209,9 @@ def load_configuration(
 
         ``tracking`` records which layer set each key's effective value,
         mirroring the (possibly nested) structure of the configuration.
-        A key untouched by any later layer keeps ``"default"``,
-        even a nested key sitting right next to a sibling
-        that an environment variable does override.
+        A key untouched by any later layer keeps the default file's
+        own ``"file:"`` label, even a nested key sitting right next to
+        a sibling that an environment variable does override.
 
         >>> config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")
         >>> with open(config_file, "w") as file:
@@ -222,7 +221,7 @@ def load_configuration(
         >>> audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
         {'model': {'device': 'cuda', 'lora': False}}
         >>> tracking
-        {'model': {'device': 'env:PKG_MODEL__DEVICE', 'lora': 'default'}}
+        {'model': {'device': 'env:PKG_MODEL__DEVICE', 'lora': 'file:...config.yaml'}}
         >>> del os.environ["PKG_MODEL__DEVICE"]
 
         Passing the same ``tracking`` mapping to a second call
@@ -240,7 +239,7 @@ def load_configuration(
         >>> audeer.load_configuration(default_file_b, tracking=tracking)
         {'pool_size': 4}
         >>> tracking
-        {'cache_root': 'default', 'pool_size': 'default'}
+        {'cache_root': 'file:...a.yaml', 'pool_size': 'file:...b.yaml'}
 
     """
     cfg = _load_configuration_file(default_config_file)
@@ -256,7 +255,7 @@ def load_configuration(
     # ever built.
     owner: dict | None = None
     if tracking is not None:
-        owner = _label_tree(cfg, "default")
+        owner = _label_tree(cfg, f"file:{default_config_file}")
 
     if user_configs is not None:
         if isinstance(user_configs, (str, Mapping)):
