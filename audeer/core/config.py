@@ -124,10 +124,7 @@ def load_configuration(
             after files and environment variables are merged
         tracking: mutable mapping that records,
             for each configuration key,
-            which layer set its effective value.
-            ``tracking`` mirrors the (possibly nested) structure
-            of the returned configuration,
-            and each leaf is a label naming its source:
+            which layer set its effective value:
             ``f"file:{path}"`` for ``default_config_file``
             or a ``user_configs`` entry that provided a file,
             ``"mapping[<i>]"`` for the ``user_configs`` entry
@@ -139,21 +136,13 @@ def load_configuration(
             for an environment variable override.
             A whole-section JSON environment variable
             labels every key it sets;
-            a more specific nested variable applied afterwards
-            re-labels only the key it overrides,
-            leaving its siblings labeled by the section variable.
-            Entries are added to ``tracking`` in place,
-            exactly like ``dict.update()``;
-            it is never cleared first.
-            Pass a fresh ``{}`` for a clean view of a single call,
-            or reuse the same mapping across several calls
+            a more specific nested variable re-labels
+            only the key it overrides.
+            Entries are added to ``tracking`` in place.
+            Reuse the same mapping across several calls
             to accumulate their entries.
-            ``tracking`` never influences the returned configuration,
-            it only records how it was assembled.
-            If ``None`` (the default),
+            If ``None``,
             no tracking is performed
-            and calling ``load_configuration()``
-            costs the same as without this argument
 
     Returns:
         merged configuration dictionary
@@ -207,11 +196,7 @@ def load_configuration(
         {'hosts': ['host1', 'host2']}
         >>> del os.environ["APP_HOSTS"]
 
-        ``tracking`` records which layer set each key's effective value,
-        mirroring the (possibly nested) structure of the configuration.
-        A key untouched by any later layer keeps the default file's
-        own ``"file:"`` label, even a nested key sitting right next to
-        a sibling that an environment variable does override.
+        ``tracking`` records which layer set each key's effective value.
 
         >>> config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")
         >>> with open(config_file, "w") as file:
