@@ -208,18 +208,22 @@ def load_configuration(
         {'hosts': ['host1', 'host2']}
         >>> del os.environ["APP_HOSTS"]
 
-        ``tracking`` records which layer set each key's effective value.
+        ``tracking`` records which layer set each key's effective value,
+        mirroring the (possibly nested) structure of the configuration.
+        A key untouched by any later layer keeps ``"default"``,
+        even a nested key sitting right next to a sibling
+        that an environment variable does override.
 
         >>> config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")
         >>> with open(config_file, "w") as file:
-        ...     _ = file.write("cache_root: ~/cache\n")
+        ...     _ = file.write("model:\n  device: cpu\n  lora: false\n")
+        >>> os.environ["PKG_MODEL__DEVICE"] = "cuda"
         >>> tracking = {}
-        >>> audeer.load_configuration(
-        ...     config_file, {"cache_root": "~/user"}, tracking=tracking
-        ... )
-        {'cache_root': '~/user'}
+        >>> audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
+        {'model': {'device': 'cuda', 'lora': False}}
         >>> tracking
-        {'cache_root': 'mapping[0]'}
+        {'model': {'device': 'env:PKG_MODEL__DEVICE', 'lora': 'default'}}
+        >>> del os.environ["PKG_MODEL__DEVICE"]
 
     """
     cfg = _load_configuration_file(default_config_file)
