@@ -1538,6 +1538,32 @@ def test_load_configuration_tracking_untouched_on_error(tmpdir, monkeypatch):
     assert tracking == {"preexisting": "sentinel"}
 
 
+def test_load_configuration_tracking_key_overridden_by_every_layer(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\nshared: /data\ntimeout: 1\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "shared: /user-data\ntimeout: 2\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "3")
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file, user_file, env_prefix="PKG", tracking=tracking
+    )
+    # "cache_root" is set only by the default file, "shared" is overridden
+    # once (by the user file), and "timeout" is overridden by every layer
+    # in turn: tracking must show the outermost layer that actually
+    # touched each key, not an intermediate one
+    assert config == {"cache_root": "~/cache", "shared": "/user-data", "timeout": 3}
+    assert tracking == {
+        "cache_root": "default",
+        "shared": f"file:{user_file}",
+        "timeout": "env:PKG_TIMEOUT",
+    }
+
+
 def test_load_configuration_validate(tmpdir):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
