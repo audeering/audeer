@@ -1630,6 +1630,28 @@ def test_load_configuration_tracking_three_levels_deep(tmpdir, monkeypatch):
     }
 
 
+def test_load_configuration_tracking_multiple_mapping_entries(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        [{"a": 1}, {"b": 2}, {"c": 3}],
+        tracking=tracking,
+    )
+    # Three mapping-only entries, no file mixed in: each index must be
+    # counted by sequence position, not just "some mapping touched it"
+    assert config == {"cache_root": "~/cache", "a": 1, "b": 2, "c": 3}
+    assert tracking == {
+        "cache_root": "default",
+        "a": "mapping[0]",
+        "b": "mapping[1]",
+        "c": "mapping[2]",
+    }
+
+
 def test_load_configuration_validate(tmpdir):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
