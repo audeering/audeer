@@ -1590,6 +1590,25 @@ def test_load_configuration_tracking_merge_into_freshly_introduced_section(tmpdi
     }
 
 
+def test_load_configuration_tracking_section_collapsed_to_scalar(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n  lora: false\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        {"model": "none"},
+        tracking=tracking,
+    )
+    # A scalar in a later layer replaces a whole default section wholesale:
+    # the previously nested per-leaf attribution ("device", "lora") must
+    # collapse into a single flat label for "model", not leave stale
+    # nested entries behind
+    assert config == {"model": "none"}
+    assert tracking == {"model": "mapping[0]"}
+
+
 def test_load_configuration_validate(tmpdir):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
