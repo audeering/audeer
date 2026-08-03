@@ -1609,6 +1609,27 @@ def test_load_configuration_tracking_section_collapsed_to_scalar(tmpdir):
     assert tracking == {"model": "mapping[0]"}
 
 
+def test_load_configuration_tracking_three_levels_deep(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  gpu:\n    device: cuda\n    memory: 8\n",
+    )
+    monkeypatch.setenv("PKG_MODEL__GPU__DEVICE", "mps")
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file, env_prefix="PKG", tracking=tracking
+    )
+    # Every existing nested test stops at one level (e.g. "model.device").
+    # This checks the recursion through _label_tree(), _deep_merge(), and
+    # _override_with_environment() actually holds three levels deep: the
+    # overridden leaf is attributed to its variable, the untouched sibling
+    # at the same depth keeps "default"
+    assert config == {"model": {"gpu": {"device": "mps", "memory": 8}}}
+    assert tracking == {
+        "model": {"gpu": {"device": "env:PKG_MODEL__GPU__DEVICE", "memory": "default"}},
+    }
+
+
 def test_load_configuration_validate(tmpdir):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
