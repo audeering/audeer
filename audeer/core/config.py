@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from collections.abc import Mapping
+from collections.abc import MutableMapping
 from collections.abc import Sequence
 import json
 import os
@@ -12,6 +13,7 @@ def load_configuration(
     env_prefix: str | None = None,
     types: Mapping | None = None,
     validate: Callable[[dict], None] | None = None,
+    tracking: MutableMapping | None = None,
 ) -> dict:
     r"""Load configuration from files and environment variables.
 
@@ -120,6 +122,27 @@ def load_configuration(
             dictionary and raises an error if it is invalid.
             It is applied once,
             after files and environment variables are merged
+        tracking: mutable mapping that records,
+            for each configuration key,
+            which layer set its effective value:
+            ``f"file:{path}"`` for ``default_config_file``
+            or a ``user_configs`` entry that provided a file,
+            ``"mapping[<i>]"`` for the ``user_configs`` entry
+            at index ``<i>`` that provided an already parsed mapping
+            (indices count every entry of the sequence,
+            file or mapping alike),
+            or ``f"env:{name}"`` naming the exact environment variable
+            (e.g. ``"env:PKG_MODEL__DEVICE"``)
+            for an environment variable override.
+            A whole-section JSON environment variable
+            labels every key it sets;
+            a more specific nested variable re-labels
+            only the key it overrides.
+            Entries are added to ``tracking`` in place.
+            Reuse the same mapping across several calls
+            to accumulate their entries.
+            If ``None``,
+            no tracking is performed
 
     Returns:
         merged configuration dictionary
@@ -141,6 +164,7 @@ def load_configuration(
             is not a mapping
         ValueError: if a ``types`` entry
             does not match any configuration key
+        ValueError: if ``tracking`` is not a mutable mapping
 
     Examples:
         >>> import tempfile
@@ -173,18 +197,52 @@ def load_configuration(
         {'hosts': ['host1', 'host2']}
         >>> del os.environ["APP_HOSTS"]
 
+        ``tracking`` records which layer set each key's effective value.
+
+        >>> config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")
+        >>> with open(config_file, "w") as file:
+        ...     _ = file.write("model:\n  device: cpu\n  lora: false\n")
+        >>> os.environ["PKG_MODEL__DEVICE"] = "cuda"
+        >>> tracking = {}
+        >>> audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
+        {'model': {'device': 'cuda', 'lora': False}}
+        >>> tracking
+        {'model': {'device': 'env:PKG_MODEL__DEVICE', 'lora': 'file:...config.yaml'}}
+        >>> del os.environ["PKG_MODEL__DEVICE"]
+
     """
     cfg = _load_configuration_file(default_config_file)
+
+    if tracking is not None and not isinstance(tracking, MutableMapping):
+        raise ValueError(
+            f"'tracking' must be a mutable mapping, but is '{type(tracking).__name__}'."
+        )
+
+    # Tracking is a genuine structural no-op when off: ``owner`` stays
+    # ``None``, so ``_deep_merge()``/``_override_with_environment()`` below
+    # run exactly the same path they always did, and no tracking tree is
+    # ever built.
+    owner: dict | None = None
+    if tracking is not None:
+        owner = _label_tree(cfg, f"file:{default_config_file}")
 
     if user_configs is not None:
         if isinstance(user_configs, (str, Mapping)):
             user_configs = [user_configs]
-        for user_config in user_configs:
+        for i, user_config in enumerate(user_configs):
             if isinstance(user_config, Mapping):
                 update = _copy_mapping(user_config)
             else:
                 update = _load_configuration_file(user_config)
-            _deep_merge(cfg, update)
+            if owner is None:
+                _deep_merge(cfg, update)
+            else:
+                label = (
+                    f"mapping[{i}]"
+                    if isinstance(user_config, Mapping)
+                    else f"file:{user_config}"
+                )
+                _deep_merge(cfg, update, owner, label)
 
     if types is not None:
         if not isinstance(types, Mapping):
@@ -194,10 +252,13 @@ def load_configuration(
         _validate_types(cfg, types)
 
     if env_prefix is not None:
-        _override_with_environment(cfg, f"{env_prefix}_", types or {})
+        _override_with_environment(cfg, f"{env_prefix}_", types or {}, owner)
 
     if validate is not None:
         validate(cfg)
+
+    if owner is not None:
+        tracking.update(owner)
 
     return cfg
 
@@ -237,7 +298,40 @@ def _copy_value(value: object) -> object:
     return value
 
 
-def _deep_merge(base: dict, update: dict) -> None:
+def _label_tree(mapping: Mapping, label: str) -> dict:
+    r"""Build a tracking tree that attributes every key to ``label``.
+
+    Mirrors the (possibly nested) structure of ``mapping``,
+    replacing every leaf value with ``label``.
+    Used both for the initial tracking tree
+    (every key starts out attributed to the default file)
+    and to expand a single label into a per-leaf tree,
+    e.g. when a whole configuration section
+    is replaced by a JSON environment variable
+    and a more specific, nested variable
+    later overrides one of its keys.
+
+    Args:
+        mapping: mapping whose structure is mirrored
+        label: label assigned to every leaf
+
+    Returns:
+        tracking tree, the same shape as ``mapping``,
+        with ``label`` at every leaf
+
+    """
+    return {
+        key: _label_tree(value, label) if isinstance(value, Mapping) else label
+        for key, value in mapping.items()
+    }
+
+
+def _deep_merge(
+    base: dict,
+    update: Mapping,
+    owner: dict | None = None,
+    label: str | None = None,
+) -> None:
     r"""Recursively merge ``update`` into ``base`` in place.
 
     Nested mappings are merged key by key,
@@ -246,9 +340,17 @@ def _deep_merge(base: dict, update: dict) -> None:
     Any non-mapping value (including lists)
     replaces the corresponding value in ``base``.
 
+    When ``owner`` is given,
+    it is updated in place like ``base``.
+
     Args:
         base: dictionary to merge into
         update: dictionary whose values take precedence
+        owner: owner tracking dictionary to merge into
+        label: label attributed to keys set or replaced by ``update``.
+            Every key ``update`` touches in this call gets the same
+            ``label``, since they all come from the same source.
+            Required when ``owner`` is given
 
     """
     for key, value in update.items():
@@ -257,9 +359,20 @@ def _deep_merge(base: dict, update: dict) -> None:
             and isinstance(base[key], Mapping)
             and isinstance(value, Mapping)
         ):
-            _deep_merge(base[key], value)
+            if owner is None:
+                _deep_merge(base[key], value)
+            else:
+                # ``base[key]`` is a mapping, so ``owner[key]`` is
+                # already a matching nested dict: either from the
+                # initial tracking tree, or set by an earlier iteration
+                # of this same loop
+                _deep_merge(base[key], value, owner[key], label)
         else:
             base[key] = value
+            if owner is not None:
+                owner[key] = (
+                    _label_tree(value, label) if isinstance(value, Mapping) else label
+                )
 
 
 def _load_configuration_file(config_file: str) -> dict:
@@ -444,6 +557,7 @@ def _override_with_environment(
     cfg: dict,
     env_prefix: str,
     types: Mapping,
+    owner: dict | None = None,
 ) -> None:
     r"""Override configuration values with environment variables in place.
 
@@ -453,6 +567,17 @@ def _override_with_environment(
     e.g. ``model.device`` with prefix ``PKG``
     is overridden by ``PKG_MODEL__DEVICE``.
 
+    When ``owner`` is given,
+    it is updated in place to mirror ``cfg``:
+    a key overridden by an environment variable
+    is attributed to that variable's exact name.
+    A whole-section JSON replacement
+    attributes every one of its leaves
+    to the section variable;
+    a more specific, nested variable
+    applied afterwards then re-attributes
+    only the one leaf it overrides.
+
     Args:
         cfg: configuration dictionary, modified in place
         env_prefix: name prefix accumulated so far,
@@ -460,6 +585,7 @@ def _override_with_environment(
             (``PKG_`` at the top level, ``PKG_MODEL__`` below)
         types: declared types mirroring ``cfg``,
             used to cast values whose default is ``None``
+        owner: owner tracking dictionary, updated in place when given
 
     """
     for key, default_value in cfg.items():
@@ -491,7 +617,14 @@ def _override_with_environment(
                     key_type or {},
                 )
                 cfg[key] = parsed
-            _override_with_environment(cfg[key], f"{name}__", key_type or {})
+                if owner is not None:
+                    owner[key] = _label_tree(parsed, f"env:{name}")
+            _override_with_environment(
+                cfg[key],
+                f"{name}__",
+                key_type or {},
+                owner[key] if owner is not None else None,
+            )
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
                 name,
@@ -503,7 +636,16 @@ def _override_with_environment(
                 # A mapping introduced via a declared ``dict`` type
                 # behaves like a section, so nested variables
                 # are applied on top of it as well
-                _override_with_environment(cfg[key], f"{name}__", {})
+                if owner is not None:
+                    owner[key] = _label_tree(cfg[key], f"env:{name}")
+                _override_with_environment(
+                    cfg[key],
+                    f"{name}__",
+                    {},
+                    owner[key] if owner is not None else None,
+                )
+            elif owner is not None:
+                owner[key] = f"env:{name}"
 
 
 def _parse_environment_value(

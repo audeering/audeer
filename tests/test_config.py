@@ -1,4 +1,5 @@
 import collections
+from collections import UserDict
 import pathlib
 from types import MappingProxyType
 
@@ -1236,6 +1237,427 @@ def test_load_configuration_environment_invalid(
     monkeypatch.setenv(name, value)
     with pytest.raises(ValueError, match="could not be converted to the type"):
         audeer.load_configuration(config_file, env_prefix="PKG")
+
+
+def test_load_configuration_tracking_omitted(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    # Without ``tracking``, the return value is the plain configuration
+    # dictionary, exactly as before the feature existed
+    config = audeer.load_configuration(default_file)
+    assert config == {"cache_root": "~/cache"}
+    assert type(config) is dict
+
+
+def test_load_configuration_tracking_none(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    # ``tracking=None`` is explicitly the same as omitting it:
+    # a structural no-op, not "compute it and throw it away"
+    config = audeer.load_configuration(default_file, tracking=None)
+    assert config == {"cache_root": "~/cache"}
+    assert type(config) is dict
+
+
+def test_load_configuration_tracking_not_a_mutable_mapping(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    # ``tracking`` must be a mutable mapping, like ``types`` must be a mapping
+    with pytest.raises(ValueError, match="must be a mutable mapping"):
+        audeer.load_configuration(default_file, tracking="not-a-mapping")
+
+
+def test_load_configuration_tracking_user_dict(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    # A ``MutableMapping`` that is not a ``dict`` subclass is accepted too
+    tracking = UserDict()
+    config = audeer.load_configuration(default_file, tracking=tracking)
+    assert config == {"cache_root": "~/cache"}
+    assert dict(tracking) == {"cache_root": f"file:{default_file}"}
+
+
+def test_load_configuration_tracking_default_only_key(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(default_file, tracking=tracking)
+    # A key that no later layer touches is attributed to the default file
+    assert config == {"cache_root": "~/cache"}
+    assert tracking == {"cache_root": f"file:{default_file}"}
+
+
+def test_load_configuration_tracking_user_file(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\nshared: /data\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "cache_root: ~/user\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(default_file, user_file, tracking=tracking)
+    # A user config file is labeled by its own path,
+    # the untouched key stays attributed to the default file's path
+    assert config == {"cache_root": "~/user", "shared": "/data"}
+    assert tracking == {
+        "cache_root": f"file:{user_file}",
+        "shared": f"file:{default_file}",
+    }
+
+
+def test_load_configuration_tracking_user_mapping(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n  lora: false\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        {"model": {"device": "cpu"}},
+        tracking=tracking,
+    )
+    # A mapping in ``user_configs`` is labeled by its index in the
+    # (normalized) sequence; deep-merged keys keep their own attribution
+    assert config == {"model": {"device": "cpu", "lora": False}}
+    assert tracking == {
+        "model": {"device": "mapping[0]", "lora": f"file:{default_file}"},
+    }
+
+
+def test_load_configuration_tracking_user_configs_mixed_sequence(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "cache_root: ~/user\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        [user_file, {"cache_root": "~/mapping"}],
+        tracking=tracking,
+    )
+    # The mapping's index reflects its position in the sequence,
+    # not the count of mapping entries alone
+    assert config == {"cache_root": "~/mapping"}
+    assert tracking == {"cache_root": "mapping[1]"}
+
+
+def test_load_configuration_tracking_environment_scalar(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\n",
+    )
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file, env_prefix="PKG", tracking=tracking
+    )
+    # A scalar environment override is labeled by the exact variable name
+    assert config == {"model": {"device": "cuda", "lora": False}}
+    assert tracking == {
+        "model": {"device": "env:PKG_MODEL__DEVICE", "lora": f"file:{default_file}"},
+    }
+
+
+def test_load_configuration_tracking_environment_whole_dict(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\n",
+    )
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda", "lora": true}')
+    tracking = {}
+    config = audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
+    # A whole-section JSON replace attributes every leaf it sets
+    # to the one variable that replaced the section
+    assert config == {"model": {"device": "cuda", "lora": True}}
+    assert tracking == {
+        "model": {"device": "env:PKG_MODEL", "lora": "env:PKG_MODEL"},
+    }
+
+
+def test_load_configuration_tracking_environment_whole_dict_then_nested(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\n",
+    )
+    # The whole-section variable sets both keys, then a more specific
+    # nested variable overrides just "device" afterwards
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda", "lora": true}')
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "mps")
+    tracking = {}
+    config = audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
+    assert config == {"model": {"device": "mps", "lora": True}}
+    # "device" is re-attributed to the more specific variable,
+    # "lora" (untouched by it) stays attributed to the section variable
+    assert tracking == {
+        "model": {"device": "env:PKG_MODEL__DEVICE", "lora": "env:PKG_MODEL"},
+    }
+
+
+def test_load_configuration_tracking_accumulates_across_calls(tmpdir, monkeypatch):
+    default_file_a = write_config(
+        audeer.path(tmpdir, "default_a.yaml"),
+        "cache_root: ~/cache-a\ntimeout: null\n",
+    )
+    default_file_b = write_config(
+        audeer.path(tmpdir, "default_b.yaml"),
+        "pool_size: 4\n",
+    )
+    monkeypatch.setenv("LIB_A_TIMEOUT", "2.5")
+    monkeypatch.setenv("LIB_B_POOL_SIZE", "8")
+    tracking = {}
+    # Two independent calls sharing the same ``tracking`` dict:
+    # like ``dict.update()``, entries from both calls are kept,
+    # the second call does not wipe out the first
+    config_a = audeer.load_configuration(
+        default_file_a,
+        env_prefix="LIB_A",
+        types={"timeout": float},
+        tracking=tracking,
+    )
+    config_b = audeer.load_configuration(
+        default_file_b,
+        env_prefix="LIB_B",
+        tracking=tracking,
+    )
+    assert config_a == {"cache_root": "~/cache-a", "timeout": 2.5}
+    assert config_b == {"pool_size": 8}
+    assert tracking == {
+        "cache_root": f"file:{default_file_a}",
+        "timeout": "env:LIB_A_TIMEOUT",
+        "pool_size": "env:LIB_B_POOL_SIZE",
+    }
+
+
+def test_load_configuration_tracking_types_none_default_environment(
+    tmpdir, monkeypatch
+):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: null\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "2.5")
+    tracking = {}
+    # A key declared in ``types`` because its default is ``None``
+    # is still attributed to the environment variable that overrides it
+    config = audeer.load_configuration(
+        default_file,
+        env_prefix="PKG",
+        types={"timeout": float},
+        tracking=tracking,
+    )
+    assert config == {"timeout": 2.5}
+    assert tracking == {"timeout": "env:PKG_TIMEOUT"}
+
+
+def test_load_configuration_tracking_environment_declared_dict_then_nested(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model: null\n",
+    )
+    # A None default declared as ``dict`` is introduced by one variable,
+    # then refined by a nested one, exactly like without tracking;
+    # both are attributed to the variable that actually set them
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cpu", "batch": 8}')
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    tracking = {}
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"model": dict},
+        tracking=tracking,
+    )
+    assert config == {"model": {"device": "cuda", "batch": 8}}
+    assert tracking == {
+        "model": {"device": "env:PKG_MODEL__DEVICE", "batch": "env:PKG_MODEL"},
+    }
+
+
+def test_load_configuration_tracking_does_not_affect_cfg(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model:\n  lora: true\n",
+    )
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    # The exact same call, once with tracking, once without,
+    # must produce an identical configuration:
+    # ``tracking`` is a pure side channel
+    config_without = audeer.load_configuration(
+        default_file, user_file, env_prefix="PKG"
+    )
+    config_with = audeer.load_configuration(
+        default_file, user_file, env_prefix="PKG", tracking={}
+    )
+    assert config_without == config_with
+
+
+def test_load_configuration_tracking_untouched_on_error(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\ntimeout: null\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "cache_root: ~/user\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "not-a-number")
+    tracking = {"preexisting": "sentinel"}
+    # By the time the environment override raises, the internal tracking
+    # tree already holds real entries built from the default file and
+    # ``user_file``. None of that leaks into the caller's ``tracking``
+    # mapping: it is only ever updated once, as the very last step, after
+    # every other step succeeded
+    with pytest.raises(ValueError, match="could not be converted"):
+        audeer.load_configuration(
+            default_file,
+            user_file,
+            env_prefix="PKG",
+            types={"timeout": float},
+            tracking=tracking,
+        )
+    assert tracking == {"preexisting": "sentinel"}
+
+
+def test_load_configuration_tracking_key_overridden_by_every_layer(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\nshared: /data\ntimeout: 1\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "shared: /user-data\ntimeout: 2\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "3")
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file, user_file, env_prefix="PKG", tracking=tracking
+    )
+    # "cache_root" is set only by the default file, "shared" is overridden
+    # once (by the user file), and "timeout" is overridden by every layer
+    # in turn: tracking must show the outermost layer that actually
+    # touched each key, not an intermediate one
+    assert config == {"cache_root": "~/cache", "shared": "/user-data", "timeout": 3}
+    assert tracking == {
+        "cache_root": f"file:{default_file}",
+        "shared": f"file:{user_file}",
+        "timeout": "env:PKG_TIMEOUT",
+    }
+
+
+def test_load_configuration_tracking_merge_into_freshly_introduced_section(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        [{"tts": {"vendor": "iva-tts"}}, {"tts": {"region": "eu"}}],
+        tracking=tracking,
+    )
+    # The default file has no "tts" section at all: the first mapping
+    # entry introduces it fresh, and the second entry deep-merges an
+    # additional key into that same section. At that point owner["tts"]
+    # was set by the first entry's iteration, not by the initial tracking
+    # tree built from the default file
+    assert config == {
+        "cache_root": "~/cache",
+        "tts": {"vendor": "iva-tts", "region": "eu"},
+    }
+    assert tracking == {
+        "cache_root": f"file:{default_file}",
+        "tts": {"vendor": "mapping[0]", "region": "mapping[1]"},
+    }
+
+
+def test_load_configuration_tracking_section_collapsed_to_scalar(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cuda\n  lora: false\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        {"model": "none"},
+        tracking=tracking,
+    )
+    # A scalar in a later layer replaces a whole default section wholesale:
+    # the previously nested per-leaf attribution ("device", "lora") must
+    # collapse into a single flat label for "model", not leave stale
+    # nested entries behind
+    assert config == {"model": "none"}
+    assert tracking == {"model": "mapping[0]"}
+
+
+def test_load_configuration_tracking_three_levels_deep(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  gpu:\n    device: cuda\n    memory: 8\n",
+    )
+    monkeypatch.setenv("PKG_MODEL__GPU__DEVICE", "mps")
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file, env_prefix="PKG", tracking=tracking
+    )
+    # Every existing nested test stops at one level (e.g. "model.device").
+    # This checks the recursion through _label_tree(), _deep_merge(), and
+    # _override_with_environment() actually holds three levels deep: the
+    # overridden leaf is attributed to its variable, the untouched sibling
+    # at the same depth keeps its "file:" label
+    assert config == {"model": {"gpu": {"device": "mps", "memory": 8}}}
+    assert tracking == {
+        "model": {
+            "gpu": {
+                "device": "env:PKG_MODEL__GPU__DEVICE",
+                "memory": f"file:{default_file}",
+            },
+        },
+    }
+
+
+def test_load_configuration_tracking_multiple_mapping_entries(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        [{"a": 1}, {"b": 2}, {"c": 3}],
+        tracking=tracking,
+    )
+    # Three mapping-only entries, no file mixed in: each index must be
+    # counted by sequence position, not just "some mapping touched it"
+    assert config == {"cache_root": "~/cache", "a": 1, "b": 2, "c": 3}
+    assert tracking == {
+        "cache_root": f"file:{default_file}",
+        "a": "mapping[0]",
+        "b": "mapping[1]",
+        "c": "mapping[2]",
+    }
 
 
 def test_load_configuration_validate(tmpdir):
