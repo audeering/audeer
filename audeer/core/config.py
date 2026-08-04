@@ -649,8 +649,6 @@ def _override_with_environment(
                 default_value,
                 key_type,
             )
-            if owner is not None:
-                owner[key] = f"env:{name}"
             if isinstance(cfg[key], Mapping):
                 # A mapping introduced via a declared ``dict`` type
                 # behaves like a section, so nested variables
@@ -663,6 +661,8 @@ def _override_with_environment(
                     {},
                     owner[key] if owner is not None else None,
                 )
+            elif owner is not None:
+                owner[key] = f"env:{name}"
 
 
 def _parse_environment_value(
