@@ -24,7 +24,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v9
+      uses: astral-sh/setup-uv@v9.0.0
 
     - name: Test building documentation
       run: uv run python -m sphinx docs/ docs/_build/ -b html -W
