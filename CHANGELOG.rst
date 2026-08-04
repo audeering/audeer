@@ -7,6 +7,13 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.5.0 (2026-08-04)
+--------------------------
+
+* Added: ``audeer.load_configuration()``
+* Changed: exclude ``tests/`` and ``docs/`` folders from the Python package
+
+
 Version 2.4.0 (2026-02-20)
 --------------------------
 
