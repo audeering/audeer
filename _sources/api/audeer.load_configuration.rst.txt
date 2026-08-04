@@ -1,0 +1,6 @@
+﻿load\_configuration\(\)
+=======================
+
+.. currentmodule:: audeer
+
+.. autofunction:: audeer.load_configuration

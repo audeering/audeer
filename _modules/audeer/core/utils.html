@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v2.4.0
+                v2.5.0
               </div>
             
           
@@ -723,9 +723,33 @@
 
 <span class="sd">    .. note:: Result values are returned in order of ``params``.</span>
 
+<span class="sd">    When ``multiprocessing`` is ``True``,</span>
+<span class="sd">    ``task_func`` and all values in ``params``</span>
+<span class="sd">    must be picklable,</span>
+<span class="sd">    and ``task_func`` must not depend</span>
+<span class="sd">    on runtime-modified global state.</span>
+<span class="sd">    Worker processes are created</span>
+<span class="sd">    using the start method returned by</span>
+<span class="sd">    :func:`multiprocessing.get_start_method`.</span>
+<span class="sd">    If you have called</span>
+<span class="sd">    :func:`multiprocessing.set_start_method`</span>
+<span class="sd">    beforehand,</span>
+<span class="sd">    that choice is respected;</span>
+<span class="sd">    otherwise the interpreter&#39;s</span>
+<span class="sd">    platform-specific default is used</span>
+<span class="sd">    (see :func:`multiprocessing.get_start_method`</span>
+<span class="sd">    for details).</span>
+<span class="sd">    With ``&quot;spawn&quot;``,</span>
+<span class="sd">    each worker re-imports the module</span>
+<span class="sd">    containing ``task_func``,</span>
+<span class="sd">    so any global state modified after import</span>
+<span class="sd">    will not be visible to workers.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        task_func: task function with one or more</span>
-<span class="sd">            parameters, e.g. ``x, y, z``, and optionally returning a value</span>
+<span class="sd">            parameters, e.g. ``x, y, z``, and optionally returning a value.</span>
+<span class="sd">            When ``multiprocessing`` is ``True``,</span>
+<span class="sd">            this must be a picklable top-level function</span>
 <span class="sd">        params: sequence of tuples holding parameters for each task.</span>
 <span class="sd">            Each tuple contains a sequence of positional arguments and a</span>
 <span class="sd">            dictionary with keyword arguments, e.g.:</span>
@@ -1127,7 +1151,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/02/20 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/08/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -1168,6 +1192,7 @@
 
   
 
+  <script type="text/javascript" src="../../../_static/js/jquery.js"></script>
   <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
   <script type="text/javascript">

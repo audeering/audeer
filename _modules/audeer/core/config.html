@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v2.4.0
+                v2.5.0
               </div>
             
           
@@ -138,9 +138,719 @@
            <div itemprop="articleBody">
             
   <h1>Source code for audeer.core.config</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableMapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+
+<div class="viewcode-block" id="load_configuration">
+<a class="viewcode-back" href="../../../api/audeer.load_configuration.html#audeer.load_configuration">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_configuration</span><span class="p">(</span>
+    <span class="n">default_config_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">user_configs</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">env_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">types</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">validate</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">tracking</span><span class="p">:</span> <span class="n">MutableMapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load configuration from files and environment variables.</span>
+
+<span class="sd">    Configuration values are collected from,</span>
+<span class="sd">    in order of increasing precedence:</span>
+
+<span class="sd">    1. ``default_config_file``,</span>
+<span class="sd">       e.g. the configuration file shipped with a package</span>
+<span class="sd">    2. ``user_configs``,</span>
+<span class="sd">       applied in the given order</span>
+<span class="sd">       (a later entry overrides an earlier one)</span>
+<span class="sd">    3. environment variables,</span>
+<span class="sd">       if ``env_prefix`` is given</span>
+
+<span class="sd">    Configuration files or mappings are deep-merged:</span>
+<span class="sd">    nested mappings are merged key by key,</span>
+<span class="sd">    so a section in a user file</span>
+<span class="sd">    only overrides the keys it defines</span>
+<span class="sd">    and keeps the remaining keys from the default.</span>
+<span class="sd">    Any non-mapping value (including a list)</span>
+<span class="sd">    replaces the previous value as a whole.</span>
+
+<span class="sd">    Environment variables are matched</span>
+<span class="sd">    against the upper-cased configuration keys,</span>
+<span class="sd">    prefixed with ``env_prefix`` and an underscore,</span>
+<span class="sd">    e.g. the key ``cache_root``</span>
+<span class="sd">    is overridden by ``&lt;env_prefix&gt;_CACHE_ROOT``.</span>
+<span class="sd">    Keys inside nested mappings are addressed</span>
+<span class="sd">    by joining the levels with ``__``,</span>
+<span class="sd">    e.g. ``model.device``</span>
+<span class="sd">    is overridden by ``&lt;env_prefix&gt;_MODEL__DEVICE``.</span>
+<span class="sd">    A whole nested mapping can instead be replaced</span>
+<span class="sd">    by a single variable holding a JSON object,</span>
+<span class="sd">    e.g. ``&lt;env_prefix&gt;_MODEL=&#39;{&quot;device&quot;: &quot;cpu&quot;}&#39;``;</span>
+<span class="sd">    the object replaces the mapping as a whole</span>
+<span class="sd">    (keys it omits are dropped)</span>
+<span class="sd">    and may introduce keys not present in the files.</span>
+<span class="sd">    Each value of the object must match the type</span>
+<span class="sd">    of the default value it replaces</span>
+<span class="sd">    (an integer is accepted for a float default),</span>
+<span class="sd">    otherwise a ``ValueError`` is raised;</span>
+<span class="sd">    introduced keys and keys whose default is ``None``</span>
+<span class="sd">    keep their JSON type.</span>
+<span class="sd">    Nested variables are applied afterwards</span>
+<span class="sd">    and therefore take precedence,</span>
+<span class="sd">    e.g. ``&lt;env_prefix&gt;_MODEL__DEVICE``</span>
+<span class="sd">    overrides ``device`` from ``&lt;env_prefix&gt;_MODEL``.</span>
+<span class="sd">    The value of an environment variable is converted</span>
+<span class="sd">    to the type of the corresponding default value:</span>
+<span class="sd">    ``str`` values are used as they are,</span>
+<span class="sd">    ``int``/``float`` values are cast,</span>
+<span class="sd">    and ``list``/``dict`` values are parsed as JSON.</span>
+<span class="sd">    A ``bool`` value is ``True``</span>
+<span class="sd">    for ``&quot;1&quot;``, ``&quot;true&quot;``, ``&quot;yes&quot;``, ``&quot;on&quot;``</span>
+<span class="sd">    (case insensitive)</span>
+<span class="sd">    and ``False`` for any other value;</span>
+<span class="sd">    a boolean is therefore never rejected,</span>
+<span class="sd">    whereas ``int``, ``float`` and JSON conversions</span>
+<span class="sd">    raise a ``ValueError`` on invalid input.</span>
+<span class="sd">    A default value of any other type</span>
+<span class="sd">    (e.g. a date parsed from YAML)</span>
+<span class="sd">    cannot be overridden</span>
+<span class="sd">    and raises a ``ValueError`` as well.</span>
+<span class="sd">    Only keys already present in the merged configuration,</span>
+<span class="sd">    whether from a file or a mapping,</span>
+<span class="sd">    can be overridden by environment variables.</span>
+<span class="sd">    Only string keys are matched;</span>
+<span class="sd">    a non-string key (e.g. a numeric YAML key)</span>
+<span class="sd">    is left untouched.</span>
+
+<span class="sd">    A default value of ``None`` carries no type,</span>
+<span class="sd">    so an environment variable would be kept as a string.</span>
+<span class="sd">    Use ``types`` to declare the intended type</span>
+<span class="sd">    for such keys,</span>
+<span class="sd">    or to override the inferred type of any key.</span>
+<span class="sd">    ``types`` mirrors the (possibly nested) structure</span>
+<span class="sd">    of the configuration;</span>
+<span class="sd">    an entry that does not match a configuration key</span>
+<span class="sd">    raises a ``ValueError``.</span>
+
+<span class="sd">    Missing or empty configuration files are skipped.</span>
+
+<span class="sd">    Reading configuration files requires ``pyyaml``,</span>
+<span class="sd">    which is installed when depending on ``audeer[yaml]``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        default_config_file: path to default configuration file.</span>
+<span class="sd">            The file does not have to exist</span>
+<span class="sd">        user_configs: path(s) to user configuration file(s),</span>
+<span class="sd">            or already parsed mapping(s),</span>
+<span class="sd">            applied in the given order.</span>
+<span class="sd">            Files do not have to exist,</span>
+<span class="sd">            and a given mapping is not modified</span>
+<span class="sd">        env_prefix: prefix of environment variables</span>
+<span class="sd">            used to override configuration values.</span>
+<span class="sd">            If ``None``, environment variables are ignored</span>
+<span class="sd">        types: mapping that declares the type</span>
+<span class="sd">            of configuration values,</span>
+<span class="sd">            mirroring the (possibly nested) configuration structure.</span>
+<span class="sd">            Used to cast environment variable overrides</span>
+<span class="sd">            for keys whose default value is ``None``,</span>
+<span class="sd">            or to override the type inferred from the default value.</span>
+<span class="sd">            Supported types are</span>
+<span class="sd">            ``bool``, ``int``, ``float``, ``str``, ``list``, ``dict``</span>
+<span class="sd">        validate: callable that receives the merged configuration</span>
+<span class="sd">            dictionary and raises an error if it is invalid.</span>
+<span class="sd">            It is applied once,</span>
+<span class="sd">            after files and environment variables are merged</span>
+<span class="sd">        tracking: mutable mapping that records,</span>
+<span class="sd">            for each configuration key,</span>
+<span class="sd">            which layer set its effective value:</span>
+<span class="sd">            ``f&quot;file:{path}&quot;`` for ``default_config_file``</span>
+<span class="sd">            or a ``user_configs`` entry that provided a file,</span>
+<span class="sd">            ``&quot;mapping[&lt;i&gt;]&quot;`` for the ``user_configs`` entry</span>
+<span class="sd">            at index ``&lt;i&gt;`` that provided an already parsed mapping</span>
+<span class="sd">            (indices count every entry of the sequence,</span>
+<span class="sd">            file or mapping alike),</span>
+<span class="sd">            or ``f&quot;env:{name}&quot;`` naming the exact environment variable</span>
+<span class="sd">            (e.g. ``&quot;env:PKG_MODEL__DEVICE&quot;``)</span>
+<span class="sd">            for an environment variable override.</span>
+<span class="sd">            A whole-section JSON environment variable</span>
+<span class="sd">            labels every key it sets;</span>
+<span class="sd">            a more specific nested variable re-labels</span>
+<span class="sd">            only the key it overrides.</span>
+<span class="sd">            Entries are added to ``tracking`` in place.</span>
+<span class="sd">            Reuse the same mapping across several calls</span>
+<span class="sd">            to accumulate their entries.</span>
+<span class="sd">            If ``None``,</span>
+<span class="sd">            no tracking is performed</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        merged configuration dictionary</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: if ``pyyaml`` is not installed,</span>
+<span class="sd">            and a configuration file exists</span>
+<span class="sd">        ValueError: if a configuration file</span>
+<span class="sd">            does not contain a mapping of key-value pairs</span>
+<span class="sd">        ValueError: if an environment variable</span>
+<span class="sd">            cannot be converted to the type</span>
+<span class="sd">            of the corresponding default value,</span>
+<span class="sd">            or that type is not supported</span>
+<span class="sd">        ValueError: if a type declared in ``types``</span>
+<span class="sd">            is not a class,</span>
+<span class="sd">            or not one of the supported types</span>
+<span class="sd">        ValueError: if ``types``,</span>
+<span class="sd">            or a ``types`` entry for a nested section,</span>
+<span class="sd">            is not a mapping</span>
+<span class="sd">        ValueError: if a ``types`` entry</span>
+<span class="sd">            does not match any configuration key</span>
+<span class="sd">        ValueError: if ``tracking`` is not a mutable mapping</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; import tempfile</span>
+<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), &quot;config.yaml&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; with open(config_file, &quot;w&quot;) as file:</span>
+<span class="sd">        ...     _ = file.write(&quot;cache_root: ~/cache\n&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; audeer.load_configuration(config_file)</span>
+<span class="sd">        {&#39;cache_root&#39;: &#39;~/cache&#39;}</span>
+
+<span class="sd">        A user configuration can also be given</span>
+<span class="sd">        as an already parsed mapping.</span>
+
+<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), &quot;config.yaml&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; with open(config_file, &quot;w&quot;) as file:</span>
+<span class="sd">        ...     _ = file.write(&quot;model:\n  device: cpu\n  lora: false\n&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; audeer.load_configuration(config_file, {&quot;model&quot;: {&quot;device&quot;: &quot;cuda&quot;}})</span>
+<span class="sd">        {&#39;model&#39;: {&#39;device&#39;: &#39;cuda&#39;, &#39;lora&#39;: False}}</span>
+
+<span class="sd">        A key that defaults to ``None`` has no inferred type,</span>
+<span class="sd">        so declare it in ``types``.</span>
+
+<span class="sd">        &gt;&gt;&gt; import os</span>
+<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), &quot;config.yaml&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; with open(config_file, &quot;w&quot;) as file:</span>
+<span class="sd">        ...     _ = file.write(&quot;hosts: null\n&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; os.environ[&quot;APP_HOSTS&quot;] = &#39;[&quot;host1&quot;, &quot;host2&quot;]&#39;</span>
+<span class="sd">        &gt;&gt;&gt; audeer.load_configuration(</span>
+<span class="sd">        ...     config_file, env_prefix=&quot;APP&quot;, types={&quot;hosts&quot;: list}</span>
+<span class="sd">        ... )</span>
+<span class="sd">        {&#39;hosts&#39;: [&#39;host1&#39;, &#39;host2&#39;]}</span>
+<span class="sd">        &gt;&gt;&gt; del os.environ[&quot;APP_HOSTS&quot;]</span>
+
+<span class="sd">        ``tracking`` records which layer set each key&#39;s effective value.</span>
+
+<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), &quot;config.yaml&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; with open(config_file, &quot;w&quot;) as file:</span>
+<span class="sd">        ...     _ = file.write(&quot;model:\n  device: cpu\n  lora: false\n&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; os.environ[&quot;PKG_MODEL__DEVICE&quot;] = &quot;cuda&quot;</span>
+<span class="sd">        &gt;&gt;&gt; tracking = {}</span>
+<span class="sd">        &gt;&gt;&gt; audeer.load_configuration(config_file, env_prefix=&quot;PKG&quot;, tracking=tracking)</span>
+<span class="sd">        {&#39;model&#39;: {&#39;device&#39;: &#39;cuda&#39;, &#39;lora&#39;: False}}</span>
+<span class="sd">        &gt;&gt;&gt; tracking</span>
+<span class="sd">        {&#39;model&#39;: {&#39;device&#39;: &#39;env:PKG_MODEL__DEVICE&#39;, &#39;lora&#39;: &#39;file:...config.yaml&#39;}}</span>
+<span class="sd">        &gt;&gt;&gt; del os.environ[&quot;PKG_MODEL__DEVICE&quot;]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">_load_configuration_file</span><span class="p">(</span><span class="n">default_config_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tracking</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tracking</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;tracking&#39; must be a mutable mapping, but is &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tracking</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Tracking is a genuine structural no-op when off: ``owner`` stays</span>
+    <span class="c1"># ``None``, so ``_deep_merge()``/``_override_with_environment()`` below</span>
+    <span class="c1"># run exactly the same path they always did, and no tracking tree is</span>
+    <span class="c1"># ever built.</span>
+    <span class="n">owner</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">tracking</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">owner</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;file:</span><span class="si">{</span><span class="n">default_config_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user_configs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_configs</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)):</span>
+            <span class="n">user_configs</span> <span class="o">=</span> <span class="p">[</span><span class="n">user_configs</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">user_config</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">user_configs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_config</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="n">_copy_mapping</span><span class="p">(</span><span class="n">user_config</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="n">_load_configuration_file</span><span class="p">(</span><span class="n">user_config</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_deep_merge</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;mapping[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]&quot;</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_config</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;file:</span><span class="si">{</span><span class="n">user_config</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">_deep_merge</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">types</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">types</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;types&#39; must be a mapping, but is &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">types</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">_validate_types</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">types</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">env_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_override_with_environment</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env_prefix</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">,</span> <span class="n">types</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">owner</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">validate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">validate</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tracking</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">owner</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cfg</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_copy_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Copy a mapping into plain dictionaries.</span>
+
+<span class="sd">    Nested mappings, and plain lists and tuples, are copied as well,</span>
+<span class="sd">    so merging and environment overrides</span>
+<span class="sd">    cannot modify the mapping given by the user.</span>
+<span class="sd">    Values of other container types,</span>
+<span class="sd">    e.g. a ``set`` or a ``NamedTuple``,</span>
+<span class="sd">    are not copied and remain shared with the given mapping:</span>
+<span class="sd">    a ``NamedTuple`` is a ``tuple`` subclass</span>
+<span class="sd">    whose constructor does not accept a single iterable,</span>
+<span class="sd">    so it is kept as a leaf value like a set is.</span>
+<span class="sd">    This is not a concern for configuration values</span>
+<span class="sd">    parsed from JSON or YAML,</span>
+<span class="sd">    which never produce such types.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mapping: mapping to copy</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        copy of ``mapping``, using ``dict`` at every level</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">_copy_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_copy_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Copy a configuration value, see :func:`_copy_mapping`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_copy_mapping</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)(</span><span class="n">_copy_value</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_label_tree</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Build a tracking tree that attributes every key to ``label``.</span>
+
+<span class="sd">    Mirrors the (possibly nested) structure of ``mapping``,</span>
+<span class="sd">    replacing every leaf value with ``label``.</span>
+<span class="sd">    Used both for the initial tracking tree</span>
+<span class="sd">    (every key starts out attributed to the default file)</span>
+<span class="sd">    and to expand a single label into a per-leaf tree,</span>
+<span class="sd">    e.g. when a whole configuration section</span>
+<span class="sd">    is replaced by a JSON environment variable</span>
+<span class="sd">    and a more specific, nested variable</span>
+<span class="sd">    later overrides one of its keys.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mapping: mapping whose structure is mirrored</span>
+<span class="sd">        label: label assigned to every leaf</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tracking tree, the same shape as ``mapping``,</span>
+<span class="sd">        with ``label`` at every leaf</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="n">label</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_deep_merge</span><span class="p">(</span>
+    <span class="n">base</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">update</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">owner</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Recursively merge ``update`` into ``base`` in place.</span>
+
+<span class="sd">    Nested mappings are merged key by key,</span>
+<span class="sd">    so a key present only in ``base``</span>
+<span class="sd">    is kept when ``update`` provides the same section.</span>
+<span class="sd">    Any non-mapping value (including lists)</span>
+<span class="sd">    replaces the corresponding value in ``base``.</span>
+
+<span class="sd">    When ``owner`` is given,</span>
+<span class="sd">    it is updated in place like ``base``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        base: dictionary to merge into</span>
+<span class="sd">        update: dictionary whose values take precedence</span>
+<span class="sd">        owner: owner tracking dictionary to merge into</span>
+<span class="sd">        label: label attributed to keys set or replaced by ``update``.</span>
+<span class="sd">            Every key ``update`` touches in this call gets the same</span>
+<span class="sd">            ``label``, since they all come from the same source.</span>
+<span class="sd">            Required when ``owner`` is given</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">key</span> <span class="ow">in</span> <span class="n">base</span>
+            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">Mapping</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_deep_merge</span><span class="p">(</span><span class="n">base</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># ``base[key]`` is a mapping, so ``owner[key]`` is</span>
+                <span class="c1"># already a matching nested dict: either from the</span>
+                <span class="c1"># initial tracking tree, or set by an earlier iteration</span>
+                <span class="c1"># of this same loop</span>
+                <span class="n">_deep_merge</span><span class="p">(</span><span class="n">base</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">,</span> <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">label</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">_label_tree</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="n">label</span>
+                <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_configuration_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Read a single configuration file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config_file: path to a YAML configuration file.</span>
+<span class="sd">            The file does not have to exist</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        configuration dictionary,</span>
+<span class="sd">        empty if the file is missing or empty</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Skip missing or empty files</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="c1"># Import lazily as ``pyyaml`` is an optional dependency</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">&quot;Reading configuration files requires &#39;pyyaml&#39;. &quot;</span>
+            <span class="s2">&quot;Install it with: uv pip install audeer[yaml]&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">cf</span><span class="p">:</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">cf</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+
+    <span class="c1"># A file with only comments or whitespace also yields ``None``</span>
+    <span class="k">if</span> <span class="n">cfg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The configuration file &#39;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;must contain a mapping of key-value pairs, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but contains a &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_types</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">types</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Validate declared ``types`` against the configuration structure.</span>
+
+<span class="sd">    Checks, independent of which environment variables are set, that a declared</span>
+<span class="sd">    leaf type is a class and a declared section type is a mapping. Only entries</span>
+<span class="sd">    that mirror the configuration are considered.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cfg: configuration dictionary</span>
+<span class="sd">        types: declared types mirroring ``cfg``</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if a declared section type is not a mapping</span>
+<span class="sd">        ValueError: if a declared leaf type is not a class</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Reject entries without a matching configuration key</span>
+    <span class="c1"># to catch misspellings</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; does not match any configuration key.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># An explicit ``None`` entry is a malformed declaration,</span>
+        <span class="c1"># only an absent key means &quot;no type declared&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">declared</span> <span class="o">=</span> <span class="n">types</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry for the nested section &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;must be a mapping, but is &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">declared</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">_validate_types</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">declared</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry for &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; declares a nested section, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but the corresponding configuration value is not a mapping.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry for &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; is not a type: </span><span class="si">{</span><span class="n">declared</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">declared</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="c1"># Anything else would silently fall through</span>
+            <span class="c1"># to keeping the environment variable a string</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry for &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;is not a supported type: &#39;</span><span class="si">{</span><span class="n">declared</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Supported types are &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;bool&#39;, &#39;int&#39;, &#39;float&#39;, &#39;str&#39;, &#39;list&#39;, &#39;dict&#39;.&quot;</span>
+            <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_json_replacement</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">parsed</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">defaults</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">types</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Validate a JSON section replacement against the default values.</span>
+
+<span class="sd">    Each value of the parsed JSON object</span>
+<span class="sd">    must match the type of the default value it replaces,</span>
+<span class="sd">    mirroring the conversion rules for scalar environment variables.</span>
+<span class="sd">    An integer is promoted in place</span>
+<span class="sd">    where the default value is a float.</span>
+<span class="sd">    Values without a default (introduced keys)</span>
+<span class="sd">    or with a ``None`` default keep their JSON type,</span>
+<span class="sd">    unless a type is declared in ``types``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: name of the environment variable</span>
+<span class="sd">        value: raw string value of the environment variable</span>
+<span class="sd">        parsed: JSON object parsed from ``value``, modified in place</span>
+<span class="sd">        defaults: section of the configuration the object replaces</span>
+<span class="sd">        types: declared types mirroring ``defaults``</span>
+<span class="sd">        path: dotted key path accumulated so far</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if a value does not match</span>
+<span class="sd">            the type of the corresponding default value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">json_value</span> <span class="ow">in</span> <span class="n">parsed</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">key_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">declared</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The environment variable &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;sets &#39;</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">&#39; to a value of type &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;but the corresponding configuration value &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;is a mapping.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">_validate_json_replacement</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span>
+                <span class="n">value</span><span class="p">,</span>
+                <span class="n">json_value</span><span class="p">,</span>
+                <span class="n">default_value</span><span class="p">,</span>
+                <span class="n">declared</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="p">{},</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">declared</span>
+        <span class="k">elif</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">target</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">target</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">json_value</span><span class="p">,</span> <span class="nb">bool</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">valid</span><span class="p">:</span>
+                <span class="n">parsed</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The environment variable &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;sets &#39;</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">&#39; to a value of type &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but the corresponding configuration value &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;has type &#39;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_override_with_environment</span><span class="p">(</span>
+    <span class="n">cfg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">env_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">types</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">owner</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Override configuration values with environment variables in place.</span>
+
+<span class="sd">    Nested mappings are traversed recursively.</span>
+<span class="sd">    The environment variable name of a nested key</span>
+<span class="sd">    joins the levels with ``__``,</span>
+<span class="sd">    e.g. ``model.device`` with prefix ``PKG``</span>
+<span class="sd">    is overridden by ``PKG_MODEL__DEVICE``.</span>
+
+<span class="sd">    When ``owner`` is given,</span>
+<span class="sd">    it is updated in place to mirror ``cfg``:</span>
+<span class="sd">    a key overridden by an environment variable</span>
+<span class="sd">    is attributed to that variable&#39;s exact name.</span>
+<span class="sd">    A whole-section JSON replacement</span>
+<span class="sd">    attributes every one of its leaves</span>
+<span class="sd">    to the section variable;</span>
+<span class="sd">    a more specific, nested variable</span>
+<span class="sd">    applied afterwards then re-attributes</span>
+<span class="sd">    only the one leaf it overrides.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cfg: configuration dictionary, modified in place</span>
+<span class="sd">        env_prefix: name prefix accumulated so far,</span>
+<span class="sd">            including the trailing separator</span>
+<span class="sd">            (``PKG_`` at the top level, ``PKG_MODEL__`` below)</span>
+<span class="sd">        types: declared types mirroring ``cfg``,</span>
+<span class="sd">            used to cast values whose default is ``None``</span>
+<span class="sd">        owner: owner tracking dictionary, updated in place when given</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">default_value</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># Environment variables can only address string keys;</span>
+        <span class="c1"># non-string keys (e.g. integers) are left untouched.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env_prefix</span><span class="si">}{</span><span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">key_type</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="c1"># A whole-section variable (e.g. PKG_MODEL) replaces the mapping</span>
+            <span class="c1"># as a JSON object; nested variables (e.g. PKG_MODEL__DEVICE) are</span>
+            <span class="c1"># applied afterwards and therefore take precedence.</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+                <span class="n">parsed</span> <span class="o">=</span> <span class="n">_parse_environment_value</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+                    <span class="n">default_value</span><span class="p">,</span>
+                    <span class="nb">dict</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="c1"># The validation guarantees that the replaced values keep</span>
+                <span class="c1"># the types of the defaults, so nested overrides applied</span>
+                <span class="c1"># below still cast to the original types</span>
+                <span class="n">_validate_json_replacement</span><span class="p">(</span>
+                    <span class="n">name</span><span class="p">,</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+                    <span class="n">parsed</span><span class="p">,</span>
+                    <span class="n">default_value</span><span class="p">,</span>
+                    <span class="n">key_type</span> <span class="ow">or</span> <span class="p">{},</span>
+                <span class="p">)</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed</span>
+                <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">_override_with_environment</span><span class="p">(</span>
+                <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">__&quot;</span><span class="p">,</span>
+                <span class="n">key_type</span> <span class="ow">or</span> <span class="p">{},</span>
+                <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_parse_environment_value</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+                <span class="n">default_value</span><span class="p">,</span>
+                <span class="n">key_type</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="c1"># A mapping introduced via a declared ``dict`` type</span>
+                <span class="c1"># behaves like a section, so nested variables</span>
+                <span class="c1"># are applied on top of it as well</span>
+                <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">_override_with_environment</span><span class="p">(</span>
+                    <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">__&quot;</span><span class="p">,</span>
+                    <span class="p">{},</span>
+                    <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_environment_value</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">default_value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert an environment variable to the wanted type.</span>
+
+<span class="sd">    The target type is ``target_type`` if given,</span>
+<span class="sd">    otherwise the type of ``default_value``.</span>
+<span class="sd">    A ``None`` default without a declared type</span>
+<span class="sd">    leaves the value unchanged as a string.</span>
+<span class="sd">    Any other target type outside the supported set</span>
+<span class="sd">    raises a ``ValueError``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">target_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># A boolean never fails conversion:</span>
+        <span class="c1"># any value other than the truthy ones becomes ``False``</span>
+        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;on&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="c1"># ``json.JSONDecodeError`` is a subclass of ``ValueError``</span>
+        <span class="k">if</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="c1"># ``json.loads`` accepts any JSON value,</span>
+            <span class="c1"># so a scalar like ``&quot;123&quot;`` parses without</span>
+            <span class="c1"># being the requested ``list``/``dict``.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">target_type</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span>
+            <span class="k">return</span> <span class="n">parsed</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The environment variable &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;could not be converted to the type &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">target_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;of the corresponding configuration value.&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">ex</span>
+    <span class="c1"># A ``None`` default carries no type information,</span>
+    <span class="c1"># so the value is kept as a string (see ``types``)</span>
+    <span class="k">if</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="c1"># E.g. a datetime.date default parsed from YAML;</span>
+    <span class="c1"># silently keeping the value a string would hide the error</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;The environment variable &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;cannot override the corresponding configuration value: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;its type &#39;</span><span class="si">{</span><span class="n">target_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; is not supported. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Supported types are &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;&#39;bool&#39;, &#39;int&#39;, &#39;float&#39;, &#39;str&#39;, &#39;list&#39;, &#39;dict&#39;.&quot;</span>
+    <span class="p">)</span>
+
+
 <div class="viewcode-block" id="config">
 <a class="viewcode-back" href="../../../api/audeer.config.html#audeer.config">[docs]</a>
-<span></span><span class="k">class</span><span class="w"> </span><span class="nc">config</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">config</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get/set defaults for :mod:`audeer`.</span>
 
 <span class="sd">    For example, when you want to change the default number of columns</span>
@@ -182,7 +892,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/02/20 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/08/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -223,6 +933,7 @@
 
   
 
+  <script type="text/javascript" src="../../../_static/js/jquery.js"></script>
   <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
   <script type="text/javascript">

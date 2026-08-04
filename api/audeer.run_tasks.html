@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                v2.4.0
+                v2.5.0
               </div>
             
           
@@ -119,6 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="audeer.is_uid.html">is_uid()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_dir_names.html">list_dir_names()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.list_file_names.html">list_file_names()</a></li>
+<li class="toctree-l2"><a class="reference internal" href="audeer.load_configuration.html">load_configuration()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.load_json.html">load_json()</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.LooseVersion.html">LooseVersion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="audeer.md5.html">md5()</a></li>
@@ -195,11 +196,34 @@
 <p class="admonition-title">Note</p>
 <p>Result values are returned in order of <code class="docutils literal notranslate"><span class="pre">params</span></code>.</p>
 </div>
+<p>When <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+<code class="docutils literal notranslate"><span class="pre">task_func</span></code> and all values in <code class="docutils literal notranslate"><span class="pre">params</span></code>
+must be picklable,
+and <code class="docutils literal notranslate"><span class="pre">task_func</span></code> must not depend
+on runtime-modified global state.
+Worker processes are created
+using the start method returned by
+<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.get_start_method" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiprocessing.get_start_method()</span></code></a>.
+If you have called
+<a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.set_start_method" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiprocessing.set_start_method()</span></code></a>
+beforehand,
+that choice is respected;
+otherwise the interpreter’s
+platform-specific default is used
+(see <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.get_start_method" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiprocessing.get_start_method()</span></code></a>
+for details).
+With <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code>,
+each worker re-imports the module
+containing <code class="docutils literal notranslate"><span class="pre">task_func</span></code>,
+so any global state modified after import
+will not be visible to workers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>task_func</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code></a></span>) – task function with one or more
-parameters, e.g. <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z</span></code>, and optionally returning a value</p></li>
+parameters, e.g. <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y,</span> <span class="pre">z</span></code>, and optionally returning a value.
+When <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+this must be a picklable top-level function</p></li>
 <li><p><strong>params</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a>]]]</span>) – sequence of tuples holding parameters for each task.
 Each tuple contains a sequence of positional arguments and a
 dictionary with keyword arguments, e.g.:
@@ -261,7 +285,7 @@ no refreshing is enforced</p></li>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/02/20 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/08/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
@@ -302,6 +326,7 @@ no refreshing is enforced</p></li>
 
   
 
+  <script type="text/javascript" src="../_static/js/jquery.js"></script>
   <script type="text/javascript" src="../_static/js/theme.js"></script>
 
   <script type="text/javascript">
