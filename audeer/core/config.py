@@ -164,6 +164,7 @@ def load_configuration(
             is not a mapping
         ValueError: if a ``types`` entry
             does not match any configuration key
+        ValueError: if ``tracking`` is not a mutable mapping
 
     Examples:
         >>> import tempfile
