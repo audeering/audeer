@@ -27,7 +27,7 @@ jobs:
     - name: Install uv
       uses: astral-sh/setup-uv@v9.0.0
       with:
-        cache-suffix: ${{ github.workflow }}
+        save-cache: false
 
     # PyPI package
     - name: Build Python package
