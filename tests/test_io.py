@@ -1,8 +1,10 @@
 import os
 import platform
+import re
 import stat
 import sys
 import time
+import zipfile
 
 import pytest
 
@@ -470,6 +472,98 @@ def test_common_directory(dirs, expected):
     # On MacOS we get a '/System/Volumes/Data' in front
     common = common.replace("/System/Volumes/Data", "")
     assert common == expected
+
+
+@pytest.mark.parametrize("compression", [None, 0, 1, 9])
+def test_create_archive_compression(tmpdir, compression):
+    r"""Test compression levels of zip archives.
+
+    Args:
+        tmpdir: tmpdir fixture
+        compression: compression level
+
+    """
+    content = b"a" * 10000
+    root = audeer.mkdir(tmpdir, "root")
+    with open(audeer.path(root, "file.txt"), "wb") as fp:
+        fp.write(content)
+    archive = audeer.path(tmpdir, "archive.zip")
+
+    audeer.create_archive(root, None, archive, compression=compression)
+
+    # Round trip
+    destination = audeer.mkdir(tmpdir, "destination")
+    assert audeer.extract_archive(archive, destination) == ["file.txt"]
+    with open(audeer.path(destination, "file.txt"), "rb") as fp:
+        assert fp.read() == content
+
+    # Compression method of each archive entry
+    if compression == 0:
+        expected_compress_type = zipfile.ZIP_STORED
+    else:
+        expected_compress_type = zipfile.ZIP_DEFLATED
+    with zipfile.ZipFile(archive) as zip_file:
+        for info in zip_file.infolist():
+            assert info.compress_type == expected_compress_type
+
+
+def test_create_archive_compression_size(tmpdir):
+    r"""Test that a stored archive is larger than a compressed one.
+
+    Args:
+        tmpdir: tmpdir fixture
+
+    """
+    root = audeer.mkdir(tmpdir, "root")
+    with open(audeer.path(root, "file.txt"), "wb") as fp:
+        fp.write(b"a" * 10000)
+
+    stored = audeer.path(tmpdir, "stored.zip")
+    deflated = audeer.path(tmpdir, "deflated.zip")
+    audeer.create_archive(root, None, stored, compression=0)
+    audeer.create_archive(root, None, deflated, compression=9)
+
+    assert os.path.getsize(stored) > os.path.getsize(deflated)
+
+
+@pytest.mark.parametrize("extension", ["tar", "tar.gz", "tar.bz2", "tar.xz"])
+def test_create_archive_compression_tar_error(tmpdir, extension):
+    r"""Test error when requesting compression for a tar archive.
+
+    Args:
+        tmpdir: tmpdir fixture
+        extension: archive file extension
+
+    """
+    root = audeer.mkdir(tmpdir, "root")
+    audeer.touch(root, "file.txt")
+    archive = audeer.path(tmpdir, f"archive.{extension}")
+
+    error_msg = (
+        f"'compression' is only supported for zip archives, not for '{extension}'."
+    )
+    with pytest.raises(ValueError, match=re.escape(error_msg)):
+        audeer.create_archive(root, None, archive, compression=0)
+    assert not os.path.exists(archive)
+
+
+@pytest.mark.parametrize("compression", [-1, 10])
+def test_create_archive_compression_value_error(tmpdir, compression):
+    r"""Test error for compression levels outside 0 to 9.
+
+    Args:
+        tmpdir: tmpdir fixture
+        compression: compression level
+
+    """
+    root = audeer.mkdir(tmpdir, "root")
+    audeer.touch(root, "file.txt")
+    archive = audeer.path(tmpdir, "archive.zip")
+
+    error_msg = f"'compression' has to be between 0 and 9, not {compression}."
+    with pytest.raises(ValueError, match=re.escape(error_msg)):
+        audeer.create_archive(root, None, archive, compression=compression)
+    assert not os.path.exists(archive)
 
 
 def test_download_url(tmpdir):
