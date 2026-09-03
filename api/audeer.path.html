@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                v2.5.0
+                v2.6.0
               </div>
             
           
@@ -222,20 +222,20 @@ is returned</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;~/path/.././path&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">home</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"~"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"~/path/.././path"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
-<span class="go">&#39;path&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;~/path/.././path&quot;</span><span class="p">,</span> <span class="s2">&quot;./file.txt&quot;</span><span class="p">)</span>
+<span class="go">'path'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"~/path/.././path"</span><span class="p">,</span> <span class="s2">"./file.txt"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">file</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">home</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
-<span class="go">&#39;path/file.txt&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="s2">&quot;file.txt&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">link</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;link.txt&quot;</span><span class="p">)</span>
+<span class="go">'path/file.txt'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="s2">"file.txt"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">link</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"link.txt"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">link</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">link</span><span class="p">))</span>
-<span class="go">&#39;link.txt&#39;</span>
+<span class="go">'link.txt'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">link</span><span class="p">,</span> <span class="n">follow_symlink</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
-<span class="go">&#39;file.txt&#39;</span>
+<span class="go">'file.txt'</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -265,7 +265,7 @@ is returned</p></li>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/08/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/09/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

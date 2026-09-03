@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v2.5.0
+                v2.6.0
               </div>
             
           
@@ -157,7 +157,7 @@
     <span class="n">validate</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">tracking</span><span class="p">:</span> <span class="n">MutableMapping</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load configuration from files and environment variables.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Load configuration from files and environment variables.</span>
 
 <span class="sd">    Configuration values are collected from,</span>
 <span class="sd">    in order of increasing precedence:</span>
@@ -189,7 +189,7 @@
 <span class="sd">    is overridden by ``&lt;env_prefix&gt;_MODEL__DEVICE``.</span>
 <span class="sd">    A whole nested mapping can instead be replaced</span>
 <span class="sd">    by a single variable holding a JSON object,</span>
-<span class="sd">    e.g. ``&lt;env_prefix&gt;_MODEL=&#39;{&quot;device&quot;: &quot;cpu&quot;}&#39;``;</span>
+<span class="sd">    e.g. ``&lt;env_prefix&gt;_MODEL='{"device": "cpu"}'``;</span>
 <span class="sd">    the object replaces the mapping as a whole</span>
 <span class="sd">    (keys it omits are dropped)</span>
 <span class="sd">    and may introduce keys not present in the files.</span>
@@ -209,7 +209,7 @@
 <span class="sd">    ``int``/``float`` values are cast,</span>
 <span class="sd">    and ``list``/``dict`` values are parsed as JSON.</span>
 <span class="sd">    A ``bool`` value is ``True``</span>
-<span class="sd">    for ``&quot;1&quot;``, ``&quot;true&quot;``, ``&quot;yes&quot;``, ``&quot;on&quot;``</span>
+<span class="sd">    for ``"1"``, ``"true"``, ``"yes"``, ``"on"``</span>
 <span class="sd">    (case insensitive)</span>
 <span class="sd">    and ``False`` for any other value;</span>
 <span class="sd">    a boolean is therefore never rejected,</span>
@@ -267,14 +267,14 @@
 <span class="sd">        tracking: mutable mapping that records,</span>
 <span class="sd">            for each configuration key,</span>
 <span class="sd">            which layer set its effective value:</span>
-<span class="sd">            ``f&quot;file:{path}&quot;`` for ``default_config_file``</span>
+<span class="sd">            ``f"file:{path}"`` for ``default_config_file``</span>
 <span class="sd">            or a ``user_configs`` entry that provided a file,</span>
-<span class="sd">            ``&quot;mapping[&lt;i&gt;]&quot;`` for the ``user_configs`` entry</span>
+<span class="sd">            ``"mapping[&lt;i&gt;]"`` for the ``user_configs`` entry</span>
 <span class="sd">            at index ``&lt;i&gt;`` that provided an already parsed mapping</span>
 <span class="sd">            (indices count every entry of the sequence,</span>
 <span class="sd">            file or mapping alike),</span>
-<span class="sd">            or ``f&quot;env:{name}&quot;`` naming the exact environment variable</span>
-<span class="sd">            (e.g. ``&quot;env:PKG_MODEL__DEVICE&quot;``)</span>
+<span class="sd">            or ``f"env:{name}"`` naming the exact environment variable</span>
+<span class="sd">            (e.g. ``"env:PKG_MODEL__DEVICE"``)</span>
 <span class="sd">            for an environment variable override.</span>
 <span class="sd">            A whole-section JSON environment variable</span>
 <span class="sd">            labels every key it sets;</span>
@@ -310,54 +310,54 @@
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; import tempfile</span>
-<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), &quot;config.yaml&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; with open(config_file, &quot;w&quot;) as file:</span>
-<span class="sd">        ...     _ = file.write(&quot;cache_root: ~/cache\n&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")</span>
+<span class="sd">        &gt;&gt;&gt; with open(config_file, "w") as file:</span>
+<span class="sd">        ...     _ = file.write("cache_root: ~/cache\n")</span>
 <span class="sd">        &gt;&gt;&gt; audeer.load_configuration(config_file)</span>
-<span class="sd">        {&#39;cache_root&#39;: &#39;~/cache&#39;}</span>
+<span class="sd">        {'cache_root': '~/cache'}</span>
 
 <span class="sd">        A user configuration can also be given</span>
 <span class="sd">        as an already parsed mapping.</span>
 
-<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), &quot;config.yaml&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; with open(config_file, &quot;w&quot;) as file:</span>
-<span class="sd">        ...     _ = file.write(&quot;model:\n  device: cpu\n  lora: false\n&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; audeer.load_configuration(config_file, {&quot;model&quot;: {&quot;device&quot;: &quot;cuda&quot;}})</span>
-<span class="sd">        {&#39;model&#39;: {&#39;device&#39;: &#39;cuda&#39;, &#39;lora&#39;: False}}</span>
+<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")</span>
+<span class="sd">        &gt;&gt;&gt; with open(config_file, "w") as file:</span>
+<span class="sd">        ...     _ = file.write("model:\n  device: cpu\n  lora: false\n")</span>
+<span class="sd">        &gt;&gt;&gt; audeer.load_configuration(config_file, {"model": {"device": "cuda"}})</span>
+<span class="sd">        {'model': {'device': 'cuda', 'lora': False}}</span>
 
 <span class="sd">        A key that defaults to ``None`` has no inferred type,</span>
 <span class="sd">        so declare it in ``types``.</span>
 
 <span class="sd">        &gt;&gt;&gt; import os</span>
-<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), &quot;config.yaml&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; with open(config_file, &quot;w&quot;) as file:</span>
-<span class="sd">        ...     _ = file.write(&quot;hosts: null\n&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; os.environ[&quot;APP_HOSTS&quot;] = &#39;[&quot;host1&quot;, &quot;host2&quot;]&#39;</span>
+<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")</span>
+<span class="sd">        &gt;&gt;&gt; with open(config_file, "w") as file:</span>
+<span class="sd">        ...     _ = file.write("hosts: null\n")</span>
+<span class="sd">        &gt;&gt;&gt; os.environ["APP_HOSTS"] = '["host1", "host2"]'</span>
 <span class="sd">        &gt;&gt;&gt; audeer.load_configuration(</span>
-<span class="sd">        ...     config_file, env_prefix=&quot;APP&quot;, types={&quot;hosts&quot;: list}</span>
+<span class="sd">        ...     config_file, env_prefix="APP", types={"hosts": list}</span>
 <span class="sd">        ... )</span>
-<span class="sd">        {&#39;hosts&#39;: [&#39;host1&#39;, &#39;host2&#39;]}</span>
-<span class="sd">        &gt;&gt;&gt; del os.environ[&quot;APP_HOSTS&quot;]</span>
+<span class="sd">        {'hosts': ['host1', 'host2']}</span>
+<span class="sd">        &gt;&gt;&gt; del os.environ["APP_HOSTS"]</span>
 
-<span class="sd">        ``tracking`` records which layer set each key&#39;s effective value.</span>
+<span class="sd">        ``tracking`` records which layer set each key's effective value.</span>
 
-<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), &quot;config.yaml&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; with open(config_file, &quot;w&quot;) as file:</span>
-<span class="sd">        ...     _ = file.write(&quot;model:\n  device: cpu\n  lora: false\n&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; os.environ[&quot;PKG_MODEL__DEVICE&quot;] = &quot;cuda&quot;</span>
+<span class="sd">        &gt;&gt;&gt; config_file = audeer.path(tempfile.mkdtemp(), "config.yaml")</span>
+<span class="sd">        &gt;&gt;&gt; with open(config_file, "w") as file:</span>
+<span class="sd">        ...     _ = file.write("model:\n  device: cpu\n  lora: false\n")</span>
+<span class="sd">        &gt;&gt;&gt; os.environ["PKG_MODEL__DEVICE"] = "cuda"</span>
 <span class="sd">        &gt;&gt;&gt; tracking = {}</span>
-<span class="sd">        &gt;&gt;&gt; audeer.load_configuration(config_file, env_prefix=&quot;PKG&quot;, tracking=tracking)</span>
-<span class="sd">        {&#39;model&#39;: {&#39;device&#39;: &#39;cuda&#39;, &#39;lora&#39;: False}}</span>
+<span class="sd">        &gt;&gt;&gt; audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)</span>
+<span class="sd">        {'model': {'device': 'cuda', 'lora': False}}</span>
 <span class="sd">        &gt;&gt;&gt; tracking</span>
-<span class="sd">        {&#39;model&#39;: {&#39;device&#39;: &#39;env:PKG_MODEL__DEVICE&#39;, &#39;lora&#39;: &#39;file:...config.yaml&#39;}}</span>
-<span class="sd">        &gt;&gt;&gt; del os.environ[&quot;PKG_MODEL__DEVICE&quot;]</span>
+<span class="sd">        {'model': {'device': 'env:PKG_MODEL__DEVICE', 'lora': 'file:...config.yaml'}}</span>
+<span class="sd">        &gt;&gt;&gt; del os.environ["PKG_MODEL__DEVICE"]</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">cfg</span> <span class="o">=</span> <span class="n">_load_configuration_file</span><span class="p">(</span><span class="n">default_config_file</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">tracking</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tracking</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;tracking&#39; must be a mutable mapping, but is &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tracking</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="sa">f</span><span class="s2">"'tracking' must be a mutable mapping, but is '</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tracking</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'."</span>
         <span class="p">)</span>
 
     <span class="c1"># Tracking is a genuine structural no-op when off: ``owner`` stays</span>
@@ -366,7 +366,7 @@
     <span class="c1"># ever built.</span>
     <span class="n">owner</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">tracking</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">owner</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;file:</span><span class="si">{</span><span class="n">default_config_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">owner</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"file:</span><span class="si">{</span><span class="n">default_config_file</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">user_configs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_configs</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)):</span>
@@ -380,21 +380,21 @@
                 <span class="n">_deep_merge</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">label</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;mapping[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]&quot;</span>
+                    <span class="sa">f</span><span class="s2">"mapping[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]"</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_config</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;file:</span><span class="si">{</span><span class="n">user_config</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">else</span> <span class="sa">f</span><span class="s2">"file:</span><span class="si">{</span><span class="n">user_config</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
                 <span class="n">_deep_merge</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">types</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">types</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;types&#39; must be a mapping, but is &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">types</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="sa">f</span><span class="s2">"'types' must be a mapping, but is '</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">types</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'."</span>
             <span class="p">)</span>
         <span class="n">_validate_types</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">types</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">env_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_override_with_environment</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env_prefix</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">,</span> <span class="n">types</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">owner</span><span class="p">)</span>
+        <span class="n">_override_with_environment</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">env_prefix</span><span class="si">}</span><span class="s2">_"</span><span class="p">,</span> <span class="n">types</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">owner</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">validate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">validate</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
@@ -407,7 +407,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_copy_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Copy a mapping into plain dictionaries.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Copy a mapping into plain dictionaries.</span>
 
 <span class="sd">    Nested mappings, and plain lists and tuples, are copied as well,</span>
 <span class="sd">    so merging and environment overrides</span>
@@ -428,12 +428,12 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        copy of ``mapping``, using ``dict`` at every level</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">_copy_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_copy_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Copy a configuration value, see :func:`_copy_mapping`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Copy a configuration value, see :func:`_copy_mapping`."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_copy_mapping</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
@@ -442,7 +442,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_label_tree</span><span class="p">(</span><span class="n">mapping</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Build a tracking tree that attributes every key to ``label``.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Build a tracking tree that attributes every key to ``label``.</span>
 
 <span class="sd">    Mirrors the (possibly nested) structure of ``mapping``,</span>
 <span class="sd">    replacing every leaf value with ``label``.</span>
@@ -462,7 +462,7 @@
 <span class="sd">        tracking tree, the same shape as ``mapping``,</span>
 <span class="sd">        with ``label`` at every leaf</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="n">key</span><span class="p">:</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="n">label</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -475,7 +475,7 @@
     <span class="n">owner</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Recursively merge ``update`` into ``base`` in place.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Recursively merge ``update`` into ``base`` in place.</span>
 
 <span class="sd">    Nested mappings are merged key by key,</span>
 <span class="sd">    so a key present only in ``base``</span>
@@ -495,7 +495,7 @@
 <span class="sd">            ``label``, since they all come from the same source.</span>
 <span class="sd">            Required when ``owner`` is given</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">key</span> <span class="ow">in</span> <span class="n">base</span>
@@ -519,7 +519,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_load_configuration_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Read a single configuration file.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Read a single configuration file.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        config_file: path to a YAML configuration file.</span>
@@ -529,7 +529,7 @@
 <span class="sd">        configuration dictionary,</span>
 <span class="sd">        empty if the file is missing or empty</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Skip missing or empty files</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
@@ -539,8 +539,8 @@
         <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
     <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
-            <span class="s2">&quot;Reading configuration files requires &#39;pyyaml&#39;. &quot;</span>
-            <span class="s2">&quot;Install it with: uv pip install audeer[yaml]&quot;</span>
+            <span class="s2">"Reading configuration files requires 'pyyaml'. "</span>
+            <span class="s2">"Install it with: uv pip install audeer[yaml]"</span>
         <span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">cf</span><span class="p">:</span>
@@ -551,15 +551,15 @@
         <span class="k">return</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The configuration file &#39;</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;must contain a mapping of key-value pairs, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;but contains a &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="sa">f</span><span class="s2">"The configuration file '</span><span class="si">{</span><span class="n">config_file</span><span class="si">}</span><span class="s2">' "</span>
+            <span class="sa">f</span><span class="s2">"must contain a mapping of key-value pairs, "</span>
+            <span class="sa">f</span><span class="s2">"but contains a '</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'."</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_validate_types</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">types</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Validate declared ``types`` against the configuration structure.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Validate declared ``types`` against the configuration structure.</span>
 
 <span class="sd">    Checks, independent of which environment variables are set, that a declared</span>
 <span class="sd">    leaf type is a class and a declared section type is a mapping. Only entries</span>
@@ -573,44 +573,44 @@
 <span class="sd">        ValueError: if a declared section type is not a mapping</span>
 <span class="sd">        ValueError: if a declared leaf type is not a class</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Reject entries without a matching configuration key</span>
     <span class="c1"># to catch misspellings</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; does not match any configuration key.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The 'types' entry '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' does not match any configuration key."</span>
             <span class="p">)</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># An explicit ``None`` entry is a malformed declaration,</span>
-        <span class="c1"># only an absent key means &quot;no type declared&quot;</span>
+        <span class="c1"># only an absent key means "no type declared"</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">declared</span> <span class="o">=</span> <span class="n">types</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry for the nested section &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;must be a mapping, but is &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">declared</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The 'types' entry for the nested section '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' "</span>
+                    <span class="sa">f</span><span class="s2">"must be a mapping, but is '</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">declared</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'."</span>
                 <span class="p">)</span>
             <span class="n">_validate_types</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">declared</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry for &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; declares a nested section, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;but the corresponding configuration value is not a mapping.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The 'types' entry for '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' declares a nested section, "</span>
+                <span class="sa">f</span><span class="s2">"but the corresponding configuration value is not a mapping."</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry for &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; is not a type: </span><span class="si">{</span><span class="n">declared</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The 'types' entry for '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' is not a type: </span><span class="si">{</span><span class="n">declared</span><span class="si">!r}</span><span class="s2">."</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">declared</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="c1"># Anything else would silently fall through</span>
             <span class="c1"># to keeping the environment variable a string</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The &#39;types&#39; entry for &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;is not a supported type: &#39;</span><span class="si">{</span><span class="n">declared</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Supported types are &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;bool&#39;, &#39;int&#39;, &#39;float&#39;, &#39;str&#39;, &#39;list&#39;, &#39;dict&#39;.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The 'types' entry for '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' "</span>
+                <span class="sa">f</span><span class="s2">"is not a supported type: '</span><span class="si">{</span><span class="n">declared</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'. "</span>
+                <span class="sa">f</span><span class="s2">"Supported types are "</span>
+                <span class="sa">f</span><span class="s2">"'bool', 'int', 'float', 'str', 'list', 'dict'."</span>
             <span class="p">)</span>
 
 
@@ -620,9 +620,9 @@
     <span class="n">parsed</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">defaults</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
     <span class="n">types</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
-    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Validate a JSON section replacement against the default values.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Validate a JSON section replacement against the default values.</span>
 
 <span class="sd">    Each value of the parsed JSON object</span>
 <span class="sd">    must match the type of the default value it replaces,</span>
@@ -645,19 +645,19 @@
 <span class="sd">        ValueError: if a value does not match</span>
 <span class="sd">            the type of the corresponding default value</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">json_value</span> <span class="ow">in</span> <span class="n">parsed</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">key_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">key_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">path</span><span class="si">}{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">declared</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="n">default_value</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The environment variable &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;sets &#39;</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">&#39; to a value of type &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;but the corresponding configuration value &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;is a mapping.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The environment variable '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' "</span>
+                    <span class="sa">f</span><span class="s2">"sets '</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">' to a value of type "</span>
+                    <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">', "</span>
+                    <span class="sa">f</span><span class="s2">"but the corresponding configuration value "</span>
+                    <span class="sa">f</span><span class="s2">"is a mapping."</span>
                 <span class="p">)</span>
             <span class="n">_validate_json_replacement</span><span class="p">(</span>
                 <span class="n">name</span><span class="p">,</span>
@@ -665,7 +665,7 @@
                 <span class="n">json_value</span><span class="p">,</span>
                 <span class="n">default_value</span><span class="p">,</span>
                 <span class="n">declared</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="p">{},</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">declared</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
@@ -688,11 +688,11 @@
             <span class="n">valid</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The environment variable &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;sets &#39;</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">&#39; to a value of type &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;but the corresponding configuration value &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;has type &#39;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The environment variable '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' "</span>
+                <span class="sa">f</span><span class="s2">"sets '</span><span class="si">{</span><span class="n">key_path</span><span class="si">}</span><span class="s2">' to a value of type "</span>
+                <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">', "</span>
+                <span class="sa">f</span><span class="s2">"but the corresponding configuration value "</span>
+                <span class="sa">f</span><span class="s2">"has type '</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">'."</span>
             <span class="p">)</span>
 
 
@@ -702,7 +702,7 @@
     <span class="n">types</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
     <span class="n">owner</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Override configuration values with environment variables in place.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Override configuration values with environment variables in place.</span>
 
 <span class="sd">    Nested mappings are traversed recursively.</span>
 <span class="sd">    The environment variable name of a nested key</span>
@@ -713,7 +713,7 @@
 <span class="sd">    When ``owner`` is given,</span>
 <span class="sd">    it is updated in place to mirror ``cfg``:</span>
 <span class="sd">    a key overridden by an environment variable</span>
-<span class="sd">    is attributed to that variable&#39;s exact name.</span>
+<span class="sd">    is attributed to that variable's exact name.</span>
 <span class="sd">    A whole-section JSON replacement</span>
 <span class="sd">    attributes every one of its leaves</span>
 <span class="sd">    to the section variable;</span>
@@ -730,13 +730,13 @@
 <span class="sd">            used to cast values whose default is ``None``</span>
 <span class="sd">        owner: owner tracking dictionary, updated in place when given</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">default_value</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># Environment variables can only address string keys;</span>
         <span class="c1"># non-string keys (e.g. integers) are left untouched.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">continue</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">env_prefix</span><span class="si">}{</span><span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">env_prefix</span><span class="si">}{</span><span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
         <span class="n">key_type</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default_value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
             <span class="c1"># A whole-section variable (e.g. PKG_MODEL) replaces the mapping</span>
@@ -761,10 +761,10 @@
                 <span class="p">)</span>
                 <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">parsed</span>
                 <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">_override_with_environment</span><span class="p">(</span>
                 <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">__&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">__"</span><span class="p">,</span>
                 <span class="n">key_type</span> <span class="ow">or</span> <span class="p">{},</span>
                 <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
@@ -780,15 +780,15 @@
                 <span class="c1"># behaves like a section, so nested variables</span>
                 <span class="c1"># are applied on top of it as well</span>
                 <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_label_tree</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="sa">f</span><span class="s2">"env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">_override_with_environment</span><span class="p">(</span>
                     <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">__&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">__"</span><span class="p">,</span>
                     <span class="p">{},</span>
                     <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">owner</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"env:</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_environment_value</span><span class="p">(</span>
@@ -797,7 +797,7 @@
     <span class="n">default_value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="n">target_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert an environment variable to the wanted type.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Convert an environment variable to the wanted type.</span>
 
 <span class="sd">    The target type is ``target_type`` if given,</span>
 <span class="sd">    otherwise the type of ``default_value``.</span>
@@ -805,14 +805,14 @@
 <span class="sd">    leaves the value unchanged as a string.</span>
 <span class="sd">    Any other target type outside the supported set</span>
 <span class="sd">    raises a ``ValueError``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">target_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># A boolean never fails conversion:</span>
         <span class="c1"># any value other than the truthy ones becomes ``False``</span>
         <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="nb">bool</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;on&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"true"</span><span class="p">,</span> <span class="s2">"yes"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target_type</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
@@ -821,17 +821,17 @@
         <span class="k">if</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">parsed</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="c1"># ``json.loads`` accepts any JSON value,</span>
-            <span class="c1"># so a scalar like ``&quot;123&quot;`` parses without</span>
+            <span class="c1"># so a scalar like ``"123"`` parses without</span>
             <span class="c1"># being the requested ``list``/``dict``.</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">target_type</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span>
             <span class="k">return</span> <span class="n">parsed</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The environment variable &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;could not be converted to the type &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">target_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;of the corresponding configuration value.&quot;</span>
+            <span class="sa">f</span><span class="s2">"The environment variable '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' "</span>
+            <span class="sa">f</span><span class="s2">"could not be converted to the type "</span>
+            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">target_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">' "</span>
+            <span class="sa">f</span><span class="s2">"of the corresponding configuration value."</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">ex</span>
     <span class="c1"># A ``None`` default carries no type information,</span>
     <span class="c1"># so the value is kept as a string (see ``types``)</span>
@@ -840,18 +840,18 @@
     <span class="c1"># E.g. a datetime.date default parsed from YAML;</span>
     <span class="c1"># silently keeping the value a string would hide the error</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;The environment variable &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;cannot override the corresponding configuration value: &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;its type &#39;</span><span class="si">{</span><span class="n">target_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; is not supported. &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;Supported types are &quot;</span>
-        <span class="sa">f</span><span class="s2">&quot;&#39;bool&#39;, &#39;int&#39;, &#39;float&#39;, &#39;str&#39;, &#39;list&#39;, &#39;dict&#39;.&quot;</span>
+        <span class="sa">f</span><span class="s2">"The environment variable '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' "</span>
+        <span class="sa">f</span><span class="s2">"cannot override the corresponding configuration value: "</span>
+        <span class="sa">f</span><span class="s2">"its type '</span><span class="si">{</span><span class="n">target_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">' is not supported. "</span>
+        <span class="sa">f</span><span class="s2">"Supported types are "</span>
+        <span class="sa">f</span><span class="s2">"'bool', 'int', 'float', 'str', 'list', 'dict'."</span>
     <span class="p">)</span>
 
 
 <div class="viewcode-block" id="config">
 <a class="viewcode-back" href="../../../api/audeer.config.html#audeer.config">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">config</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get/set defaults for :mod:`audeer`.</span>
+<span class="w">    </span><span class="sd">"""Get/set defaults for :mod:`audeer`.</span>
 
 <span class="sd">    For example, when you want to change the default number of columns</span>
 <span class="sd">    for the progress bar::</span>
@@ -860,22 +860,22 @@
 
 <span class="sd">        audeer.config.TQDM_COLUMNS = 50</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">TQDM_DESCLEN</span> <span class="o">=</span> <span class="mi">60</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Length of progress bar description.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Length of progress bar description."""</span>
 
     <span class="n">TQDM_FORMAT</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;</span><span class="si">{percentage:3.0f}</span><span class="s2">%|</span><span class="si">{bar}</span><span class="s2"> [</span><span class="si">{elapsed}</span><span class="s2">&lt;</span><span class="si">{remaining}</span><span class="s2">] &quot;</span>
-        <span class="s2">&quot;{desc:&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">TQDM_DESCLEN</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+        <span class="s2">"</span><span class="si">{percentage:3.0f}</span><span class="s2">%|</span><span class="si">{bar}</span><span class="s2"> [</span><span class="si">{elapsed}</span><span class="s2">&lt;</span><span class="si">{remaining}</span><span class="s2">] "</span>
+        <span class="s2">"{desc:"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">TQDM_DESCLEN</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"}"</span>
     <span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Format of progress bars.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Format of progress bars."""</span>
 
     <span class="n">TQDM_COLUMNS</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Number of columns of progress bars.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Number of columns of progress bars."""</span>
 
     <span class="n">TQDM_LEAVE</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Leave progress bar on screen after finishing.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Leave progress bar on screen after finishing."""</span></div>
 
 </pre></div>
 
@@ -892,7 +892,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/08/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/09/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

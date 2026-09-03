@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                v2.5.0
+                v2.6.0
               </div>
             
           
@@ -221,15 +221,15 @@ in order they were added to the archives</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s2">&quot;a.txt&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s2">&quot;b.txt&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">archive_a</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;archive.zip&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">archive_b</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">&quot;archive.tar.gz&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">create_archive</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;a.txt&quot;</span><span class="p">],</span> <span class="n">archive_a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">create_archive</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;b.txt&quot;</span><span class="p">],</span> <span class="n">archive_b</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">extract_archives</span><span class="p">([</span><span class="n">archive_a</span><span class="p">,</span> <span class="n">archive_b</span><span class="p">],</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
-<span class="go">[&#39;a.txt&#39;, &#39;b.txt&#39;]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">folder</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s2">"a.txt"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s2">"b.txt"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">archive_a</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"archive.zip"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">archive_b</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="s2">"archive.tar.gz"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">create_archive</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="p">[</span><span class="s2">"a.txt"</span><span class="p">],</span> <span class="n">archive_a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">create_archive</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="p">[</span><span class="s2">"b.txt"</span><span class="p">],</span> <span class="n">archive_b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">extract_archives</span><span class="p">([</span><span class="n">archive_a</span><span class="p">,</span> <span class="n">archive_b</span><span class="p">],</span> <span class="s2">"."</span><span class="p">)</span>
+<span class="go">['a.txt', 'b.txt']</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -259,7 +259,7 @@ in order they were added to the archives</p>
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/08/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/09/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

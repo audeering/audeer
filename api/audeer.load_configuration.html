@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                v2.5.0
+                v2.6.0
               </div>
             
           
@@ -347,47 +347,47 @@ no tracking is performed</p></li>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;cache_root: ~/cache</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">"config.yaml"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"cache_root: ~/cache</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-<span class="go">{&#39;cache_root&#39;: &#39;~/cache&#39;}</span>
+<span class="go">{'cache_root': '~/cache'}</span>
 </pre></div>
 </div>
 <p>A user configuration can also be given
 as an already parsed mapping.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;model:</span><span class="se">\n</span><span class="s2">  device: cpu</span><span class="se">\n</span><span class="s2">  lora: false</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="s2">&quot;cuda&quot;</span><span class="p">}})</span>
-<span class="go">{&#39;model&#39;: {&#39;device&#39;: &#39;cuda&#39;, &#39;lora&#39;: False}}</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">"config.yaml"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"model:</span><span class="se">\n</span><span class="s2">  device: cpu</span><span class="se">\n</span><span class="s2">  lora: false</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="p">{</span><span class="s2">"model"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"device"</span><span class="p">:</span> <span class="s2">"cuda"</span><span class="p">}})</span>
+<span class="go">{'model': {'device': 'cuda', 'lora': False}}</span>
 </pre></div>
 </div>
 <p>A key that defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code> has no inferred type,
 so declare it in <code class="docutils literal notranslate"><span class="pre">types</span></code>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;hosts: null</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;APP_HOSTS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;[&quot;host1&quot;, &quot;host2&quot;]&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">"config.yaml"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"hosts: null</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"APP_HOSTS"</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'["host1", "host2"]'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">config_file</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;APP&quot;</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;hosts&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">}</span>
+<span class="gp">... </span>    <span class="n">config_file</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">"APP"</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">{</span><span class="s2">"hosts"</span><span class="p">:</span> <span class="nb">list</span><span class="p">}</span>
 <span class="gp">... </span><span class="p">)</span>
-<span class="go">{&#39;hosts&#39;: [&#39;host1&#39;, &#39;host2&#39;]}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;APP_HOSTS&quot;</span><span class="p">]</span>
+<span class="go">{'hosts': ['host1', 'host2']}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"APP_HOSTS"</span><span class="p">]</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">tracking</span></code> records which layer set each key’s effective value.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;model:</span><span class="se">\n</span><span class="s2">  device: cpu</span><span class="se">\n</span><span class="s2">  lora: false</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PKG_MODEL__DEVICE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">config_file</span> <span class="o">=</span> <span class="n">audeer</span><span class="o">.</span><span class="n">path</span><span class="p">(</span><span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">(),</span> <span class="s2">"config.yaml"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">_</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"model:</span><span class="se">\n</span><span class="s2">  device: cpu</span><span class="se">\n</span><span class="s2">  lora: false</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PKG_MODEL__DEVICE"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"cuda"</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tracking</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">&quot;PKG&quot;</span><span class="p">,</span> <span class="n">tracking</span><span class="o">=</span><span class="n">tracking</span><span class="p">)</span>
-<span class="go">{&#39;model&#39;: {&#39;device&#39;: &#39;cuda&#39;, &#39;lora&#39;: False}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audeer</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">env_prefix</span><span class="o">=</span><span class="s2">"PKG"</span><span class="p">,</span> <span class="n">tracking</span><span class="o">=</span><span class="n">tracking</span><span class="p">)</span>
+<span class="go">{'model': {'device': 'cuda', 'lora': False}}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">tracking</span>
-<span class="go">{&#39;model&#39;: {&#39;device&#39;: &#39;env:PKG_MODEL__DEVICE&#39;, &#39;lora&#39;: &#39;file:...config.yaml&#39;}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;PKG_MODEL__DEVICE&quot;</span><span class="p">]</span>
+<span class="go">{'model': {'device': 'env:PKG_MODEL__DEVICE', 'lora': 'file:...config.yaml'}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"PKG_MODEL__DEVICE"</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -417,7 +417,7 @@ so declare it in <code class="docutils literal notranslate"><span class="pre">ty
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/08/04 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/09/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
