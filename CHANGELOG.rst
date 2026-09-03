@@ -7,6 +7,15 @@ The format is based on `Keep a Changelog`_,
 and this project adheres to `Semantic Versioning`_.
 
 
+Version 2.6.0 (2026-09-03)
+--------------------------
+
+* Added: ``compression`` argument to ``audeer.create_archive()``
+  to select compression level
+  or no compression
+  for ZIP archives
+
+
 Version 2.5.0 (2026-08-04)
 --------------------------
 
