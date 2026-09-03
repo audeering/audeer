@@ -98,6 +98,7 @@ def create_archive(
     files: str | Sequence[str] | None,
     archive: str,
     *,
+    compression: int | None = None,
     verbose: bool = False,
 ):
     r"""Create ZIP or TAR archive.
@@ -125,6 +126,18 @@ def create_archive(
         archive: path to archive file.
             The type of the archive
             is determined from its file extension
+        compression: compression level
+            of a zip archive.
+            It is not a ``zipfile`` compression constant.
+            If ``None``,
+            the default compression of ``zipfile`` is used.
+            If ``0``,
+            the files are stored without compression.
+            Values from ``1`` to ``9``
+            select the deflate compression level,
+            with ``1`` being the fastest
+            and ``9`` the smallest archive.
+            Supported for zip archives only
         verbose: if ``True`` a progress bar is shown
 
     Raises:
@@ -133,6 +146,10 @@ def create_archive(
         RuntimeError: if archive does not end with ``zip``,
             ``tar``, ``tar.gz``, ``tar.bz2``, ``tar.xz``
         RuntimeError: if a file in ``files`` is not below ``root``
+        ValueError: if ``compression`` is not ``None``
+            and ``archive`` is not a zip archive
+        ValueError: if ``compression`` is not ``None``
+            and not between 0 and 9
 
     Examples:
         >>> file_a = audeer.touch("a.txt")
@@ -146,6 +163,10 @@ def create_archive(
         >>> audeer.create_archive(folder, ["a.txt"], archive)
         >>> audeer.extract_archive(archive, ".")
         ['a.txt']
+        >>> archive = audeer.path("stored.zip")
+        >>> audeer.create_archive(folder, None, archive, compression=0)
+        >>> audeer.extract_archive(archive, ".")
+        ['a.txt', 'b.txt']
 
     """
     root = safe_path(root)
@@ -214,11 +235,16 @@ def create_archive(
     disable = not verbose
 
     archive_handlers = {
-        "zip": lambda path: zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED),
-        "tar": lambda path: tarfile.open(path, "w:"),
-        "tar.gz": lambda path: tarfile.open(path, "w:gz"),
-        "tar.bz2": lambda path: tarfile.open(path, "w:bz2"),
-        "tar.xz": lambda path: tarfile.open(path, "w:xz"),
+        "zip": lambda path, level: zipfile.ZipFile(
+            path,
+            "w",
+            zipfile.ZIP_STORED if level == 0 else zipfile.ZIP_DEFLATED,
+            compresslevel=level,
+        ),
+        "tar": lambda path, level: tarfile.open(path, "w:"),
+        "tar.gz": lambda path, level: tarfile.open(path, "w:gz"),
+        "tar.bz2": lambda path, level: tarfile.open(path, "w:bz2"),
+        "tar.xz": lambda path, level: tarfile.open(path, "w:xz"),
     }
 
     # Get the archive extension
@@ -229,8 +255,19 @@ def create_archive(
             f"Unsupported archive format. Supported formats: {supported}"
         )
 
+    if compression is not None:
+        if extension != "zip":
+            raise ValueError(
+                f"'compression' is only supported for zip archives, "
+                f"not for '{extension}'."
+            )
+        if not 0 <= compression <= 9:
+            raise ValueError(
+                f"'compression' has to be between 0 and 9, not {compression}."
+            )
+
     # Create and populate the archive
-    with archive_handlers[extension](archive) as archive_file:
+    with archive_handlers[extension](archive, compression) as archive_file:
         for file in progress_bar(files, desc=desc, disable=disable):
             full_file = safe_path(root, file)
             if extension == "zip":
