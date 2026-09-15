@@ -1,5 +1,5 @@
+import contextlib
 from doctest import ELLIPSIS
-import os
 import platform
 
 import pytest
@@ -20,12 +20,8 @@ def imports(namespace):
 def run_in_tmpdir(tmpdir_factory):
     """Move to a persistent tmpdir for execution of a whole file."""
     tmpdir = tmpdir_factory.mktemp("tmp")
-    current_dir = os.getcwd()
-    os.chdir(tmpdir)
-
-    yield
-
-    os.chdir(current_dir)
+    with contextlib.chdir(tmpdir):
+        yield
 
 
 # Collect doctests

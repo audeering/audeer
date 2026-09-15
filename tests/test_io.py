@@ -1,3 +1,4 @@
+import contextlib
 import os
 import platform
 import re
@@ -1372,16 +1373,13 @@ def test_mkdir(tmpdir):
     assert p == path
     # Relative path
     path = str(tmpdir.mkdir("folder3"))
-    current_path = os.getcwd()
-    os.chdir(path)
-    p = audeer.mkdir("folder4")
-    os.chdir(current_path)
+    with contextlib.chdir(path):
+        p = audeer.mkdir("folder4")
     assert os.path.isdir(p) is True
     assert p == os.path.join(path, "folder4")
     # Subdirectories
-    os.chdir(path)
-    p = audeer.mkdir("folder5", "folder6")
-    os.chdir(current_path)
+    with contextlib.chdir(path):
+        p = audeer.mkdir("folder5", "folder6")
     assert os.path.isdir(p) is True
     assert p == os.path.join(path, "folder5", "folder6")
     # Path in bytes
@@ -1740,12 +1738,10 @@ def test_rmdir(tmpdir):
     assert not os.path.exists(os.path.dirname(p))
     # Relative path
     path = str(tmpdir.mkdir("folder"))
-    current_path = os.getcwd()
-    os.chdir(os.path.dirname(path))
-    assert os.path.exists(path)
-    audeer.rmdir("folder")
-    assert not os.path.exists(path)
-    os.chdir(current_path)
+    with contextlib.chdir(os.path.dirname(path)):
+        assert os.path.exists(path)
+        audeer.rmdir("folder")
+        assert not os.path.exists(path)
     # Symbolic link
     path = audeer.mkdir(tmpdir, "folder")
     link = os.path.join(tmpdir, "link")
@@ -1782,10 +1778,8 @@ def test_script_dir(tmpdir):
     """
     expected_script_dir = os.path.dirname(os.path.realpath(__file__))
     assert audeer.script_dir() == expected_script_dir
-    current_dir = os.getcwd()
-    os.chdir(tmpdir)
-    assert audeer.script_dir() == expected_script_dir
-    os.chdir(current_dir)
+    with contextlib.chdir(tmpdir):
+        assert audeer.script_dir() == expected_script_dir
 
 
 def test_touch(tmpdir):
