@@ -875,6 +875,95 @@ def test_load_configuration_environment_empty_string(tmpdir, monkeypatch):
         audeer.load_configuration(config_file, env_prefix="PKG")
 
 
+@pytest.mark.parametrize("value", ["null", "Null", "NULL"])
+@pytest.mark.parametrize(
+    "content",
+    [
+        "key: default\n",
+        "key: 1\n",
+        "key: 1.5\n",
+        "key: true\n",
+        "key: [1, 2]\n",
+        "key: null\n",
+    ],
+)
+def test_load_configuration_environment_null(tmpdir, monkeypatch, content, value):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # Like a YAML null, "null" sets a key of any type to None
+    monkeypatch.setenv("PKG_KEY", value)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"key": None}
+
+
+def test_load_configuration_environment_null_declared_type(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: 1.0\nhosts: null\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "null")
+    monkeypatch.setenv("PKG_HOSTS", "null")
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"timeout": float, "hosts": list},
+    )
+    assert config == {"timeout": None, "hosts": None}
+
+
+def test_load_configuration_environment_null_unsets_user_value(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  vocoder: null\n  device: cpu\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model:\n  vocoder: some-vocoder\n",
+    )
+    # A value set by a user file can be unset again
+    monkeypatch.setenv("PKG_MODEL__VOCODER", "null")
+    config = audeer.load_configuration(default_file, user_file, env_prefix="PKG")
+    assert config == {"model": {"vocoder": None, "device": "cpu"}}
+
+
+@pytest.mark.parametrize("value", ["nul", "nulls", "None", "~", " null"])
+def test_load_configuration_environment_null_other_values(tmpdir, monkeypatch, value):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "key: default\n",
+    )
+    # Only the exact spelling "null" (case insensitive) means None
+    monkeypatch.setenv("PKG_KEY", value)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"key": value}
+
+
+def test_load_configuration_environment_null_section(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\nname: default\n",
+    )
+    # Like a YAML null, "null" sets a whole section to None,
+    # and nested variables of the section are ignored
+    monkeypatch.setenv("PKG_MODEL", "null")
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    tracking = {}
+    config = audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
+    assert config == {"model": None, "name": "default"}
+    assert tracking == {"model": "env:PKG_MODEL", "name": f"file:{config_file}"}
+
+
+def test_load_configuration_environment_null_tracking(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n",
+    )
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "null")
+    tracking = {}
+    config = audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
+    assert config == {"model": {"device": None}}
+    assert tracking == {"model": {"device": "env:PKG_MODEL__DEVICE"}}
+
+
 def test_load_configuration_environment_types_none_default(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
