@@ -87,8 +87,8 @@ def load_configuration(
     but an empty string for ``str`` values.
     A default value of any other type
     (e.g. a date parsed from YAML)
-    cannot be overridden
-    and raises a ``ValueError`` as well.
+    can only be set to ``None`` by ``"null"``;
+    any other value raises a ``ValueError`` as well.
     Only keys already present in the merged configuration,
     whether from a file or a mapping,
     can be overridden by environment variables.

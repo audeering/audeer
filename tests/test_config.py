@@ -1292,11 +1292,29 @@ def test_load_configuration_environment_unsupported_default_type(
     tmpdir, monkeypatch, content, name, value
 ):
     config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
-    # A default value of an unsupported type cannot be overridden;
+    # A default value of an unsupported type cannot be overridden
+    # by a value other than "null";
     # silently degrading it to a string would hide the error
     monkeypatch.setenv(name, value)
     with pytest.raises(ValueError, match="is not supported"):
         audeer.load_configuration(config_file, env_prefix="PKG")
+
+
+@pytest.mark.parametrize(
+    "content, name, key",
+    [
+        ("release: 2026-01-01\n", "PKG_RELEASE", "release"),
+        ("start: 2026-01-01 10:00:00\n", "PKG_START", "start"),
+    ],
+)
+def test_load_configuration_environment_unsupported_default_type_null(
+    tmpdir, monkeypatch, content, name, key
+):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # "null" still sets a value of an unsupported type to None
+    monkeypatch.setenv(name, "null")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {key: None}
 
 
 def test_load_configuration_environment_none_default_untyped(tmpdir, monkeypatch):
