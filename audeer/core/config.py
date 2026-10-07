@@ -73,10 +73,22 @@ def load_configuration(
     a boolean is therefore never rejected,
     whereas ``int``, ``float`` and JSON conversions
     raise a ``ValueError`` on invalid input.
+    The value ``"null"`` (case insensitive)
+    sets a key of any type to ``None``,
+    like ``null`` in a YAML file;
+    for a nested mapping,
+    it sets the whole mapping to ``None``,
+    and nested variables of that mapping are ignored.
+    Likewise, a JSON ``null`` in a whole-section variable
+    sets a key of any type to ``None``,
+    except for a nested mapping,
+    which can only be replaced by a JSON object.
+    An empty value is not ``None``,
+    but an empty string for ``str`` values.
     A default value of any other type
     (e.g. a date parsed from YAML)
-    cannot be overridden
-    and raises a ``ValueError`` as well.
+    can only be set to ``None`` by ``"null"``;
+    any other value raises a ``ValueError`` as well.
     Only keys already present in the merged configuration,
     whether from a file or a mapping,
     can be overridden by environment variables.
@@ -489,6 +501,10 @@ def _validate_json_replacement(
     Values without a default (introduced keys)
     or with a ``None`` default keep their JSON type,
     unless a type is declared in ``types``.
+    Like ``"null"`` for a scalar environment variable,
+    a JSON ``null`` is accepted for a value of any type,
+    except for a nested mapping,
+    which must be replaced by a JSON object.
 
     Args:
         name: name of the environment variable
@@ -524,6 +540,9 @@ def _validate_json_replacement(
                 declared if isinstance(declared, Mapping) else {},
                 f"{key_path}.",
             )
+            continue
+        # Like a YAML null, a JSON null unsets a value of any type
+        if json_value is None:
             continue
         if isinstance(declared, type):
             target = declared
@@ -606,6 +625,13 @@ def _override_with_environment(
                     default_value,
                     dict,
                 )
+                if parsed is None:
+                    # Like a YAML null, "null" removes the whole section,
+                    # leaving nested variables nothing to override
+                    cfg[key] = None
+                    if owner is not None:
+                        owner[key] = f"env:{name}"
+                    continue
                 # The validation guarantees that the replaced values keep
                 # the types of the defaults, so nested overrides applied
                 # below still cast to the original types
@@ -658,11 +684,16 @@ def _parse_environment_value(
 
     The target type is ``target_type`` if given,
     otherwise the type of ``default_value``.
+    The value ``"null"`` (case insensitive)
+    is converted to ``None`` for any target type.
     A ``None`` default without a declared type
-    leaves the value unchanged as a string.
+    leaves any other value unchanged as a string.
     Any other target type outside the supported set
     raises a ``ValueError``.
     """
+    # Like a YAML null, "null" unsets a value of any type
+    if value.lower() == "null":
+        return None
     if target_type is None:
         target_type = type(default_value)
     try:

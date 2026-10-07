@@ -675,16 +675,47 @@ def test_load_configuration_environment_whole_dict_none_default(tmpdir, monkeypa
     assert config == {"model": {"device": "cuda"}}
 
 
+@pytest.mark.parametrize(
+    "content, types",
+    [
+        ("model:\n  device: cpu\n  lora: false\n", None),
+        ("model:\n  device: 1\n  lora: false\n", None),
+        ("model:\n  device: 1.5\n  lora: false\n", None),
+        ("model:\n  device: true\n  lora: false\n", None),
+        ("model:\n  device: [1, 2]\n  lora: false\n", None),
+        ("model:\n  device: null\n  lora: false\n", {"model": {"device": str}}),
+    ],
+)
 def test_load_configuration_environment_whole_dict_null_for_typed_default(
+    tmpdir, monkeypatch, content, types
+):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # Like "null" for a scalar variable,
+    # JSON null sets a value of any type to None
+    monkeypatch.setenv("PKG_MODEL", '{"device": null, "lora": true}')
+    tracking = {}
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types=types,
+        tracking=tracking,
+    )
+    assert config == {"model": {"device": None, "lora": True}}
+    assert tracking == {
+        "model": {"device": "env:PKG_MODEL", "lora": "env:PKG_MODEL"},
+    }
+
+
+def test_load_configuration_environment_whole_dict_null_for_nested_section(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "model:\n  device: cpu\n",
+        "model:\n  b:\n    c: 1\n",
     )
-    # JSON null does not match the str type of the default
-    monkeypatch.setenv("PKG_MODEL", '{"device": null}')
-    with pytest.raises(ValueError, match="has type 'str'"):
+    # A nested section can only be replaced by a JSON object
+    monkeypatch.setenv("PKG_MODEL", '{"b": null}')
+    with pytest.raises(ValueError, match="is a mapping"):
         audeer.load_configuration(config_file, env_prefix="PKG")
 
 
@@ -873,6 +904,95 @@ def test_load_configuration_environment_empty_string(tmpdir, monkeypatch):
     monkeypatch.setenv("PKG_COUNT", "")
     with pytest.raises(ValueError, match="could not be converted to the type"):
         audeer.load_configuration(config_file, env_prefix="PKG")
+
+
+@pytest.mark.parametrize("value", ["null", "Null", "NULL"])
+@pytest.mark.parametrize(
+    "content",
+    [
+        "key: default\n",
+        "key: 1\n",
+        "key: 1.5\n",
+        "key: true\n",
+        "key: [1, 2]\n",
+        "key: null\n",
+    ],
+)
+def test_load_configuration_environment_null(tmpdir, monkeypatch, content, value):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # Like a YAML null, "null" sets a key of any type to None
+    monkeypatch.setenv("PKG_KEY", value)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"key": None}
+
+
+def test_load_configuration_environment_null_declared_type(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: 1.0\nhosts: null\n",
+    )
+    monkeypatch.setenv("PKG_TIMEOUT", "null")
+    monkeypatch.setenv("PKG_HOSTS", "null")
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"timeout": float, "hosts": list},
+    )
+    assert config == {"timeout": None, "hosts": None}
+
+
+def test_load_configuration_environment_null_unsets_user_value(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  vocoder: null\n  device: cpu\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model:\n  vocoder: some-vocoder\n",
+    )
+    # A value set by a user file can be unset again
+    monkeypatch.setenv("PKG_MODEL__VOCODER", "null")
+    config = audeer.load_configuration(default_file, user_file, env_prefix="PKG")
+    assert config == {"model": {"vocoder": None, "device": "cpu"}}
+
+
+@pytest.mark.parametrize("value", ["nul", "nulls", "None", "~", " null"])
+def test_load_configuration_environment_null_other_values(tmpdir, monkeypatch, value):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "key: default\n",
+    )
+    # Only the exact spelling "null" (case insensitive) means None
+    monkeypatch.setenv("PKG_KEY", value)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"key": value}
+
+
+def test_load_configuration_environment_null_section(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\nname: default\n",
+    )
+    # Like a YAML null, "null" sets a whole section to None,
+    # and nested variables of the section are ignored
+    monkeypatch.setenv("PKG_MODEL", "null")
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
+    tracking = {}
+    config = audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
+    assert config == {"model": None, "name": "default"}
+    assert tracking == {"model": "env:PKG_MODEL", "name": f"file:{config_file}"}
+
+
+def test_load_configuration_environment_null_tracking(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n",
+    )
+    monkeypatch.setenv("PKG_MODEL__DEVICE", "null")
+    tracking = {}
+    config = audeer.load_configuration(config_file, env_prefix="PKG", tracking=tracking)
+    assert config == {"model": {"device": None}}
+    assert tracking == {"model": {"device": "env:PKG_MODEL__DEVICE"}}
 
 
 def test_load_configuration_environment_types_none_default(tmpdir, monkeypatch):
@@ -1172,11 +1292,29 @@ def test_load_configuration_environment_unsupported_default_type(
     tmpdir, monkeypatch, content, name, value
 ):
     config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
-    # A default value of an unsupported type cannot be overridden;
+    # A default value of an unsupported type cannot be overridden
+    # by a value other than "null";
     # silently degrading it to a string would hide the error
     monkeypatch.setenv(name, value)
     with pytest.raises(ValueError, match="is not supported"):
         audeer.load_configuration(config_file, env_prefix="PKG")
+
+
+@pytest.mark.parametrize(
+    "content, name, key",
+    [
+        ("release: 2026-01-01\n", "PKG_RELEASE", "release"),
+        ("start: 2026-01-01 10:00:00\n", "PKG_START", "start"),
+    ],
+)
+def test_load_configuration_environment_unsupported_default_type_null(
+    tmpdir, monkeypatch, content, name, key
+):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # "null" still sets a value of an unsupported type to None
+    monkeypatch.setenv(name, "null")
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {key: None}
 
 
 def test_load_configuration_environment_none_default_untyped(tmpdir, monkeypatch):
