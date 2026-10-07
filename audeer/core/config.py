@@ -79,6 +79,10 @@ def load_configuration(
     for a nested mapping,
     it sets the whole mapping to ``None``,
     and nested variables of that mapping are ignored.
+    Likewise, a JSON ``null`` in a whole-section variable
+    sets a key of any type to ``None``,
+    except for a nested mapping,
+    which can only be replaced by a JSON object.
     An empty value is not ``None``,
     but an empty string for ``str`` values.
     A default value of any other type
@@ -497,6 +501,10 @@ def _validate_json_replacement(
     Values without a default (introduced keys)
     or with a ``None`` default keep their JSON type,
     unless a type is declared in ``types``.
+    Like ``"null"`` for a scalar environment variable,
+    a JSON ``null`` is accepted for a value of any type,
+    except for a nested mapping,
+    which must be replaced by a JSON object.
 
     Args:
         name: name of the environment variable
@@ -532,6 +540,9 @@ def _validate_json_replacement(
                 declared if isinstance(declared, Mapping) else {},
                 f"{key_path}.",
             )
+            continue
+        # Like a YAML null, a JSON null unsets a value of any type
+        if json_value is None:
             continue
         if isinstance(declared, type):
             target = declared

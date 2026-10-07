@@ -675,16 +675,47 @@ def test_load_configuration_environment_whole_dict_none_default(tmpdir, monkeypa
     assert config == {"model": {"device": "cuda"}}
 
 
+@pytest.mark.parametrize(
+    "content, types",
+    [
+        ("model:\n  device: cpu\n  lora: false\n", None),
+        ("model:\n  device: 1\n  lora: false\n", None),
+        ("model:\n  device: 1.5\n  lora: false\n", None),
+        ("model:\n  device: true\n  lora: false\n", None),
+        ("model:\n  device: [1, 2]\n  lora: false\n", None),
+        ("model:\n  device: null\n  lora: false\n", {"model": {"device": str}}),
+    ],
+)
 def test_load_configuration_environment_whole_dict_null_for_typed_default(
+    tmpdir, monkeypatch, content, types
+):
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
+    # Like "null" for a scalar variable,
+    # JSON null sets a value of any type to None
+    monkeypatch.setenv("PKG_MODEL", '{"device": null, "lora": true}')
+    tracking = {}
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types=types,
+        tracking=tracking,
+    )
+    assert config == {"model": {"device": None, "lora": True}}
+    assert tracking == {
+        "model": {"device": "env:PKG_MODEL", "lora": "env:PKG_MODEL"},
+    }
+
+
+def test_load_configuration_environment_whole_dict_null_for_nested_section(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "model:\n  device: cpu\n",
+        "model:\n  b:\n    c: 1\n",
     )
-    # JSON null does not match the str type of the default
-    monkeypatch.setenv("PKG_MODEL", '{"device": null}')
-    with pytest.raises(ValueError, match="has type 'str'"):
+    # A nested section can only be replaced by a JSON object
+    monkeypatch.setenv("PKG_MODEL", '{"b": null}')
+    with pytest.raises(ValueError, match="is a mapping"):
         audeer.load_configuration(config_file, env_prefix="PKG")
 
 
