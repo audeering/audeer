@@ -64,7 +64,8 @@ def load_configuration(
     overrides ``device`` from ``<env_prefix>_MODEL``.
     Set ``env_replace_sections`` to ``False``
     to ignore such whole-section variables,
-    and allow only to override individual values.
+    including variables for keys declared as ``dict`` in ``types``,
+    so that only individual values can be overridden.
     The value of an environment variable is converted
     to the type of the corresponding default value:
     ``str`` values are used as they are,
@@ -118,12 +119,10 @@ def load_configuration(
             a whole nested mapping can be replaced
             by a single environment variable holding a JSON object,
             e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``.
-            If ``False``, such variables are ignored
+            If ``False``, such variables are ignored,
+            as are variables for keys declared as ``dict`` in ``types``,
             and only individual values
-            can be overridden by environment variables.
-            A key whose default value is not a mapping
-            but is declared as ``dict`` in ``types``
-            can still be set by a JSON object
+            can be overridden by environment variables
         types: mapping that declares the type
             of configuration values,
             mirroring the (possibly nested) configuration structure.
@@ -609,7 +608,8 @@ def _override_with_environment(
             used to cast values whose default is ``None``
         owner: owner tracking dictionary, updated in place when given
         replace_sections: if ``False``,
-            whole-section variables (e.g. ``PKG_MODEL``) are ignored
+            whole-section variables (e.g. ``PKG_MODEL``)
+            and variables for keys declared as ``dict`` are ignored
 
     """
     for key, default_value in cfg.items():
@@ -651,6 +651,10 @@ def _override_with_environment(
                 replace_sections=replace_sections,
             )
         elif name in os.environ:
+            # A value declared as ``dict`` is replaced as a whole,
+            # just like a section
+            if not replace_sections and key_type is dict:
+                continue
             cfg[key] = _parse_environment_value(
                 name,
                 os.environ[name],

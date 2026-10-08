@@ -837,18 +837,19 @@ def test_load_configuration_environment_replace_sections_disabled_declared_dict(
         audeer.path(tmpdir, "default.yaml"),
         "model: null\n",
     )
-    # A None default declared as ``dict`` is a value, not a section,
-    # so it can still be set by a JSON object,
-    # but sections it introduces cannot be replaced
+    # A key declared as ``dict`` is replaced as a whole like a section,
+    # so its variable is ignored as well
     monkeypatch.setenv("PKG_MODEL", '{"device": "cpu", "sub": {"a": 1}}')
-    monkeypatch.setenv("PKG_MODEL__SUB", '{"b": 2}')
+    tracking = {}
     config = audeer.load_configuration(
         config_file,
         env_prefix="PKG",
         env_replace_sections=False,
         types={"model": dict},
+        tracking=tracking,
     )
-    assert config == {"model": {"device": "cpu", "sub": {"a": 1}}}
+    assert config == {"model": None}
+    assert tracking == {"model": f"file:{config_file}"}
 
 
 def test_load_configuration_environment_declared_dict_then_nested(tmpdir, monkeypatch):
