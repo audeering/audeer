@@ -801,6 +801,56 @@ def test_load_configuration_environment_whole_dict_nested_omitted_key(
     assert config == {"model": {"device": "cuda"}}
 
 
+def test_load_configuration_environment_replace_sections_disabled(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  lora: false\n  sub:\n    a: 1\n",
+    )
+    # Whole-section variables are ignored at every level,
+    # even with a value that would be invalid otherwise,
+    # whereas nested variables still override individual values
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda"}')
+    monkeypatch.setenv("PKG_MODEL__SUB", "{not valid json")
+    monkeypatch.setenv("PKG_MODEL__LORA", "true")
+    monkeypatch.setenv("PKG_MODEL__SUB__A", "2")
+    tracking = {}
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        env_replace_sections=False,
+        tracking=tracking,
+    )
+    assert config == {"model": {"device": "cpu", "lora": True, "sub": {"a": 2}}}
+    assert tracking == {
+        "model": {
+            "device": f"file:{config_file}",
+            "lora": "env:PKG_MODEL__LORA",
+            "sub": {"a": "env:PKG_MODEL__SUB__A"},
+        }
+    }
+
+
+def test_load_configuration_environment_replace_sections_disabled_declared_dict(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model: null\n",
+    )
+    # A None default declared as ``dict`` is a value, not a section,
+    # so it can still be set by a JSON object,
+    # but sections it introduces cannot be replaced
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cpu", "sub": {"a": 1}}')
+    monkeypatch.setenv("PKG_MODEL__SUB", '{"b": 2}')
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        env_replace_sections=False,
+        types={"model": dict},
+    )
+    assert config == {"model": {"device": "cpu", "sub": {"a": 1}}}
+
+
 def test_load_configuration_environment_declared_dict_then_nested(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

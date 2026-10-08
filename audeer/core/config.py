@@ -11,6 +11,7 @@ def load_configuration(
     user_configs: str | Mapping | Sequence[str | Mapping] | None = None,
     *,
     env_prefix: str | None = None,
+    env_replace_sections: bool = True,
     types: Mapping | None = None,
     validate: Callable[[dict], None] | None = None,
     tracking: MutableMapping | None = None,
@@ -61,6 +62,9 @@ def load_configuration(
     and therefore take precedence,
     e.g. ``<env_prefix>_MODEL__DEVICE``
     overrides ``device`` from ``<env_prefix>_MODEL``.
+    Set ``env_replace_sections`` to ``False``
+    to ignore such whole-section variables,
+    and allow only to override individual values.
     The value of an environment variable is converted
     to the type of the corresponding default value:
     ``str`` values are used as they are,
@@ -110,6 +114,16 @@ def load_configuration(
         env_prefix: prefix of environment variables
             used to override configuration values.
             If ``None``, environment variables are ignored
+        env_replace_sections: if ``True``,
+            a whole nested mapping can be replaced
+            by a single environment variable holding a JSON object,
+            e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``.
+            If ``False``, such variables are ignored
+            and only individual values
+            can be overridden by environment variables.
+            A key whose default value is not a mapping
+            but is declared as ``dict`` in ``types``
+            can still be set by a JSON object
         types: mapping that declares the type
             of configuration values,
             mirroring the (possibly nested) configuration structure.
@@ -252,7 +266,13 @@ def load_configuration(
         _validate_types(cfg, types)
 
     if env_prefix is not None:
-        _override_with_environment(cfg, f"{env_prefix}_", types or {}, owner)
+        _override_with_environment(
+            cfg,
+            f"{env_prefix}_",
+            types or {},
+            owner,
+            replace_sections=env_replace_sections,
+        )
 
     if validate is not None:
         validate(cfg)
@@ -558,6 +578,8 @@ def _override_with_environment(
     env_prefix: str,
     types: Mapping,
     owner: dict | None = None,
+    *,
+    replace_sections: bool = True,
 ) -> None:
     r"""Override configuration values with environment variables in place.
 
@@ -586,6 +608,8 @@ def _override_with_environment(
         types: declared types mirroring ``cfg``,
             used to cast values whose default is ``None``
         owner: owner tracking dictionary, updated in place when given
+        replace_sections: if ``False``,
+            whole-section variables (e.g. ``PKG_MODEL``) are ignored
 
     """
     for key, default_value in cfg.items():
@@ -599,7 +623,7 @@ def _override_with_environment(
             # A whole-section variable (e.g. PKG_MODEL) replaces the mapping
             # as a JSON object; nested variables (e.g. PKG_MODEL__DEVICE) are
             # applied afterwards and therefore take precedence.
-            if name in os.environ:
+            if replace_sections and name in os.environ:
                 parsed = _parse_environment_value(
                     name,
                     os.environ[name],
@@ -624,6 +648,7 @@ def _override_with_environment(
                 f"{name}__",
                 key_type or {},
                 owner[key] if owner is not None else None,
+                replace_sections=replace_sections,
             )
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
@@ -643,6 +668,7 @@ def _override_with_environment(
                     f"{name}__",
                     {},
                     owner[key] if owner is not None else None,
+                    replace_sections=replace_sections,
                 )
             elif owner is not None:
                 owner[key] = f"env:{name}"
