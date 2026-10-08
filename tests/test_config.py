@@ -1,6 +1,7 @@
 import collections
 from collections import UserDict
 import pathlib
+import re
 from types import MappingProxyType
 
 import pytest
@@ -830,26 +831,30 @@ def test_load_configuration_environment_replace_sections_disabled(tmpdir, monkey
     }
 
 
+@pytest.mark.parametrize(
+    "content, types, key",
+    [
+        ("model: null\n", {"model": dict}, "model"),
+        ("model:\n  extra: null\n", {"model": {"extra": dict}}, "extra"),
+    ],
+)
 def test_load_configuration_environment_replace_sections_disabled_declared_dict(
-    tmpdir, monkeypatch
+    tmpdir, content, types, key
 ):
-    config_file = write_config(
-        audeer.path(tmpdir, "default.yaml"),
-        "model: null\n",
-    )
+    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
     # A key declared as ``dict`` is replaced as a whole like a section,
-    # so its variable is ignored as well
-    monkeypatch.setenv("PKG_MODEL", '{"device": "cpu", "sub": {"a": 1}}')
-    tracking = {}
-    config = audeer.load_configuration(
-        config_file,
-        env_prefix="PKG",
-        env_replace_sections=False,
-        types={"model": dict},
-        tracking=tracking,
+    # which cannot happen when section replacement is disabled
+    error_msg = (
+        f"The 'types' entry for '{key}' declares 'dict', "
+        f"which has no effect with 'env_replace_sections=False'."
     )
-    assert config == {"model": None}
-    assert tracking == {"model": f"file:{config_file}"}
+    with pytest.raises(ValueError, match=re.escape(error_msg)):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            env_replace_sections=False,
+            types=types,
+        )
 
 
 def test_load_configuration_environment_replace_sections_disabled_list(

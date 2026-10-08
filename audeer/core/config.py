@@ -64,7 +64,6 @@ def load_configuration(
     overrides ``device`` from ``<env_prefix>_MODEL``.
     Set ``env_replace_sections`` to ``False``
     to ignore such whole-section variables,
-    including variables for keys declared as ``dict`` in ``types``,
     so that only individual values can be overridden.
     The value of an environment variable is converted
     to the type of the corresponding default value:
@@ -120,9 +119,10 @@ def load_configuration(
             by a single environment variable holding a JSON object,
             e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``.
             If ``False``, such variables are ignored,
-            as are variables for keys declared as ``dict`` in ``types``,
             and only individual values
-            can be overridden by environment variables
+            can be overridden by environment variables.
+            Declaring a key as ``dict`` in ``types``
+            is then not allowed
         types: mapping that declares the type
             of configuration values,
             mirroring the (possibly nested) configuration structure.
@@ -177,6 +177,8 @@ def load_configuration(
             is not a mapping
         ValueError: if a ``types`` entry
             does not match any configuration key
+        ValueError: if a ``types`` entry declares ``dict``
+            and ``env_replace_sections`` is ``False``
         ValueError: if ``tracking`` is not a mutable mapping
 
     Examples:
@@ -262,7 +264,7 @@ def load_configuration(
             raise ValueError(
                 f"'types' must be a mapping, but is '{type(types).__name__}'."
             )
-        _validate_types(cfg, types)
+        _validate_types(cfg, types, replace_sections=env_replace_sections)
 
     if env_prefix is not None:
         _override_with_environment(
@@ -434,7 +436,12 @@ def _load_configuration_file(config_file: str) -> dict:
     return dict(cfg)
 
 
-def _validate_types(cfg: Mapping, types: Mapping) -> None:
+def _validate_types(
+    cfg: Mapping,
+    types: Mapping,
+    *,
+    replace_sections: bool = True,
+) -> None:
     r"""Validate declared ``types`` against the configuration structure.
 
     Checks, independent of which environment variables are set, that a declared
@@ -444,10 +451,14 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
     Args:
         cfg: configuration dictionary
         types: declared types mirroring ``cfg``
+        replace_sections: if ``False``,
+            declaring a leaf as ``dict`` is rejected
 
     Raises:
         ValueError: if a declared section type is not a mapping
         ValueError: if a declared leaf type is not a class
+        ValueError: if a declared leaf type is ``dict``
+            and ``replace_sections`` is ``False``
 
     """
     # Reject entries without a matching configuration key
@@ -469,7 +480,7 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
                     f"The 'types' entry for the nested section '{key}' "
                     f"must be a mapping, but is '{type(declared).__name__}'."
                 )
-            _validate_types(value, declared)
+            _validate_types(value, declared, replace_sections=replace_sections)
         elif isinstance(declared, Mapping):
             raise ValueError(
                 f"The 'types' entry for '{key}' declares a nested section, "
@@ -487,6 +498,13 @@ def _validate_types(cfg: Mapping, types: Mapping) -> None:
                 f"is not a supported type: '{declared.__name__}'. "
                 f"Supported types are "
                 f"'bool', 'int', 'float', 'str', 'list', 'dict'."
+            )
+        elif not replace_sections and declared is dict:
+            # A value declared as ``dict`` is replaced as a whole,
+            # just like a section, which is disabled
+            raise ValueError(
+                f"The 'types' entry for '{key}' declares 'dict', "
+                f"which has no effect with 'env_replace_sections=False'."
             )
 
 
@@ -608,8 +626,7 @@ def _override_with_environment(
             used to cast values whose default is ``None``
         owner: owner tracking dictionary, updated in place when given
         replace_sections: if ``False``,
-            whole-section variables (e.g. ``PKG_MODEL``)
-            and variables for keys declared as ``dict`` are ignored
+            whole-section variables (e.g. ``PKG_MODEL``) are ignored
 
     """
     for key, default_value in cfg.items():
@@ -651,10 +668,6 @@ def _override_with_environment(
                 replace_sections=replace_sections,
             )
         elif name in os.environ:
-            # A value declared as ``dict`` is replaced as a whole,
-            # just like a section
-            if not replace_sections and key_type is dict:
-                continue
             cfg[key] = _parse_environment_value(
                 name,
                 os.environ[name],
