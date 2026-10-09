@@ -865,6 +865,35 @@ def test_load_configuration_environment_json_section_nested_levels(tmpdir, monke
     }
 
 
+def test_load_configuration_environment_list_of_mappings(tmpdir, monkeypatch):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        (
+            "layers:\n  - size: 1\n    act: relu\n"
+            "model:\n  layers:\n    - size: 1\n      act: relu\n    - size: 2\n"
+        ),
+    )
+    # A list is an individual value, even if it contains mappings,
+    # so it is replaced as a whole at every level
+    # instead of being deep-merged
+    monkeypatch.setenv("PKG_LAYERS", '[{"size": 2}, {"size": 3}]')
+    monkeypatch.setenv("PKG_MODEL__LAYERS", '[{"size": 4}]')
+    tracking = {}
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        tracking=tracking,
+    )
+    assert config == {
+        "layers": [{"size": 2}, {"size": 3}],
+        "model": {"layers": [{"size": 4}]},
+    }
+    assert tracking == {
+        "layers": "env:PKG_LAYERS",
+        "model": {"layers": "env:PKG_MODEL__LAYERS"},
+    }
+
+
 def test_load_configuration_environment_empty_section_then_nested(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
