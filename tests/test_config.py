@@ -1807,3 +1807,82 @@ def test_load_configuration_validate_passes_with_environment(tmpdir, monkeypatch
     # and the configuration is returned unchanged
     assert calls == [{"count": 5}]
     assert config == {"count": 5}
+
+
+def test_load_configuration_tracking_empty_section(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "extra: {}\nmodel:\n  options: {}\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(default_file, user_file, tracking=tracking)
+    # An empty section has no keys that could carry a label,
+    # so the section itself is attributed to the layer that set it
+    assert config == {"model": {"device": "cpu", "options": {}}, "extra": {}}
+    assert tracking == {
+        "model": {"device": f"file:{default_file}", "options": f"file:{user_file}"},
+        "extra": f"file:{user_file}",
+    }
+
+
+def test_load_configuration_tracking_empty_section_in_default(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "extra: {}\nother: {}\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        [{"extra": {"a": 1}}, {"extra": {"b": 2}, "other": {}}],
+        tracking=tracking,
+    )
+    # Keys added to an empty default section are tracked per key;
+    # an empty section set again by a later layer is owned by that layer,
+    # like a scalar set to the same value
+    assert config == {"extra": {"a": 1, "b": 2}, "other": {}}
+    assert tracking == {
+        "extra": {"a": "mapping[0]", "b": "mapping[1]"},
+        "other": "mapping[1]",
+    }
+
+
+def test_load_configuration_tracking_empty_section_kept_by_empty_update(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n",
+    )
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        {"model": {}},
+        tracking=tracking,
+    )
+    # An empty section in a later layer does not remove keys
+    assert config == {"model": {"device": "cpu"}}
+    assert tracking == {"model": {"device": f"file:{default_file}"}}
+
+
+def test_load_configuration_tracking_empty_section_environment(tmpdir, monkeypatch):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\nextra: {}\nhosts: null\n",
+    )
+    monkeypatch.setenv("PKG_MODEL", "{}")
+    monkeypatch.setenv("PKG_HOSTS", "{}")
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        env_prefix="PKG",
+        types={"hosts": dict},
+        tracking=tracking,
+    )
+    assert config == {"model": {}, "extra": {}, "hosts": {}}
+    assert tracking == {
+        "model": "env:PKG_MODEL",
+        "extra": f"file:{default_file}",
+        "hosts": "env:PKG_HOSTS",
+    }

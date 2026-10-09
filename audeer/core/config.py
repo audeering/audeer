@@ -151,6 +151,8 @@ def load_configuration(
             labels every key it sets;
             a more specific nested variable re-labels
             only the key it overrides.
+            An empty section, e.g. ``other: {}``,
+            is labeled as a whole.
             Entries are added to ``tracking`` in place.
             Reuse the same mapping across several calls
             to accumulate their entries.
@@ -341,10 +343,31 @@ def _label_tree(mapping: Mapping, label: str) -> dict:
         with ``label`` at every leaf
 
     """
-    return {
-        key: _label_tree(value, label) if isinstance(value, Mapping) else label
-        for key, value in mapping.items()
-    }
+    return {key: _label_value(value, label) for key, value in mapping.items()}
+
+
+def _label_value(value: object, label: str) -> dict | str:
+    r"""Build the tracking entry for a single configuration value.
+
+    A non-empty mapping is expanded into a tracking tree
+    via :func:`_label_tree`.
+    Any other value,
+    including an empty mapping,
+    is attributed to ``label`` directly,
+    as an empty tracking tree
+    could not record where the value comes from.
+
+    Args:
+        value: configuration value
+        label: label assigned to ``value``
+
+    Returns:
+        tracking entry for ``value``
+
+    """
+    if isinstance(value, Mapping) and value:
+        return _label_tree(value, label)
+    return label
 
 
 def _deep_merge(
@@ -384,16 +407,21 @@ def _deep_merge(
                 _deep_merge(base[key], value)
             else:
                 # ``base[key]`` is a mapping, so ``owner[key]`` is
-                # already a matching nested dict: either from the
-                # initial tracking tree, or set by an earlier iteration
-                # of this same loop
+                # a matching nested dict, or a label if ``base[key]``
+                # is empty. The label is replaced by a nested dict
+                # once ``value`` adds keys to the section,
+                # or by ``label`` if the section stays empty,
+                # as the last layer setting a value owns it
+                if not base[key] and not value:
+                    owner[key] = label
+                    continue
+                if not isinstance(owner[key], dict):
+                    owner[key] = {}
                 _deep_merge(base[key], value, owner[key], label)
         else:
             base[key] = value
             if owner is not None:
-                owner[key] = (
-                    _label_tree(value, label) if isinstance(value, Mapping) else label
-                )
+                owner[key] = _label_value(value, label)
 
 
 def _load_configuration_file(config_file: str) -> dict:
@@ -659,7 +687,7 @@ def _override_with_environment(
                 )
                 cfg[key] = parsed
                 if owner is not None:
-                    owner[key] = _label_tree(parsed, f"env:{name}")
+                    owner[key] = _label_value(parsed, f"env:{name}")
             _override_with_environment(
                 cfg[key],
                 f"{name}__",
@@ -679,7 +707,7 @@ def _override_with_environment(
                 # behaves like a section, so nested variables
                 # are applied on top of it as well
                 if owner is not None:
-                    owner[key] = _label_tree(cfg[key], f"env:{name}")
+                    owner[key] = _label_value(cfg[key], f"env:{name}")
                 _override_with_environment(
                     cfg[key],
                     f"{name}__",
