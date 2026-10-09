@@ -404,6 +404,29 @@ def test_load_configuration_user_mapping_environment_json(tmpdir, monkeypatch):
         audeer.load_configuration(default_file, user_config, env_prefix="PKG")
 
 
+def test_load_configuration_environment_json_section_keeps_user_value(
+    tmpdir, monkeypatch
+):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "main:\n  a: 1\n  b: 2\n",
+    )
+    user_file = write_config(audeer.path(tmpdir, "user.yaml"), "main:\n  a: 5\n")
+    # A section variable is merged into the result of the user file,
+    # so a value the user file sets survives
+    # when the variable sets another key of the same section
+    monkeypatch.setenv("PKG_MAIN", '{"b": 7}')
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        user_file,
+        env_prefix="PKG",
+        tracking=tracking,
+    )
+    assert config == {"main": {"a": 5, "b": 7}}
+    assert tracking == {"main": {"a": f"file:{user_file}", "b": "env:PKG_MAIN"}}
+
+
 def test_load_configuration_user_mapping_types(tmpdir, monkeypatch):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
