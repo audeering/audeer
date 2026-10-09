@@ -11,6 +11,7 @@ def load_configuration(
     user_configs: str | Mapping | Sequence[str | Mapping] | None = None,
     *,
     env_prefix: str | None = None,
+    strict: bool = False,
     types: Mapping | None = None,
     validate: Callable[[dict], None] | None = None,
     tracking: MutableMapping | None = None,
@@ -95,6 +96,12 @@ def load_configuration(
     an entry that does not match a configuration key
     raises a ``ValueError``.
 
+    Set ``strict`` to ``True``
+    and ``default_config_file`` restricts allowed keys and types.
+    Additional keys or non matching types raise a ``ValueError``,
+    whereby an integer is accepted as float,
+    and values whose default has no type are not checked.
+
     Missing or empty configuration files are skipped.
 
     Reading configuration files requires ``pyyaml``,
@@ -111,6 +118,10 @@ def load_configuration(
         env_prefix: prefix of environment variables
             used to override configuration values.
             If ``None``, environment variables are ignored
+        strict: if ``True``,
+            every user configuration may only contain keys
+            of ``default_config_file``,
+            with values of the same type as their default values
         types: mapping that declares the type
             of configuration values,
             mirroring the (possibly nested) configuration structure.
@@ -153,6 +164,10 @@ def load_configuration(
             and a configuration file exists
         ValueError: if a configuration file
             does not contain a mapping of key-value pairs
+        ValueError: if ``strict`` is ``True``
+            and a user configuration contains a key
+            that is not in ``default_config_file``,
+            or a value whose type does not match its default value
         ValueError: if an environment variable
             cannot be converted to the type
             of the corresponding default value,
@@ -227,14 +242,27 @@ def load_configuration(
     if tracking is not None:
         owner = _label_tree(cfg, f"file:{default_config_file}")
 
+    # Checked before the user configurations,
+    # as ``strict`` reads ``types`` while it validates them
+    if types is not None and not isinstance(types, Mapping):
+        raise ValueError(f"'types' must be a mapping, but is '{type(types).__name__}'.")
+
     if user_configs is not None:
+        # User configurations are checked against the default file only,
+        # so a value set by an earlier user configuration
+        # does not change the type a later one is checked against
+        defaults = _copy_mapping(cfg) if strict else {}
         if isinstance(user_configs, (str, Mapping)):
             user_configs = [user_configs]
         for i, user_config in enumerate(user_configs):
             if isinstance(user_config, Mapping):
                 update = _copy_mapping(user_config)
+                source = f"user configuration at index {i}"
             else:
                 update = _load_configuration_file(user_config)
+                source = f"configuration file '{user_config}'"
+            if strict:
+                _validate_user_config(update, defaults, types or {}, source)
             if owner is None:
                 _deep_merge(cfg, update)
             else:
@@ -246,10 +274,6 @@ def load_configuration(
                 _deep_merge(cfg, update, owner, label)
 
     if types is not None:
-        if not isinstance(types, Mapping):
-            raise ValueError(
-                f"'types' must be a mapping, but is '{type(types).__name__}'."
-            )
         _validate_types(cfg, types)
 
     if env_prefix is not None:
@@ -530,25 +554,10 @@ def _validate_json_override(
                 f"{key_path}.",
             )
             continue
-        if isinstance(declared, type):
-            target = declared
-        elif default_value is not None:
-            target = type(default_value)
-        else:
+        target = _target_type(declared, default_value)
+        if target is None:
             continue
-        if target is bool:
-            valid = isinstance(json_value, bool)
-        elif target is int:
-            valid = isinstance(json_value, int) and not isinstance(json_value, bool)
-        elif target is float:
-            valid = isinstance(json_value, (int, float)) and not isinstance(
-                json_value, bool
-            )
-            if valid:
-                parsed[key] = float(json_value)
-        else:
-            valid = isinstance(json_value, target)
-        if not valid:
+        if not _matches_type(json_value, target):
             raise ValueError(
                 f"The environment variable '{name}={value}' "
                 f"sets '{key_path}' to a value of type "
@@ -556,6 +565,120 @@ def _validate_json_override(
                 f"but the corresponding configuration value "
                 f"has type '{target.__name__}'."
             )
+        if target is float:
+            parsed[key] = float(json_value)
+
+
+def _target_type(declared: object, default_value: object) -> type | None:
+    r"""Type a value is checked against.
+
+    Args:
+        declared: entry of ``types`` for the value, if any
+        default_value: default value
+
+    Returns:
+        the declared type,
+        otherwise the type of ``default_value``,
+        or ``None`` if neither gives a type
+
+    """
+    if isinstance(declared, type):
+        return declared
+    if default_value is not None:
+        return type(default_value)
+    return None
+
+
+def _matches_type(value: object, target: type) -> bool:
+    r"""Check if a value matches the type of a configuration value.
+
+    ``bool`` and ``int`` do not match each other,
+    although ``bool`` is a subclass of ``int``,
+    and an integer matches a ``float``.
+
+    Args:
+        value: value to check
+        target: wanted type
+
+    Returns:
+        ``True`` if ``value`` matches ``target``
+
+    """
+    if target is bool:
+        return isinstance(value, bool)
+    if target is int:
+        return isinstance(value, int) and not isinstance(value, bool)
+    if target is float:
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, target)
+
+
+def _validate_user_config(
+    update: dict,
+    defaults: Mapping,
+    types: Mapping,
+    source: str,
+    path: str = "",
+) -> None:
+    r"""Validate a user configuration against the default configuration.
+
+    Every key must exist in ``defaults``,
+    a section must stay a section,
+    and every value must match the type of its default value,
+    see :func:`_matches_type`.
+    An integer is promoted in place
+    where the default value is a float.
+    A value with a ``None`` default is not checked,
+    unless a type is declared in ``types``.
+
+    Args:
+        update: user configuration, modified in place
+        defaults: corresponding section of the default configuration
+        types: declared types mirroring ``defaults``
+        source: description of the user configuration
+            used in error messages
+        path: dotted key path accumulated so far
+
+    Raises:
+        ValueError: if a key is not in ``defaults``,
+            or a value does not match the type of its default value
+
+    """
+    for key, value in update.items():
+        key_path = f"{path}{key}"
+        if key not in defaults:
+            raise ValueError(
+                f"The {source} contains the key '{key_path}', "
+                f"which is not in the default configuration."
+            )
+        default_value = defaults[key]
+        declared = types.get(key)
+        if isinstance(default_value, Mapping):
+            if not isinstance(value, Mapping):
+                raise ValueError(
+                    f"The {source} sets '{key_path}' to a value of type "
+                    f"'{type(value).__name__}', "
+                    f"but the default value is a mapping."
+                )
+            _validate_user_config(
+                value,
+                default_value,
+                declared if isinstance(declared, Mapping) else {},
+                source,
+                f"{key_path}.",
+            )
+            continue
+        target = _target_type(declared, default_value)
+        if target is None:
+            continue
+        if not _matches_type(value, target):
+            raise ValueError(
+                f"The {source} sets '{key_path}' to a value of type "
+                f"'{type(value).__name__}', "
+                f"but the default value has type '{target.__name__}'."
+            )
+        if target is float:
+            update[key] = float(value)
 
 
 def _override_with_environment(
