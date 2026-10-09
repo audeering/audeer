@@ -1,7 +1,6 @@
 import collections
 from collections import UserDict
 import pathlib
-import re
 from types import MappingProxyType
 
 import pytest
@@ -831,32 +830,6 @@ def test_load_configuration_environment_replace_sections_disabled(tmpdir, monkey
     }
 
 
-@pytest.mark.parametrize(
-    "content, types, key",
-    [
-        ("model: null\n", {"model": dict}, "model"),
-        ("model:\n  extra: null\n", {"model": {"extra": dict}}, "extra"),
-    ],
-)
-def test_load_configuration_environment_replace_sections_disabled_declared_dict(
-    tmpdir, content, types, key
-):
-    config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
-    # A key declared as ``dict`` is replaced as a whole like a section,
-    # which cannot happen when section replacement is disabled
-    error_msg = (
-        f"The 'types' entry for '{key}' declares 'dict', "
-        f"which has no effect with 'env_replace_sections=False'."
-    )
-    with pytest.raises(ValueError, match=re.escape(error_msg)):
-        audeer.load_configuration(
-            config_file,
-            env_prefix="PKG",
-            env_replace_sections=False,
-            types=types,
-        )
-
-
 def test_load_configuration_environment_replace_sections_disabled_list(
     tmpdir, monkeypatch
 ):
@@ -882,10 +855,10 @@ def test_load_configuration_environment_replace_sections_disabled_list(
 def test_load_configuration_environment_replace_sections_enabled(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "model:\n  device: cpu\n  lora: false\n  sub:\n    a: 1\nextra: null\n",
+        "model:\n  device: cpu\n  lora: false\n  sub:\n    a: 1\nextra: {}\n",
     )
     # Explicitly enabling section replacement matches the default behavior
-    # at every level and for keys declared as ``dict``
+    # at every level and for empty sections
     monkeypatch.setenv("PKG_MODEL", '{"device": "cuda", "sub": {"a": 1}}')
     monkeypatch.setenv("PKG_MODEL__SUB", '{"a": 2}')
     monkeypatch.setenv("PKG_EXTRA", '{"b": {"c": 1}}')
@@ -894,7 +867,6 @@ def test_load_configuration_environment_replace_sections_enabled(tmpdir, monkeyp
         audeer.load_configuration(
             config_file,
             env_prefix="PKG",
-            types={"extra": dict},
             **kwargs,
         )
         for kwargs in [{}, {"env_replace_sections": True}]
@@ -906,21 +878,17 @@ def test_load_configuration_environment_replace_sections_enabled(tmpdir, monkeyp
     assert configs == [expected, expected]
 
 
-def test_load_configuration_environment_declared_dict_then_nested(tmpdir, monkeypatch):
+def test_load_configuration_environment_empty_section_then_nested(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "model: null\n",
+        "model: {}\n",
     )
-    # A None default declared as ``dict`` accepts a JSON object,
+    # An empty section accepts a JSON object,
     # and nested variables are applied on top of it afterwards,
     # like for any other section
     monkeypatch.setenv("PKG_MODEL", '{"device": "cpu", "batch": 8}')
     monkeypatch.setenv("PKG_MODEL__DEVICE", "cuda")
-    config = audeer.load_configuration(
-        config_file,
-        env_prefix="PKG",
-        types={"model": dict},
-    )
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
     assert config == {"model": {"device": "cuda", "batch": 8}}
     assert isinstance(config["model"]["batch"], int)
 
@@ -1173,7 +1141,8 @@ def test_load_configuration_environment_types_not_a_type(tmpdir, monkeypatch):
 
 
 @pytest.mark.parametrize("env_set", [True, False])
-def test_load_configuration_types_unsupported(tmpdir, monkeypatch, env_set):
+@pytest.mark.parametrize("declared", [pathlib.Path, dict])
+def test_load_configuration_types_unsupported(tmpdir, monkeypatch, env_set, declared):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "path: null\n",
@@ -1183,12 +1152,14 @@ def test_load_configuration_types_unsupported(tmpdir, monkeypatch, env_set):
     else:
         monkeypatch.delenv("PKG_PATH", raising=False)
     # A declared type outside the supported set is rejected up front
-    # instead of silently keeping the value a string
+    # instead of silently keeping the value a string.
+    # ``dict`` is rejected as well,
+    # a section needs an empty mapping as default instead
     with pytest.raises(ValueError, match="is not a supported type"):
         audeer.load_configuration(
             config_file,
             env_prefix="PKG",
-            types={"path": pathlib.Path},
+            types={"path": declared},
         )
 
 
@@ -1572,14 +1543,14 @@ def test_load_configuration_tracking_types_none_default_environment(
     assert tracking == {"timeout": "env:PKG_TIMEOUT"}
 
 
-def test_load_configuration_tracking_environment_declared_dict_then_nested(
+def test_load_configuration_tracking_environment_empty_section_then_nested(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "model: null\n",
+        "model: {}\n",
     )
-    # A None default declared as ``dict`` is introduced by one variable,
+    # An empty section is filled by one variable,
     # then refined by a nested one, exactly like without tracking;
     # both are attributed to the variable that actually set them
     monkeypatch.setenv("PKG_MODEL", '{"device": "cpu", "batch": 8}')
@@ -1588,7 +1559,6 @@ def test_load_configuration_tracking_environment_declared_dict_then_nested(
     config = audeer.load_configuration(
         config_file,
         env_prefix="PKG",
-        types={"model": dict},
         tracking=tracking,
     )
     assert config == {"model": {"device": "cuda", "batch": 8}}
