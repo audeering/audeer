@@ -73,3 +73,26 @@ def test_path_symlinks(tmpdir):
     _, expected_path = os.path.splitdrive(expected_path)
     assert path == expected_path
     assert isinstance(path, str)
+
+
+@pytest.mark.parametrize(
+    "path, paths, expand_vars, expected",
+    [
+        ("$AUDEER_TEST/file.txt", [], False, "$AUDEER_TEST/file.txt"),
+        ("$AUDEER_TEST/file.txt", [], True, "/a/b/file.txt"),
+        ("${AUDEER_TEST}/file.txt", [], True, "/a/b/file.txt"),
+        (b"$AUDEER_TEST/file.txt", [], True, "/a/b/file.txt"),
+        ("/c", ["$AUDEER_TEST_REL", "file.txt"], True, "/c/d/file.txt"),
+        ("$AUDEER_TEST_HOME/file.txt", [], True, "~/file.txt"),
+        ("$AUDEER_UNDEFINED/file.txt", [], True, "$AUDEER_UNDEFINED/file.txt"),
+    ],
+)
+def test_path_expand_vars(monkeypatch, path, paths, expand_vars, expected):
+    monkeypatch.setenv("AUDEER_TEST", "/a/b")
+    monkeypatch.setenv("AUDEER_TEST_REL", "d")
+    monkeypatch.setenv("AUDEER_TEST_HOME", "~")
+    monkeypatch.delenv("AUDEER_UNDEFINED", raising=False)
+    expected = os.path.abspath(os.path.expanduser(expected))
+    path = audeer.path(path, *paths, expand_vars=expand_vars)
+    assert path == expected
+    assert isinstance(path, str)
