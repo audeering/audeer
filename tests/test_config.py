@@ -155,6 +155,37 @@ def test_load_configuration_deep_merge_list_replaced(tmpdir):
     }
 
 
+@pytest.mark.parametrize(
+    "user_config, env",
+    [
+        ("model:\n  device: cuda\n", {}),
+        (None, {"PKG_MODEL__DEVICE": "cuda"}),
+        (None, {"PKG_MODEL": '{"device": "cuda"}'}),
+    ],
+)
+def test_load_configuration_yaml_alias(tmpdir, monkeypatch, user_config, env):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "base: &base\n  device: cpu\nmodel: *base\n",
+    )
+    if user_config is not None:
+        user_config = write_config(audeer.path(tmpdir, "user.yaml"), user_config)
+    for name, value in env.items():
+        monkeypatch.setenv(name, value)
+    # A section that is a YAML alias of another section
+    # is overridden on its own,
+    # the aliased section keeps its value
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        user_config,
+        env_prefix="PKG",
+        tracking=tracking,
+    )
+    assert config == {"base": {"device": "cpu"}, "model": {"device": "cuda"}}
+    assert tracking["base"] == {"device": f"file:{default_file}"}
+
+
 def test_load_configuration_missing_user_file(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

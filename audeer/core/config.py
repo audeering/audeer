@@ -433,7 +433,10 @@ def _load_configuration_file(config_file: str) -> dict:
             f"must contain a mapping of key-value pairs, "
             f"but contains a '{type(cfg).__name__}'."
         )
-    return dict(cfg)
+    # YAML anchors and aliases load as one shared object;
+    # copying gives every occurrence its own dictionaries,
+    # so an override of one section cannot change another
+    return _copy_mapping(cfg)
 
 
 def _validate_types(
