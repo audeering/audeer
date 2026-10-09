@@ -376,14 +376,16 @@ def _deep_merge(
             and isinstance(base[key], Mapping)
             and isinstance(value, Mapping)
         ):
-            if owner is None:
-                _deep_merge(base[key], value)
-            else:
-                # ``base[key]`` is a mapping, so ``owner[key]`` is
-                # already a matching nested dict: either from the
-                # initial tracking tree, or set by an earlier iteration
-                # of this same loop
-                _deep_merge(base[key], value, owner[key], label)
+            # ``base[key]`` is a mapping, so ``owner[key]`` (if tracked) is
+            # already a matching nested dict: either from the
+            # initial tracking tree, or set by an earlier iteration
+            # of this same loop
+            _deep_merge(
+                base[key],
+                value,
+                owner[key] if owner is not None else None,
+                label,
+            )
         else:
             base[key] = value
             if owner is not None:
@@ -642,10 +644,12 @@ def _override_with_environment(
                     default_value,
                     key_type or {},
                 )
-                if owner is None:
-                    _deep_merge(cfg[key], parsed)
-                else:
-                    _deep_merge(cfg[key], parsed, owner[key], f"env:{name}")
+                _deep_merge(
+                    cfg[key],
+                    parsed,
+                    owner[key] if owner is not None else None,
+                    f"env:{name}",
+                )
             _override_with_environment(
                 cfg[key],
                 f"{name}__",
