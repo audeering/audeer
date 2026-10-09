@@ -97,15 +97,10 @@ def load_configuration(
     raises a ``ValueError``.
 
     Set ``strict`` to ``True``
-    to check every user configuration
-    against ``default_config_file``:
-    a key that is not in the default configuration,
-    or a value whose type does not match its default value,
-    raises a ``ValueError``.
-    The types follow the rules of a JSON section replacement:
-    an integer is accepted for a float default,
-    and a value whose default is ``None`` is not checked,
-    unless its type is declared in ``types``.
+    and ``default_config_file`` restricts allowed keys and types.
+    Additional keys or non matching types raise a ``ValueError``,
+    whereby an integer is accepted as float,
+    and values whose default has no type are not checked.
 
     Missing or empty configuration files are skipped.
 
