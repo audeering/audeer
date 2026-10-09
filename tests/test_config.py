@@ -582,7 +582,9 @@ def test_load_configuration_environment_partial_override(tmpdir, monkeypatch):
     assert config == {"model": {"device": "cuda", "lora": False}}
 
 
-def test_load_configuration_environment_whole_dict_preserves_type(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_preserves_type(
+    tmpdir, monkeypatch
+):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  count: 1\n",
@@ -626,7 +628,7 @@ def test_load_configuration_environment_whole_dict_preserves_type(tmpdir, monkey
         ),
     ],
 )
-def test_load_configuration_environment_whole_dict_wrong_value_type(
+def test_load_configuration_environment_json_section_wrong_value_type(
     tmpdir, monkeypatch, content, value, match
 ):
     config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
@@ -636,7 +638,7 @@ def test_load_configuration_environment_whole_dict_wrong_value_type(
         audeer.load_configuration(config_file, env_prefix="PKG")
 
 
-def test_load_configuration_environment_whole_dict_nested_preserves_type(
+def test_load_configuration_environment_json_section_nested_preserves_type(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
@@ -652,7 +654,9 @@ def test_load_configuration_environment_whole_dict_nested_preserves_type(
     assert isinstance(config["a"]["b"]["c"], int)
 
 
-def test_load_configuration_environment_whole_dict_float_promotion(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_float_promotion(
+    tmpdir, monkeypatch
+):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  ratio: 1.5\n",
@@ -664,7 +668,7 @@ def test_load_configuration_environment_whole_dict_float_promotion(tmpdir, monke
     assert isinstance(config["model"]["ratio"], float)
 
 
-def test_load_configuration_environment_whole_dict_none_default(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_none_default(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: null\n",
@@ -675,7 +679,7 @@ def test_load_configuration_environment_whole_dict_none_default(tmpdir, monkeypa
     assert config == {"model": {"device": "cuda"}}
 
 
-def test_load_configuration_environment_whole_dict_null_for_typed_default(
+def test_load_configuration_environment_json_section_null_for_typed_default(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
@@ -688,7 +692,7 @@ def test_load_configuration_environment_whole_dict_null_for_typed_default(
         audeer.load_configuration(config_file, env_prefix="PKG")
 
 
-def test_load_configuration_environment_whole_dict_null_for_none_default(
+def test_load_configuration_environment_json_section_null_for_none_default(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
@@ -701,7 +705,7 @@ def test_load_configuration_environment_whole_dict_null_for_none_default(
     assert config == {"model": {"device": None}}
 
 
-def test_load_configuration_environment_whole_dict_declared_type(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_declared_type(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  count: null\n",
@@ -716,7 +720,7 @@ def test_load_configuration_environment_whole_dict_declared_type(tmpdir, monkeyp
         )
 
 
-def test_load_configuration_environment_whole_dict_merge(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_merge(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n  lora: false\n  sub:\n    a: 1\n    b: 2\n",
@@ -731,7 +735,7 @@ def test_load_configuration_environment_whole_dict_merge(tmpdir, monkeypatch):
     }
 
 
-def test_load_configuration_environment_whole_dict_empty(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_empty(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n",
@@ -744,7 +748,9 @@ def test_load_configuration_environment_whole_dict_empty(tmpdir, monkeypatch):
     assert tracking == {"model": {"device": f"file:{config_file}"}}
 
 
-def test_load_configuration_environment_whole_dict_introduces_key(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_introduces_key(
+    tmpdir, monkeypatch
+):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n",
@@ -755,7 +761,7 @@ def test_load_configuration_environment_whole_dict_introduces_key(tmpdir, monkey
     assert config == {"model": {"device": "cuda", "batch": 8}}
 
 
-def test_load_configuration_environment_whole_dict_introduced_section_then_nested(
+def test_load_configuration_environment_json_section_introduced_section_then_nested(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
@@ -770,7 +776,7 @@ def test_load_configuration_environment_whole_dict_introduced_section_then_neste
     assert config == {"model": {"device": "cuda", "sub": {"a": 2}}}
 
 
-def test_load_configuration_environment_whole_dict_then_nested(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_then_nested(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n  lora: false\n",
@@ -791,7 +797,9 @@ def test_load_configuration_environment_whole_dict_then_nested(tmpdir, monkeypat
         "{not valid json",  # invalid JSON
     ],
 )
-def test_load_configuration_environment_whole_dict_invalid(tmpdir, monkeypatch, value):
+def test_load_configuration_environment_json_section_invalid(
+    tmpdir, monkeypatch, value
+):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n",
@@ -802,7 +810,7 @@ def test_load_configuration_environment_whole_dict_invalid(tmpdir, monkeypatch, 
         audeer.load_configuration(config_file, env_prefix="PKG")
 
 
-def test_load_configuration_environment_whole_dict_nested_omitted_key(
+def test_load_configuration_environment_json_section_nested_omitted_key(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
@@ -1466,7 +1474,7 @@ def test_load_configuration_tracking_environment_scalar(tmpdir, monkeypatch):
     }
 
 
-def test_load_configuration_tracking_environment_whole_dict(tmpdir, monkeypatch):
+def test_load_configuration_tracking_environment_json_section(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n  lora: false\n",
@@ -1482,7 +1490,7 @@ def test_load_configuration_tracking_environment_whole_dict(tmpdir, monkeypatch)
     }
 
 
-def test_load_configuration_tracking_environment_whole_dict_partial(
+def test_load_configuration_tracking_environment_json_section_partial(
     tmpdir, monkeypatch
 ):
     config_file = write_config(
@@ -1500,7 +1508,7 @@ def test_load_configuration_tracking_environment_whole_dict_partial(
     }
 
 
-def test_load_configuration_tracking_environment_whole_dict_then_nested(
+def test_load_configuration_tracking_environment_json_section_then_nested(
     tmpdir, monkeypatch
 ):
     config_file = write_config(

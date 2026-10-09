@@ -492,7 +492,7 @@ def _validate_types(
             )
 
 
-def _validate_json_replacement(
+def _validate_json_override(
     name: str,
     value: str,
     parsed: dict,
@@ -537,7 +537,7 @@ def _validate_json_replacement(
                     f"but the corresponding configuration value "
                     f"is a mapping."
                 )
-            _validate_json_replacement(
+            _validate_json_override(
                 name,
                 value,
                 json_value,
@@ -635,7 +635,7 @@ def _override_with_environment(
                 # The validation guarantees that the merged values keep
                 # the types of the defaults, so nested overrides applied
                 # below still cast to the original types
-                _validate_json_replacement(
+                _validate_json_override(
                     name,
                     os.environ[name],
                     parsed,
