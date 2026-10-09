@@ -97,10 +97,6 @@ def load_configuration(
     of the configuration;
     an entry that does not match a configuration key
     raises a ``ValueError``.
-    To allow setting a nested mapping
-    by an environment variable,
-    use an empty mapping (``{}``) as default value
-    instead of ``None``.
 
     Missing or empty configuration files are skipped.
 
