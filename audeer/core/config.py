@@ -268,8 +268,8 @@ def load_configuration(
 
     if user_configs is not None:
         # User configurations are checked against the default file only,
-        # so a key introduced by an earlier user configuration
-        # is still unknown to a later one
+        # so a value set by an earlier user configuration
+        # does not change the type a later one is checked against
         defaults = _copy_mapping(cfg) if strict else {}
         if isinstance(user_configs, (str, Mapping)):
             user_configs = [user_configs]

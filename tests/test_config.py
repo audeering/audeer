@@ -619,17 +619,19 @@ def test_load_configuration_strict_mapping(tmpdir):
 def test_load_configuration_strict_defaults_only(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "cache_root: ~/cache\n",
+        "token: null\n",
     )
-    first_file = write_config(audeer.path(tmpdir, "first.yaml"), "extra: 1\n")
-    # The first user file already introduces an unknown key,
-    # it does not become known to later user configurations
-    with pytest.raises(ValueError, match="contains the key 'extra'"):
-        audeer.load_configuration(
-            default_file,
-            [first_file, {"extra": 2}],
-            strict=True,
-        )
+    first_file = write_config(audeer.path(tmpdir, "first.yaml"), "token: 1\n")
+    # Every user configuration is checked against the default file,
+    # not against the result of the earlier ones:
+    # the None default leaves ``token`` unchecked,
+    # although the first user file has set it to an integer
+    config = audeer.load_configuration(
+        default_file,
+        [first_file, {"token": "abc"}],
+        strict=True,
+    )
+    assert config == {"token": "abc"}
 
 
 def test_load_configuration_strict_types_not_mapping(tmpdir):
