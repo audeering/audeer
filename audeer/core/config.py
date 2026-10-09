@@ -483,9 +483,7 @@ def _validate_types(
             )
         elif declared not in (bool, int, float, str, list):
             # Anything else would silently fall through
-            # to keeping the environment variable a string.
-            # ``dict`` is not supported, as a mapping is a section
-            # that should have an empty mapping as default instead
+            # to keeping the environment variable a string
             raise ValueError(
                 f"The 'types' entry for '{key}' "
                 f"is not a supported type: '{declared.__name__}'. "
