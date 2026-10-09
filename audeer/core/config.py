@@ -69,7 +69,7 @@ def load_configuration(
     to the type of the corresponding default value:
     ``str`` values are used as they are,
     ``int``/``float`` values are cast,
-    and ``list``/``dict`` values are parsed as JSON.
+    and ``list`` values are parsed as JSON.
     A ``bool`` value is ``True``
     for ``"1"``, ``"true"``, ``"yes"``, ``"on"``
     (case insensitive)
@@ -97,6 +97,10 @@ def load_configuration(
     of the configuration;
     an entry that does not match a configuration key
     raises a ``ValueError``.
+    To allow setting a nested mapping
+    by an environment variable,
+    use an empty mapping (``{}``) as default value
+    instead of ``None``.
 
     Missing or empty configuration files are skipped.
 
@@ -120,9 +124,7 @@ def load_configuration(
             e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``.
             If ``False``, such variables are ignored,
             and only individual values
-            can be overridden by environment variables.
-            Declaring a key as ``dict`` in ``types``
-            is then not allowed
+            can be overridden by environment variables
         types: mapping that declares the type
             of configuration values,
             mirroring the (possibly nested) configuration structure.
@@ -130,7 +132,7 @@ def load_configuration(
             for keys whose default value is ``None``,
             or to override the type inferred from the default value.
             Supported types are
-            ``bool``, ``int``, ``float``, ``str``, ``list``, ``dict``
+            ``bool``, ``int``, ``float``, ``str``, ``list``
         validate: callable that receives the merged configuration
             dictionary and raises an error if it is invalid.
             It is applied once,
@@ -177,8 +179,6 @@ def load_configuration(
             is not a mapping
         ValueError: if a ``types`` entry
             does not match any configuration key
-        ValueError: if a ``types`` entry declares ``dict``
-            and ``env_replace_sections`` is ``False``
         ValueError: if ``tracking`` is not a mutable mapping
 
     Examples:
@@ -264,7 +264,7 @@ def load_configuration(
             raise ValueError(
                 f"'types' must be a mapping, but is '{type(types).__name__}'."
             )
-        _validate_types(cfg, types, replace_sections=env_replace_sections)
+        _validate_types(cfg, types)
 
     if env_prefix is not None:
         _override_with_environment(
@@ -439,8 +439,6 @@ def _load_configuration_file(config_file: str) -> dict:
 def _validate_types(
     cfg: Mapping,
     types: Mapping,
-    *,
-    replace_sections: bool = True,
 ) -> None:
     r"""Validate declared ``types`` against the configuration structure.
 
@@ -451,14 +449,11 @@ def _validate_types(
     Args:
         cfg: configuration dictionary
         types: declared types mirroring ``cfg``
-        replace_sections: if ``False``,
-            declaring a leaf as ``dict`` is rejected
 
     Raises:
         ValueError: if a declared section type is not a mapping
         ValueError: if a declared leaf type is not a class
-        ValueError: if a declared leaf type is ``dict``
-            and ``replace_sections`` is ``False``
+        ValueError: if a declared leaf type is not supported
 
     """
     # Reject entries without a matching configuration key
@@ -480,7 +475,7 @@ def _validate_types(
                     f"The 'types' entry for the nested section '{key}' "
                     f"must be a mapping, but is '{type(declared).__name__}'."
                 )
-            _validate_types(value, declared, replace_sections=replace_sections)
+            _validate_types(value, declared)
         elif isinstance(declared, Mapping):
             raise ValueError(
                 f"The 'types' entry for '{key}' declares a nested section, "
@@ -490,21 +485,16 @@ def _validate_types(
             raise ValueError(
                 f"The 'types' entry for '{key}' is not a type: {declared!r}."
             )
-        elif declared not in (bool, int, float, str, list, dict):
+        elif declared not in (bool, int, float, str, list):
             # Anything else would silently fall through
-            # to keeping the environment variable a string
+            # to keeping the environment variable a string.
+            # ``dict`` is not supported, as a mapping is a section
+            # that should have an empty mapping as default instead
             raise ValueError(
                 f"The 'types' entry for '{key}' "
                 f"is not a supported type: '{declared.__name__}'. "
                 f"Supported types are "
-                f"'bool', 'int', 'float', 'str', 'list', 'dict'."
-            )
-        elif not replace_sections and declared is dict:
-            # A value declared as ``dict`` is replaced as a whole,
-            # just like a section, which is disabled
-            raise ValueError(
-                f"The 'types' entry for '{key}' declares 'dict', "
-                f"which has no effect with 'env_replace_sections=False'."
+                f"'bool', 'int', 'float', 'str', 'list'."
             )
 
 
@@ -674,20 +664,7 @@ def _override_with_environment(
                 default_value,
                 key_type,
             )
-            if isinstance(cfg[key], Mapping):
-                # A mapping introduced via a declared ``dict`` type
-                # behaves like a section, so nested variables
-                # are applied on top of it as well
-                if owner is not None:
-                    owner[key] = _label_tree(cfg[key], f"env:{name}")
-                _override_with_environment(
-                    cfg[key],
-                    f"{name}__",
-                    {},
-                    owner[key] if owner is not None else None,
-                    replace_sections=replace_sections,
-                )
-            elif owner is not None:
+            if owner is not None:
                 owner[key] = f"env:{name}"
 
 
@@ -744,7 +721,7 @@ def _parse_environment_value(
         f"cannot override the corresponding configuration value: "
         f"its type '{target_type.__name__}' is not supported. "
         f"Supported types are "
-        f"'bool', 'int', 'float', 'str', 'list', 'dict'."
+        f"'bool', 'int', 'float', 'str', 'list'."
     )
 
 
