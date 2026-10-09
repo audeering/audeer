@@ -247,6 +247,11 @@ def load_configuration(
     if tracking is not None:
         owner = _label_tree(cfg, f"file:{default_config_file}")
 
+    # Checked before the user configurations,
+    # as ``strict`` reads ``types`` while it validates them
+    if types is not None and not isinstance(types, Mapping):
+        raise ValueError(f"'types' must be a mapping, but is '{type(types).__name__}'.")
+
     if user_configs is not None:
         # User configurations are checked against the default file only,
         # so a key introduced by an earlier user configuration
@@ -274,10 +279,6 @@ def load_configuration(
                 _deep_merge(cfg, update, owner, label)
 
     if types is not None:
-        if not isinstance(types, Mapping):
-            raise ValueError(
-                f"'types' must be a mapping, but is '{type(types).__name__}'."
-            )
         _validate_types(cfg, types)
 
     if env_prefix is not None:

@@ -655,6 +655,22 @@ def test_load_configuration_strict_defaults_only(tmpdir):
         )
 
 
+def test_load_configuration_strict_types_not_mapping(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: 1.5\n",
+    )
+    # ``types`` is checked before the user configurations,
+    # so strict mode raises the same error as the default mode
+    with pytest.raises(ValueError, match="'types' must be a mapping, but is 'list'"):
+        audeer.load_configuration(
+            default_file,
+            {"timeout": 2},
+            strict=True,
+            types=["timeout"],
+        )
+
+
 def test_load_configuration_strict_types(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
