@@ -482,6 +482,189 @@ def test_load_configuration_user_mapping_shared_file(tmpdir, monkeypatch):
     }
 
 
+def test_load_configuration_strict(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        (
+            "cache_root: ~/cache\n"
+            "timeout: 1.5\n"
+            "hosts: []\n"
+            "token: null\n"
+            "model:\n  device: cpu\n  lora: false\n  sub:\n    a: 1\n"
+        ),
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "timeout: 2\nhosts: [a]\ntoken: 123\nmodel:\n  lora: true\n  sub:\n    a: 2\n",
+    )
+    # Known keys with matching types are accepted,
+    # an integer is promoted for a float default,
+    # and a value with a None default is not checked
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        [user_file, {"model": {"device": "cuda"}}],
+        strict=True,
+        tracking=tracking,
+    )
+    assert config == {
+        "cache_root": "~/cache",
+        "timeout": 2.0,
+        "hosts": ["a"],
+        "token": 123,
+        "model": {"device": "cuda", "lora": True, "sub": {"a": 2}},
+    }
+    assert isinstance(config["timeout"], float)
+    assert tracking["timeout"] == f"file:{user_file}"
+    assert tracking["model"]["device"] == "mapping[1]"
+
+
+def test_load_configuration_strict_default_off(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  lora: false\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model:\n  lroa: 1\n  lora: 'no'\n",
+    )
+    # Without strict, unknown keys are merged
+    # and values keep their type
+    config = audeer.load_configuration(default_file, user_file)
+    assert config == {"model": {"lora": "no", "lroa": 1}}
+
+
+@pytest.mark.parametrize(
+    "content, match",
+    [
+        (  # unknown top-level key
+            "cache_rot: ~/user\n",
+            "contains the key 'cache_rot', which is not in the default",
+        ),
+        (  # unknown nested key
+            "model:\n  devices: cuda\n",
+            "contains the key 'model.devices', which is not in the default",
+        ),
+        (  # unknown key in a deeper nesting level
+            "model:\n  sub:\n    b: 1\n",
+            "contains the key 'model.sub.b', which is not in the default",
+        ),
+        (  # str value where the default is bool
+            "model:\n  lora: 'false'\n",
+            "sets 'model.lora' to a value of type 'str', "
+            "but the default value has type 'bool'",
+        ),
+        (  # str value where the default is int
+            "model:\n  sub:\n    a: '1'\n",
+            "sets 'model.sub.a' to a value of type 'str', "
+            "but the default value has type 'int'",
+        ),
+        (  # bool value where the default is int
+            "model:\n  sub:\n    a: true\n",
+            "has type 'int'",
+        ),
+        (  # int value where the default is bool
+            "model:\n  lora: 1\n",
+            "has type 'bool'",
+        ),
+        (  # str value where the default is float
+            "timeout: fast\n",
+            "has type 'float'",
+        ),
+        (  # scalar where the default is a section
+            "model: cpu\n",
+            "sets 'model' to a value of type 'str', but the default value is a mapping",
+        ),
+        (  # section where the default is a scalar
+            "timeout:\n  value: 1\n",
+            "sets 'timeout' to a value of type 'dict', "
+            "but the default value has type 'float'",
+        ),
+    ],
+)
+def test_load_configuration_strict_invalid(tmpdir, content, match):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\ntimeout: 1.5\nmodel:\n  device: cpu\n"
+        "  lora: false\n  sub:\n    a: 1\n",
+    )
+    user_file = write_config(audeer.path(tmpdir, "user.yaml"), content)
+    with pytest.raises(
+        ValueError,
+        match=re.escape(f"The configuration file '{user_file}' ") + ".*" + match,
+    ):
+        audeer.load_configuration(default_file, user_file, strict=True)
+
+
+def test_load_configuration_strict_mapping(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    # An already parsed mapping is checked as well,
+    # and named by its index in the error message
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "The user configuration at index 1 contains the key 'cache_rot'"
+        ),
+    ):
+        audeer.load_configuration(
+            default_file,
+            [{"cache_root": "~/a"}, {"cache_rot": "~/b"}],
+            strict=True,
+        )
+
+
+def test_load_configuration_strict_defaults_only(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    first_file = write_config(audeer.path(tmpdir, "first.yaml"), "extra: 1\n")
+    # The first user file already introduces an unknown key,
+    # it does not become known to later user configurations
+    with pytest.raises(ValueError, match="contains the key 'extra'"):
+        audeer.load_configuration(
+            default_file,
+            [first_file, {"extra": 2}],
+            strict=True,
+        )
+
+
+def test_load_configuration_strict_types(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "token: null\ncount: 1\nmodel:\n  timeout: null\n",
+    )
+    # A declared type is used for a None default,
+    # in nested sections as well,
+    # and takes precedence over the type of the default value
+    config = audeer.load_configuration(
+        default_file,
+        {"token": "abc", "count": "1", "model": {"timeout": 2}},
+        strict=True,
+        types={"token": str, "count": str, "model": {"timeout": float}},
+    )
+    assert config == {"token": "abc", "count": "1", "model": {"timeout": 2.0}}
+    with pytest.raises(ValueError, match="sets 'token' to a value of type 'int'"):
+        audeer.load_configuration(
+            default_file,
+            {"token": 1},
+            strict=True,
+            types={"token": str},
+        )
+    with pytest.raises(
+        ValueError, match="sets 'model.timeout' to a value of type 'str'"
+    ):
+        audeer.load_configuration(
+            default_file,
+            {"model": {"timeout": "fast"}},
+            strict=True,
+            types={"model": {"timeout": float}},
+        )
+
+
 def test_load_configuration_environment(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
