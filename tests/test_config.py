@@ -848,81 +848,21 @@ def test_load_configuration_environment_json_section_nested_omitted_key(
     assert config == {"model": {"device": "cuda", "lora": True}}
 
 
-def test_load_configuration_environment_replace_sections_disabled(tmpdir, monkeypatch):
-    config_file = write_config(
-        audeer.path(tmpdir, "default.yaml"),
-        "model:\n  device: cpu\n  lora: false\n  sub:\n    a: 1\n",
-    )
-    # Whole-section variables are ignored at every level,
-    # even with a value that would be invalid otherwise,
-    # whereas nested variables still override individual values
-    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda"}')
-    monkeypatch.setenv("PKG_MODEL__SUB", "{not valid json")
-    monkeypatch.setenv("PKG_MODEL__LORA", "true")
-    monkeypatch.setenv("PKG_MODEL__SUB__A", "2")
-    tracking = {}
-    config = audeer.load_configuration(
-        config_file,
-        env_prefix="PKG",
-        env_replace_sections=False,
-        tracking=tracking,
-    )
-    assert config == {"model": {"device": "cpu", "lora": True, "sub": {"a": 2}}}
-    assert tracking == {
-        "model": {
-            "device": f"file:{config_file}",
-            "lora": "env:PKG_MODEL__LORA",
-            "sub": {"a": "env:PKG_MODEL__SUB__A"},
-        }
-    }
-
-
-def test_load_configuration_environment_replace_sections_disabled_list(
-    tmpdir, monkeypatch
-):
-    config_file = write_config(
-        audeer.path(tmpdir, "default.yaml"),
-        "layers:\n  - size: 1\nmodel:\n  layers:\n    - size: 1\n",
-    )
-    # A list is an individual value, even if it contains mappings,
-    # so it is still replaced as a whole at every level
-    monkeypatch.setenv("PKG_LAYERS", '[{"size": 2}, {"size": 3}]')
-    monkeypatch.setenv("PKG_MODEL__LAYERS", '[{"size": 4}]')
-    config = audeer.load_configuration(
-        config_file,
-        env_prefix="PKG",
-        env_replace_sections=False,
-    )
-    assert config == {
-        "layers": [{"size": 2}, {"size": 3}],
-        "model": {"layers": [{"size": 4}]},
-    }
-
-
-def test_load_configuration_environment_replace_sections_enabled(tmpdir, monkeypatch):
+def test_load_configuration_environment_json_section_nested_levels(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n  lora: false\n  sub:\n    a: 1\nextra: {}\n",
     )
-    # Explicitly enabling section replacement matches the default behavior
-    # at every level and for empty sections
+    # Section variables are applied at every level and for empty sections
     monkeypatch.setenv("PKG_MODEL", '{"device": "cuda", "sub": {"a": 1}}')
     monkeypatch.setenv("PKG_MODEL__SUB", '{"a": 2}')
     monkeypatch.setenv("PKG_EXTRA", '{"b": {"c": 1}}')
     monkeypatch.setenv("PKG_EXTRA__B", '{"c": 2}')
-    configs = [
-        audeer.load_configuration(
-            config_file,
-            env_prefix="PKG",
-            **kwargs,
-        )
-        for kwargs in [{}, {"env_replace_sections": True}]
-    ]
-    expected = {
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {
         "model": {"device": "cuda", "lora": False, "sub": {"a": 2}},
         "extra": {"b": {"c": 2}},
     }
-    assert configs == [expected, expected]
 
 
 def test_load_configuration_environment_empty_section_then_nested(tmpdir, monkeypatch):
