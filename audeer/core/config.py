@@ -46,14 +46,15 @@ def load_configuration(
     by joining the levels with ``__``,
     e.g. ``model.device``
     is overridden by ``<env_prefix>_MODEL__DEVICE``.
-    A whole nested mapping can instead be replaced
+    Several keys of a nested mapping can instead be set
     by a single variable holding a JSON object,
     e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``;
-    the object replaces the mapping as a whole
-    (keys it omits are dropped)
+    the object is deep-merged into the mapping
+    like a user configuration file
+    (keys it omits keep their values)
     and may introduce keys not present in the files.
     Each value of the object must match the type
-    of the default value it replaces
+    of the value it overrides
     (an integer is accepted for a float default),
     otherwise a ``ValueError`` is raised;
     introduced keys and keys whose default is ``None``
@@ -63,7 +64,7 @@ def load_configuration(
     e.g. ``<env_prefix>_MODEL__DEVICE``
     overrides ``device`` from ``<env_prefix>_MODEL``.
     Set ``env_replace_sections`` to ``False``
-    to ignore such whole-section variables,
+    to ignore such section variables,
     so that only individual values can be overridden.
     The value of an environment variable is converted
     to the type of the corresponding default value:
@@ -115,9 +116,10 @@ def load_configuration(
             used to override configuration values.
             If ``None``, environment variables are ignored
         env_replace_sections: if ``True``,
-            a whole nested mapping can be replaced
+            several keys of a nested mapping can be set
             by a single environment variable holding a JSON object,
-            e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``.
+            e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``,
+            which is deep-merged into the mapping.
             If ``False``, such variables are ignored,
             and only individual values
             can be overridden by environment variables
@@ -145,7 +147,7 @@ def load_configuration(
             or ``f"env:{name}"`` naming the exact environment variable
             (e.g. ``"env:PKG_MODEL__DEVICE"``)
             for an environment variable override.
-            A whole-section JSON environment variable
+            A section JSON environment variable
             labels every key it sets;
             a more specific nested variable re-labels
             only the key it overrides.
@@ -323,10 +325,8 @@ def _label_tree(mapping: Mapping, label: str) -> dict:
     Used both for the initial tracking tree
     (every key starts out attributed to the default file)
     and to expand a single label into a per-leaf tree,
-    e.g. when a whole configuration section
-    is replaced by a JSON environment variable
-    and a more specific, nested variable
-    later overrides one of its keys.
+    e.g. when a configuration value
+    is set to a mapping by a later layer.
 
     Args:
         mapping: mapping whose structure is mirrored
@@ -500,10 +500,10 @@ def _validate_json_replacement(
     types: Mapping,
     path: str = "",
 ) -> None:
-    r"""Validate a JSON section replacement against the default values.
+    r"""Validate a JSON section override against the default values.
 
     Each value of the parsed JSON object
-    must match the type of the default value it replaces,
+    must match the type of the default value it overrides,
     mirroring the conversion rules for scalar environment variables.
     An integer is promoted in place
     where the default value is a float.
@@ -515,7 +515,7 @@ def _validate_json_replacement(
         name: name of the environment variable
         value: raw string value of the environment variable
         parsed: JSON object parsed from ``value``, modified in place
-        defaults: section of the configuration the object replaces
+        defaults: section of the configuration the object is merged into
         types: declared types mirroring ``defaults``
         path: dotted key path accumulated so far
 
@@ -594,8 +594,8 @@ def _override_with_environment(
     it is updated in place to mirror ``cfg``:
     a key overridden by an environment variable
     is attributed to that variable's exact name.
-    A whole-section JSON replacement
-    attributes every one of its leaves
+    A section JSON override
+    attributes every leaf it sets
     to the section variable;
     a more specific, nested variable
     applied afterwards then re-attributes
@@ -610,7 +610,7 @@ def _override_with_environment(
             used to cast values whose default is ``None``
         owner: owner tracking dictionary, updated in place when given
         replace_sections: if ``False``,
-            whole-section variables (e.g. ``PKG_MODEL``) are ignored
+            section variables (e.g. ``PKG_MODEL``) are ignored
 
     """
     for key, default_value in cfg.items():
@@ -621,9 +621,10 @@ def _override_with_environment(
         name = f"{env_prefix}{key.upper()}"
         key_type = types.get(key)
         if isinstance(default_value, Mapping):
-            # A whole-section variable (e.g. PKG_MODEL) replaces the mapping
-            # as a JSON object; nested variables (e.g. PKG_MODEL__DEVICE) are
-            # applied afterwards and therefore take precedence.
+            # A section variable (e.g. PKG_MODEL) holds a JSON object that is
+            # deep-merged into the mapping, like a user configuration file;
+            # nested variables (e.g. PKG_MODEL__DEVICE) are applied
+            # afterwards and therefore take precedence.
             if replace_sections and name in os.environ:
                 parsed = _parse_environment_value(
                     name,
@@ -631,7 +632,7 @@ def _override_with_environment(
                     default_value,
                     dict,
                 )
-                # The validation guarantees that the replaced values keep
+                # The validation guarantees that the merged values keep
                 # the types of the defaults, so nested overrides applied
                 # below still cast to the original types
                 _validate_json_replacement(
@@ -641,9 +642,10 @@ def _override_with_environment(
                     default_value,
                     key_type or {},
                 )
-                cfg[key] = parsed
-                if owner is not None:
-                    owner[key] = _label_tree(parsed, f"env:{name}")
+                if owner is None:
+                    _deep_merge(cfg[key], parsed)
+                else:
+                    _deep_merge(cfg[key], parsed, owner[key], f"env:{name}")
             _override_with_environment(
                 cfg[key],
                 f"{name}__",
