@@ -1080,6 +1080,69 @@ def test_load_configuration_environment_replace_sections_disabled_list(
     }
 
 
+@pytest.mark.parametrize(
+    "name, match",
+    [
+        (  # top-level section
+            "PKG_MODEL",
+            "The environment variable 'PKG_MODEL' sets a whole section, "
+            "which is not allowed with 'env_replace_sections=False'. "
+            "Set single values instead, e.g. 'PKG_MODEL__DEVICE'.",
+        ),
+        (  # nested section
+            "PKG_MODEL__SUB",
+            "The environment variable 'PKG_MODEL__SUB' sets a whole section, "
+            "which is not allowed with 'env_replace_sections=False'. "
+            "Set single values instead, e.g. 'PKG_MODEL__SUB__A'.",
+        ),
+        (  # empty section, no example
+            "PKG_EMPTY",
+            "The environment variable 'PKG_EMPTY' sets a whole section, "
+            "which is not allowed with 'env_replace_sections=False'. "
+            "Set single values instead.",
+        ),
+    ],
+)
+def test_load_configuration_environment_replace_sections_disabled_strict(
+    tmpdir, monkeypatch, name, match
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  sub:\n    a: 1\nempty: {}\n",
+    )
+    # With strict, a whole-section variable raises instead of being ignored
+    monkeypatch.setenv(name, '{"device": "cuda"}')
+    with pytest.raises(ValueError, match=re.escape(match)):
+        audeer.load_configuration(
+            config_file,
+            env_prefix="PKG",
+            env_replace_sections=False,
+            strict=True,
+        )
+
+
+def test_load_configuration_environment_replace_sections_strict_values(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  sub:\n    a: 1\n",
+    )
+    # Single values are still overridden with strict,
+    # and with env_replace_sections=True a section variable is applied
+    monkeypatch.setenv("PKG_MODEL__SUB__A", "2")
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        env_replace_sections=False,
+        strict=True,
+    )
+    assert config == {"model": {"device": "cpu", "sub": {"a": 2}}}
+    monkeypatch.setenv("PKG_MODEL", '{"device": "cuda", "sub": {"a": 3}}')
+    config = audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
+    assert config == {"model": {"device": "cuda", "sub": {"a": 2}}}
+
+
 def test_load_configuration_environment_replace_sections_enabled(tmpdir, monkeypatch):
     config_file = write_config(
         audeer.path(tmpdir, "default.yaml"),

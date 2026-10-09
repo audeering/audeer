@@ -65,7 +65,9 @@ def load_configuration(
     overrides ``device`` from ``<env_prefix>_MODEL``.
     Set ``env_replace_sections`` to ``False``
     to ignore such whole-section variables,
-    so that only individual values can be overridden.
+    so that only individual values can be overridden;
+    with ``strict`` set to ``True``
+    such a variable raises a ``ValueError`` instead.
     The value of an environment variable is converted
     to the type of the corresponding default value:
     ``str`` values are used as they are,
@@ -131,6 +133,7 @@ def load_configuration(
             by a single environment variable holding a JSON object,
             e.g. ``<env_prefix>_MODEL='{"device": "cpu"}'``.
             If ``False``, such variables are ignored,
+            or raise an error if ``strict`` is ``True``,
             and only individual values
             can be overridden by environment variables.
             Declaring a key as ``dict`` in ``types``
@@ -138,7 +141,10 @@ def load_configuration(
         strict: if ``True``,
             every user configuration may only contain keys
             of ``default_config_file``,
-            with values of the same type as their default values
+            with values of the same type as their default values.
+            If ``env_replace_sections`` is ``False`` as well,
+            an environment variable for a whole section
+            raises an error instead of being ignored
         types: mapping that declares the type
             of configuration values,
             mirroring the (possibly nested) configuration structure.
@@ -185,6 +191,9 @@ def load_configuration(
             and a user configuration contains a key
             that is not in ``default_config_file``,
             or a value whose type does not match its default value
+        ValueError: if ``strict`` is ``True``,
+            ``env_replace_sections`` is ``False``,
+            and an environment variable sets a whole section
         ValueError: if an environment variable
             cannot be converted to the type
             of the corresponding default value,
@@ -302,6 +311,7 @@ def load_configuration(
             types or {},
             owner,
             replace_sections=env_replace_sections,
+            strict=strict,
         )
 
     if validate is not None:
@@ -725,6 +735,7 @@ def _override_with_environment(
     owner: dict | None = None,
     *,
     replace_sections: bool = True,
+    strict: bool = False,
 ) -> None:
     r"""Override configuration values with environment variables in place.
 
@@ -755,6 +766,13 @@ def _override_with_environment(
         owner: owner tracking dictionary, updated in place when given
         replace_sections: if ``False``,
             whole-section variables (e.g. ``PKG_MODEL``) are ignored
+        strict: if ``True`` and ``replace_sections`` is ``False``,
+            a whole-section variable raises an error
+
+    Raises:
+        ValueError: if ``strict`` is ``True``,
+            ``replace_sections`` is ``False``,
+            and a whole-section variable is set
 
     """
     for key, default_value in cfg.items():
@@ -768,6 +786,21 @@ def _override_with_environment(
             # A whole-section variable (e.g. PKG_MODEL) replaces the mapping
             # as a JSON object; nested variables (e.g. PKG_MODEL__DEVICE) are
             # applied afterwards and therefore take precedence.
+            if not replace_sections and strict and name in os.environ:
+                example = next(
+                    (
+                        f"{name}__{k.upper()}"
+                        for k in default_value
+                        if isinstance(k, str)
+                    ),
+                    None,
+                )
+                hint = f", e.g. '{example}'" if example else ""
+                raise ValueError(
+                    f"The environment variable '{name}' sets a whole section, "
+                    f"which is not allowed with 'env_replace_sections=False'. "
+                    f"Set single values instead{hint}."
+                )
             if replace_sections and name in os.environ:
                 parsed = _parse_environment_value(
                     name,
@@ -794,6 +827,7 @@ def _override_with_environment(
                 key_type or {},
                 owner[key] if owner is not None else None,
                 replace_sections=replace_sections,
+                strict=strict,
             )
         elif name in os.environ:
             cfg[key] = _parse_environment_value(
@@ -814,6 +848,7 @@ def _override_with_environment(
                     {},
                     owner[key] if owner is not None else None,
                     replace_sections=replace_sections,
+                    strict=strict,
                 )
             elif owner is not None:
                 owner[key] = f"env:{name}"
