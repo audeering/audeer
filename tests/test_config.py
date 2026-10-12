@@ -396,13 +396,13 @@ def test_load_configuration_user_mapping_environment_json(tmpdir, monkeypatch):
     user_config = {"model": {"device": "cpu"}}
     # A section introduced by the mapping
     # can be overridden by a JSON environment variable,
-    # and the values of the mapping provide the types for it
+    # which is not type-checked without ``strict``, like a user file
     monkeypatch.setenv("PKG_MODEL", '{"device": "cuda"}')
     config = audeer.load_configuration(default_file, user_config, env_prefix="PKG")
     assert config == {"name": "default", "model": {"device": "cuda"}}
     monkeypatch.setenv("PKG_MODEL", '{"device": 5}')
-    with pytest.raises(ValueError, match="has type 'str'"):
-        audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+    config = audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+    assert config == {"name": "default", "model": {"device": 5}}
 
 
 def test_load_configuration_environment_json_section_keeps_user_value(
@@ -876,10 +876,14 @@ def test_load_configuration_environment_json_section_wrong_value_type(
     tmpdir, monkeypatch, content, value, match
 ):
     config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
-    # A JSON object must match the types of the default values it overrides
+    # Like a user file, a JSON object is only checked with ``strict``
     monkeypatch.setenv("PKG_MODEL", value)
-    with pytest.raises(ValueError, match=match):
-        audeer.load_configuration(config_file, env_prefix="PKG")
+    audeer.load_configuration(config_file, env_prefix="PKG")
+    with pytest.raises(
+        ValueError,
+        match=re.escape("The environment variable 'PKG_MODEL' sets") + ".*" + match,
+    ):
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
 
 
 def test_load_configuration_environment_json_section_nested_preserves_type(
@@ -905,11 +909,14 @@ def test_load_configuration_environment_json_section_float_promotion(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  ratio: 1.5\n",
     )
-    # A JSON int is accepted for a float default and promoted
+    # With ``strict``, a JSON int is accepted for a float default and promoted,
+    # without it the value keeps its JSON type, like in a user file
     monkeypatch.setenv("PKG_MODEL", '{"ratio": 2}')
-    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    config = audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
     assert config == {"model": {"ratio": 2.0}}
     assert isinstance(config["model"]["ratio"], float)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert isinstance(config["model"]["ratio"], int)
 
 
 def test_load_configuration_environment_json_section_none_default(tmpdir, monkeypatch):
@@ -930,10 +937,13 @@ def test_load_configuration_environment_json_section_null_for_typed_default(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n",
     )
-    # JSON null does not match the str type of the default
+    # With ``strict``, JSON null does not match the str type of the default,
+    # without it the value is merged
     monkeypatch.setenv("PKG_MODEL", '{"device": null}')
     with pytest.raises(ValueError, match="has type 'str'"):
-        audeer.load_configuration(config_file, env_prefix="PKG")
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": None}}
 
 
 def test_load_configuration_environment_json_section_null_for_none_default(
@@ -954,14 +964,69 @@ def test_load_configuration_environment_json_section_declared_type(tmpdir, monke
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  count: null\n",
     )
-    # A ``types`` declaration is also enforced inside a JSON object
+    # With ``strict``, a ``types`` declaration
+    # is also enforced inside a JSON object
     monkeypatch.setenv("PKG_MODEL", '{"count": "5"}')
     with pytest.raises(ValueError, match="has type 'int'"):
         audeer.load_configuration(
             config_file,
             env_prefix="PKG",
+            strict=True,
             types={"model": {"count": int}},
         )
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"model": {"count": int}},
+    )
+    assert config == {"model": {"count": "5"}}
+
+
+def test_load_configuration_environment_json_section_strict_unknown_key(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  sub:\n    a: 1\n",
+    )
+    # With ``strict``, a key of a JSON object that is not in the default file
+    # raises, also for a nested section variable,
+    # without it the key is added like from a user file
+    monkeypatch.setenv("PKG_MODEL", '{"batch": 8}')
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "The environment variable 'PKG_MODEL' contains the key 'model.batch', "
+            "which is not in the default configuration."
+        ),
+    ):
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config["model"]["batch"] == 8
+    monkeypatch.delenv("PKG_MODEL")
+    monkeypatch.setenv("PKG_MODEL__SUB", '{"b": 2}')
+    with pytest.raises(ValueError, match="contains the key 'model.sub.b'"):
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
+
+
+def test_load_configuration_environment_json_section_strict_none_default(
+    tmpdir, monkeypatch
+):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model: null\n",
+    )
+    # A section that a user configuration sets for a None default
+    # has no defaults to check a JSON object against,
+    # like any value with a None default
+    monkeypatch.setenv("PKG_MODEL", '{"device": 5}')
+    config = audeer.load_configuration(
+        default_file,
+        {"model": {"device": "cpu"}},
+        env_prefix="PKG",
+        strict=True,
+    )
+    assert config == {"model": {"device": 5}}
 
 
 def test_load_configuration_environment_json_section_merge(tmpdir, monkeypatch):
