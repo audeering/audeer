@@ -36,6 +36,10 @@ def load_configuration(
     and keeps the remaining keys from the default.
     Any non-mapping value (including a list)
     replaces the previous value as a whole.
+    The default file fixes the structure:
+    a user configuration cannot set a section to a value,
+    or a value to a section,
+    unless the default value is ``None``.
 
     Environment variables are matched
     against the upper-cased configuration keys,
@@ -53,8 +57,9 @@ def load_configuration(
     like a user configuration file
     (keys it omits keep their values)
     and may introduce keys not present in the files.
-    Like a user configuration file,
-    the object is only checked against the default file
+    Like for a user configuration file,
+    the default file fixes its structure,
+    and its keys and types are checked
     when ``strict`` is ``True``.
     Nested variables are applied afterwards
     and therefore take precedence,
@@ -160,6 +165,10 @@ def load_configuration(
     Raises:
         ImportError: if ``pyyaml`` is not installed,
             and a configuration file exists
+        ValueError: if a user configuration,
+            or an environment variable holding a JSON object for a section,
+            sets a section of ``default_config_file`` to a value,
+            or a value to a section
         ValueError: if a configuration file
             does not contain a mapping of key-value pairs
         ValueError: if ``strict`` is ``True``
@@ -263,8 +272,7 @@ def load_configuration(
             else:
                 update = _load_configuration_file(user_config)
                 source = f"configuration file '{user_config}'"
-            if strict:
-                _validate_user_config(update, defaults, types or {}, source)
+            _validate_user_config(update, defaults, types or {}, source, strict=strict)
             if owner is None:
                 _deep_merge(cfg, update)
             else:
@@ -559,14 +567,18 @@ def _validate_user_config(
     types: Mapping,
     source: str,
     path: str = "",
+    *,
+    strict: bool = True,
 ) -> None:
     r"""Validate a user configuration against the default configuration.
 
-    Every key must exist in ``defaults``,
-    a section must stay a section,
+    A section of the default configuration must stay a section,
+    and a value must not become a section.
+    With ``strict``,
+    every key must also exist in ``defaults``,
     and every value must match the type of its default value,
     see :func:`_matches_type`.
-    An integer is promoted in place
+    An integer is then promoted in place
     where the default value is a float.
     A value with a ``None`` default is not checked,
     unless a type is declared in ``types``.
@@ -578,15 +590,22 @@ def _validate_user_config(
         source: description of the user configuration
             used in error messages
         path: dotted key path accumulated so far
+        strict: if ``True``,
+            unknown keys and the types of values are checked as well
 
     Raises:
-        ValueError: if a key is not in ``defaults``,
+        ValueError: if a section is set to a value,
+            or a value to a section
+        ValueError: if ``strict`` is ``True``,
+            and a key is not in ``defaults``,
             or a value does not match the type of its default value
 
     """
     for key, value in update.items():
         key_path = f"{path}{key}"
         if key not in defaults:
+            if not strict:
+                continue
             raise ValueError(
                 f"The {source} contains the key '{key_path}', "
                 f"which is not in the default configuration."
@@ -606,7 +625,15 @@ def _validate_user_config(
                 declared if isinstance(declared, Mapping) else {},
                 source,
                 f"{key_path}.",
+                strict=strict,
             )
+            continue
+        if default_value is not None and isinstance(value, Mapping):
+            raise ValueError(
+                f"The {source} sets '{key_path}' to a mapping, "
+                f"but the default value is not a mapping."
+            )
+        if not strict:
             continue
         target = _target_type(declared, default_value)
         if target is None:
@@ -699,13 +726,14 @@ def _override_with_environment(
                     default_value,
                     dict,
                 )
-                if strict and isinstance(section_defaults, Mapping):
+                if isinstance(section_defaults, Mapping):
                     _validate_user_config(
                         parsed,
                         section_defaults,
                         key_type or {},
                         f"environment variable '{name}'",
                         f"{path}{key}.",
+                        strict=strict,
                     )
                 _deep_merge(
                     cfg[key],

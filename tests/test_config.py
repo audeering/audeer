@@ -120,8 +120,16 @@ def test_load_configuration_deep_merge_scalar_replaces_section(tmpdir):
         audeer.path(tmpdir, "user.yaml"),
         "model: none\n",
     )
-    # A scalar in the user file replaces a whole default section
-    assert audeer.load_configuration(default_file, user_file) == {"model": "none"}
+    # The default file fixes the structure, also without ``strict``:
+    # a value in the user file cannot replace a default section
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"The configuration file '{user_file}' sets 'model' "
+            "to a value of type 'str', but the default value is a mapping."
+        ),
+    ):
+        audeer.load_configuration(default_file, user_file)
 
 
 def test_load_configuration_deep_merge_section_replaces_scalar(tmpdir):
@@ -133,10 +141,16 @@ def test_load_configuration_deep_merge_section_replaces_scalar(tmpdir):
         audeer.path(tmpdir, "user.yaml"),
         "model:\n  device: cuda\n",
     )
-    # A mapping in the user file replaces a scalar default as a whole
-    assert audeer.load_configuration(default_file, user_file) == {
-        "model": {"device": "cuda"},
-    }
+    # The default file fixes the structure, also without ``strict``:
+    # a section in the user file cannot replace a default value
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"The configuration file '{user_file}' sets 'model' "
+            "to a mapping, but the default value is not a mapping."
+        ),
+    ):
+        audeer.load_configuration(default_file, user_file)
 
 
 def test_load_configuration_deep_merge_list_replaced(tmpdir):
@@ -612,8 +626,7 @@ def test_load_configuration_strict_default_off(tmpdir):
         ),
         (  # section where the default is a scalar
             "timeout:\n  value: 1\n",
-            "sets 'timeout' to a value of type 'dict', "
-            "but the default value has type 'float'",
+            "sets 'timeout' to a mapping, but the default value is not a mapping",
         ),
     ],
 )
@@ -842,6 +855,40 @@ def test_load_configuration_environment_json_section_preserves_type(
     assert isinstance(config["model"]["count"], int)
 
 
+@pytest.mark.parametrize("strict", [False, True])
+@pytest.mark.parametrize(
+    "value, match",
+    [
+        (  # a nested section set to a value
+            '{"b": 5}',
+            "sets 'model.b' to a value of type 'int', "
+            "but the default value is a mapping.",
+        ),
+        (  # a value set to a section
+            '{"d": {"e": 1}}',
+            "sets 'model.d' to a mapping, but the default value is not a mapping.",
+        ),
+    ],
+)
+def test_load_configuration_environment_json_section_structure(
+    tmpdir, monkeypatch, value, match, strict
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  b:\n    c: 1\n  d: 2\n",
+    )
+    # Like a user file, a section variable cannot change the structure
+    # of the default file, also without ``strict``,
+    # so a nested variable such as PKG_MODEL__B__C is never ignored
+    monkeypatch.setenv("PKG_MODEL", value)
+    monkeypatch.setenv("PKG_MODEL__B__C", "5")
+    with pytest.raises(
+        ValueError,
+        match=re.escape(f"The environment variable 'PKG_MODEL' {match}"),
+    ):
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=strict)
+
+
 @pytest.mark.parametrize(
     "content, value, match",
     [
@@ -854,11 +901,6 @@ def test_load_configuration_environment_json_section_preserves_type(
             "model:\n  b:\n    c: 1\n",
             '{"b": {"c": "bad"}}',
             "has type 'int'",
-        ),
-        (  # a nested section replaced by a scalar
-            "model:\n  b:\n    c: 1\n",
-            '{"b": 5}',
-            "is a mapping",
         ),
         (  # int value where the default is bool
             "model:\n  lora: false\n",
@@ -2019,20 +2061,21 @@ def test_load_configuration_tracking_merge_into_freshly_introduced_section(tmpdi
 def test_load_configuration_tracking_section_collapsed_to_scalar(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "model:\n  device: cuda\n  lora: false\n",
+        "model: null\n",
     )
     tracking = {}
     config = audeer.load_configuration(
         default_file,
-        {"model": "none"},
+        [{"model": {"device": "cuda", "lora": False}}, {"model": "none"}],
         tracking=tracking,
     )
-    # A scalar in a later layer replaces a whole default section wholesale:
-    # the previously nested per-leaf attribution ("device", "lora") must
+    # A value with a None default is not checked,
+    # so a later layer may replace the section an earlier layer set:
+    # the nested per-leaf attribution ("device", "lora") must
     # collapse into a single flat label for "model", not leave stale
     # nested entries behind
     assert config == {"model": "none"}
-    assert tracking == {"model": "mapping[0]"}
+    assert tracking == {"model": "mapping[1]"}
 
 
 def test_load_configuration_tracking_three_levels_deep(tmpdir, monkeypatch):
