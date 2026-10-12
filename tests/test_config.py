@@ -513,12 +513,24 @@ def test_load_configuration_strict(tmpdir):
             "timeout: 1.5\n"
             "hosts: []\n"
             "token: null\n"
-            "model:\n  device: cpu\n  lora: false\n  sub:\n    a: 1\n"
+            "model:\n"
+            "  device: cpu\n"
+            "  lora: false\n"
+            "  sub:\n"
+            "    a: 1\n"
         ),
     )
     user_file = write_config(
         audeer.path(tmpdir, "user.yaml"),
-        "timeout: 2\nhosts: [a]\ntoken: 123\nmodel:\n  lora: true\n  sub:\n    a: 2\n",
+        (
+            "timeout: 2\n"
+            "hosts: [a]\n"
+            "token: 123\n"
+            "model:\n"
+            "  lora: true\n"
+            "  sub:\n"
+            "    a: 2\n"
+        ),
     )
     # Known keys with matching types are accepted,
     # an integer is promoted for a float default,
@@ -608,8 +620,15 @@ def test_load_configuration_strict_default_off(tmpdir):
 def test_load_configuration_strict_invalid(tmpdir, content, match):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "cache_root: ~/cache\ntimeout: 1.5\nmodel:\n  device: cpu\n"
-        "  lora: false\n  sub:\n    a: 1\n",
+        (
+            "cache_root: ~/cache\n"
+            "timeout: 1.5\n"
+            "model:\n"
+            "  device: cpu\n"
+            "  lora: false\n"
+            "  sub:\n"
+            "    a: 1\n"
+        ),
     )
     user_file = write_config(audeer.path(tmpdir, "user.yaml"), content)
     with pytest.raises(
