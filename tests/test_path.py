@@ -87,6 +87,23 @@ def test_path_symlinks(tmpdir):
         ("$AUDEER_UNDEFINED/file.txt", [], True, "$AUDEER_UNDEFINED/file.txt"),
         ("/c/$AUDEER_TEST", [], True, "/c/a/b"),
         ("/c_$AUDEER_TEST", [], True, "/c_/a/b"),
+        # Multiple variables
+        ("$AUDEER_TEST/$AUDEER_TEST_REL/file.txt", [], True, "/a/b/d/file.txt"),
+        ("${AUDEER_TEST}/${AUDEER_TEST_REL}/file.txt", [], True, "/a/b/d/file.txt"),
+        ("$AUDEER_TEST", ["$AUDEER_TEST_REL", "file.txt"], True, "/a/b/d/file.txt"),
+        ("$AUDEER_TEST_HOME/$AUDEER_TEST_REL", [], True, "~/d"),
+        (
+            "$AUDEER_TEST/$AUDEER_UNDEFINED/$AUDEER_TEST_REL",
+            [],
+            True,
+            "/a/b/$AUDEER_UNDEFINED/d",
+        ),
+        (
+            "$AUDEER_TEST/$AUDEER_TEST_REL",
+            [],
+            False,
+            "$AUDEER_TEST/$AUDEER_TEST_REL",
+        ),
     ],
 )
 def test_path_expand_vars(monkeypatch, path, paths, expand_vars, expected):
