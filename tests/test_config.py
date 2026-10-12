@@ -982,6 +982,34 @@ def test_load_configuration_environment_json_section_declared_type(tmpdir, monke
     assert config == {"model": {"count": "5"}}
 
 
+@pytest.mark.parametrize("strict", [False, True])
+@pytest.mark.parametrize("source", ["user_file", "section_variable"])
+def test_load_configuration_environment_type_from_default(
+    tmpdir, monkeypatch, source, strict
+):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  lr: 0.1\n",
+    )
+    user_file = write_config(audeer.path(tmpdir, "user.yaml"), "model:\n  lr: 1\n")
+    # A variable for a single value is converted to the type
+    # of the default file, not to the type of a value
+    # that a user file or a section variable set before
+    if source == "section_variable":
+        monkeypatch.setenv("PKG_MODEL", '{"lr": 1}')
+        user_configs = None
+    else:
+        user_configs = user_file
+    monkeypatch.setenv("PKG_MODEL__LR", "0.5")
+    config = audeer.load_configuration(
+        default_file,
+        user_configs,
+        env_prefix="PKG",
+        strict=strict,
+    )
+    assert config == {"model": {"lr": 0.5}}
+
+
 def test_load_configuration_environment_json_section_strict_unknown_key(
     tmpdir, monkeypatch
 ):

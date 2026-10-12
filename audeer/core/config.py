@@ -250,7 +250,8 @@ def load_configuration(
     # are checked against the default file only,
     # so a value set by an earlier layer
     # does not change the type a later one is checked against
-    defaults = _copy_mapping(cfg) if strict else None
+    # and environment variables take their types from it
+    defaults = _copy_mapping(cfg)
 
     if user_configs is not None:
         if isinstance(user_configs, (str, Mapping)):
@@ -284,6 +285,7 @@ def load_configuration(
             types or {},
             owner,
             defaults=defaults,
+            strict=strict,
         )
 
     if validate is not None:
@@ -626,6 +628,7 @@ def _override_with_environment(
     owner: dict | None = None,
     *,
     defaults: Mapping | None = None,
+    strict: bool = False,
     path: str = "",
 ) -> None:
     r"""Override configuration values with environment variables in place.
@@ -655,15 +658,20 @@ def _override_with_environment(
         types: declared types mirroring ``cfg``,
             used to cast values whose default is ``None``
         owner: owner tracking dictionary, updated in place when given
-        defaults: corresponding section of the default configuration
-            a section variable is checked against,
-            see :func:`_validate_user_config`.
-            If ``None``, section variables are not checked
+        defaults: corresponding section of the default configuration.
+            A variable for a single value is converted
+            to the type of its default value in it,
+            so a value set by a user configuration
+            does not change the type.
+            Keys not in ``defaults`` use the type of the value in ``cfg``
+        strict: if ``True``,
+            a section variable is checked against ``defaults``,
+            see :func:`_validate_user_config`
         path: dotted key path accumulated so far
 
     Raises:
-        ValueError: if ``defaults`` is given
-            and a section variable contains a key that is not in it,
+        ValueError: if ``strict`` is ``True``
+            and a section variable contains a key that is not in ``defaults``,
             or a value whose type does not match its default value
 
     """
@@ -691,7 +699,7 @@ def _override_with_environment(
                     default_value,
                     dict,
                 )
-                if isinstance(section_defaults, Mapping):
+                if strict and isinstance(section_defaults, Mapping):
                     _validate_user_config(
                         parsed,
                         section_defaults,
@@ -713,9 +721,18 @@ def _override_with_environment(
                 defaults=section_defaults
                 if isinstance(section_defaults, Mapping)
                 else None,
+                strict=strict,
                 path=f"{path}{key}.",
             )
         elif name in os.environ:
+            # The type comes from the default file,
+            # not from a value a user configuration or section variable set
+            if (
+                isinstance(defaults, Mapping)
+                and key in defaults
+                and not isinstance(defaults[key], Mapping)
+            ):
+                default_value = defaults[key]
             cfg[key] = _parse_environment_value(
                 name,
                 os.environ[name],
