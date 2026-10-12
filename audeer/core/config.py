@@ -40,6 +40,8 @@ def load_configuration(
     a user configuration cannot set a section to a value,
     or a value to a section,
     unless the default value is ``None``.
+    An integer is converted to a float
+    where the default value is a float.
 
     Environment variables are matched
     against the upper-cased configuration keys,
@@ -251,9 +253,14 @@ def load_configuration(
         owner = _label_tree(cfg, f"file:{default_config_file}")
 
     # Checked before the user configurations,
-    # as ``strict`` reads ``types`` while it validates them
-    if types is not None and not isinstance(types, Mapping):
-        raise ValueError(f"'types' must be a mapping, but is '{type(types).__name__}'.")
+    # as their validation reads ``types``,
+    # so an invalid declaration is reported as such
+    if types is not None:
+        if not isinstance(types, Mapping):
+            raise ValueError(
+                f"'types' must be a mapping, but is '{type(types).__name__}'."
+            )
+        _validate_types(cfg, types, require_keys=False)
 
     # User configurations and section variables
     # are checked against the default file only,
@@ -460,6 +467,8 @@ def _load_configuration_file(config_file: str) -> dict:
 def _validate_types(
     cfg: Mapping,
     types: Mapping,
+    *,
+    require_keys: bool = True,
 ) -> None:
     r"""Validate declared ``types`` against the configuration structure.
 
@@ -470,6 +479,9 @@ def _validate_types(
     Args:
         cfg: configuration dictionary
         types: declared types mirroring ``cfg``
+        require_keys: if ``False``,
+            entries without a matching configuration key are skipped,
+            e.g. for keys a user configuration adds later
 
     Raises:
         ValueError: if a declared section type is not a mapping
@@ -480,7 +492,7 @@ def _validate_types(
     # Reject entries without a matching configuration key
     # to catch misspellings
     for key in types:
-        if key not in cfg:
+        if key not in cfg and require_keys:
             raise ValueError(
                 f"The 'types' entry '{key}' does not match any configuration key."
             )
@@ -496,7 +508,7 @@ def _validate_types(
                     f"The 'types' entry for the nested section '{key}' "
                     f"must be a mapping, but is '{type(declared).__name__}'."
                 )
-            _validate_types(value, declared)
+            _validate_types(value, declared, require_keys=require_keys)
         elif isinstance(declared, Mapping):
             raise ValueError(
                 f"The 'types' entry for '{key}' declares a nested section, "
@@ -574,12 +586,12 @@ def _validate_user_config(
 
     A section of the default configuration must stay a section,
     and a value must not become a section.
+    An integer is promoted in place
+    where the default value is a float.
     With ``strict``,
     every key must also exist in ``defaults``,
     and every value must match the type of its default value,
     see :func:`_matches_type`.
-    An integer is then promoted in place
-    where the default value is a float.
     A value with a ``None`` default is not checked,
     unless a type is declared in ``types``.
 
@@ -633,9 +645,17 @@ def _validate_user_config(
                 f"The {source} sets '{key_path}' to a mapping, "
                 f"but the default value is not a mapping."
             )
-        if not strict:
-            continue
         target = _target_type(declared, default_value)
+        if not strict:
+            # Like an environment variable, an integer becomes a float
+            # where the default is a float, in both modes
+            if (
+                target is float
+                and isinstance(value, int)
+                and not isinstance(value, bool)
+            ):
+                update[key] = float(value)
+            continue
         if target is None:
             continue
         if not _matches_type(value, target):

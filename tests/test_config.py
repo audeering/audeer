@@ -951,14 +951,61 @@ def test_load_configuration_environment_json_section_float_promotion(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  ratio: 1.5\n",
     )
-    # With ``strict``, a JSON int is accepted for a float default and promoted,
-    # without it the value keeps its JSON type, like in a user file
+    # A JSON int is accepted for a float default and promoted,
+    # with and without ``strict``
     monkeypatch.setenv("PKG_MODEL", '{"ratio": 2}')
-    config = audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
-    assert config == {"model": {"ratio": 2.0}}
-    assert isinstance(config["model"]["ratio"], float)
-    config = audeer.load_configuration(config_file, env_prefix="PKG")
-    assert isinstance(config["model"]["ratio"], int)
+    for strict in [False, True]:
+        config = audeer.load_configuration(config_file, env_prefix="PKG", strict=strict)
+        assert config == {"model": {"ratio": 2.0}}
+        assert isinstance(config["model"]["ratio"], float)
+
+
+@pytest.mark.parametrize("strict", [False, True])
+@pytest.mark.parametrize(
+    "source", ["user_file", "mapping", "section_variable", "variable"]
+)
+def test_load_configuration_float_promotion_every_layer(
+    tmpdir, monkeypatch, source, strict
+):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  lr: 0.1\n",
+    )
+    # An integer for a float default becomes a float,
+    # independent of the layer that sets it and of ``strict``
+    user_configs = None
+    if source == "user_file":
+        user_configs = write_config(
+            audeer.path(tmpdir, "user.yaml"), "model:\n  lr: 1\n"
+        )
+    elif source == "mapping":
+        user_configs = {"model": {"lr": 1}}
+    elif source == "section_variable":
+        monkeypatch.setenv("PKG_MODEL", '{"lr": 1}')
+    else:
+        monkeypatch.setenv("PKG_MODEL__LR", "1")
+    config = audeer.load_configuration(
+        default_file, user_configs, env_prefix="PKG", strict=strict
+    )
+    assert config == {"model": {"lr": 1.0}}
+    assert isinstance(config["model"]["lr"], float)
+
+
+@pytest.mark.parametrize("strict", [False, True])
+def test_load_configuration_types_checked_first(tmpdir, strict):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  lr: 0.1\n",
+    )
+    # An invalid ``types`` entry is reported as such,
+    # before a user configuration is checked against it
+    with pytest.raises(ValueError, match="is not a supported type: 'dict'"):
+        audeer.load_configuration(
+            default_file,
+            {"model": {"lr": 0.5}},
+            types={"model": {"lr": dict}},
+            strict=strict,
+        )
 
 
 def test_load_configuration_environment_json_section_none_default(tmpdir, monkeypatch):
