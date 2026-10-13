@@ -11,20 +11,16 @@ Version 3.0.0 (2026-10-13)
 --------------------------
 
 * Added: ``strict`` argument to ``audeer.load_configuration()``.
-  With ``strict=True``,
-  a user configuration,
-  and an environment variable holding a JSON object for a section,
-  may only contain keys of the default configuration file,
-  with values of the same type as the default values
+  With ``strict=True`` user configurations
+  and environment variables
+  may only contain keys and types of the default configuration file
 * Added: ``expand_vars`` argument to ``audeer.path()``
   to expand environment variables
 * Added: support for Python 3.15
 * Changed: ``audeer.load_configuration()`` is marked as experimental
   and might have breaking changes in a future release
 * Changed: ``audeer.load_configuration()``
-  deep-merges an environment variable
-  holding a JSON object for a section
-  into that section,
+  deep-merges an environment section variable
   like a user configuration,
   instead of replacing it.
   Its values are only type-checked
@@ -32,16 +28,12 @@ Version 3.0.0 (2026-10-13)
 * Changed: ``audeer.load_configuration()``
   raises a ``ValueError``
   if a user configuration,
-  or an environment variable for a section,
+  or an environment section variable,
   sets a section of the default configuration file to a value,
   or a value to a section
 * Changed: ``audeer.load_configuration()``
-  converts an integer to a float
-  where the default value is a float,
-  also in user configurations,
-  and converts an environment variable for a single value
-  to the type of the default value,
-  also if a user configuration has set a value of another type
+  now always converts an integer to a float
+  if the default value is a float
 * Removed: ``dict`` as a supported type
   in the ``types`` argument of ``audeer.load_configuration()``,
   use an empty section ``{}`` as default value instead
