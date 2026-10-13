@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                v2.6.0
+                v2.7.0
               </div>
             
           
@@ -103,6 +103,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-2-7-0-2026-10-13">Version 2.7.0 (2026-10-13)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-6-0-2026-09-03">Version 2.6.0 (2026-09-03)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-5-0-2026-08-04">Version 2.5.0 (2026-08-04)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-2-4-0-2026-02-20">Version 2.4.0 (2026-02-20)</a></li>
@@ -221,6 +222,39 @@
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
 and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<section id="version-2-7-0-2026-10-13">
+<h2>Version 2.7.0 (2026-10-13)<a class="headerlink" href="#version-2-7-0-2026-10-13" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Added: <code class="docutils literal notranslate"><span class="pre">strict</span></code> argument to <code class="docutils literal notranslate"><span class="pre">audeer.load_configuration()</span></code>.
+With <code class="docutils literal notranslate"><span class="pre">strict=True</span></code> user configurations
+and environment variables
+may only contain keys and types of the default configuration file</p></li>
+<li><p>Added: <code class="docutils literal notranslate"><span class="pre">expand_vars</span></code> argument to <code class="docutils literal notranslate"><span class="pre">audeer.path()</span></code>
+to expand environment variables</p></li>
+<li><p>Added: support for Python 3.15</p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.load_configuration()</span></code> is marked as experimental
+and might have breaking changes in a future release</p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.load_configuration()</span></code>
+deep-merges an environment section variable
+like a user configuration,
+instead of replacing it.
+Its values are only type-checked
+if <code class="docutils literal notranslate"><span class="pre">strict</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.load_configuration()</span></code>
+raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+if a user configuration,
+or an environment section variable,
+sets a section of the default configuration file to a value,
+or a value to a section</p></li>
+<li><p>Changed: <code class="docutils literal notranslate"><span class="pre">audeer.load_configuration()</span></code>
+now always converts an integer to a float
+if the default value is a float</p></li>
+<li><p>Removed: <code class="docutils literal notranslate"><span class="pre">dict</span></code> as a supported type
+in the <code class="docutils literal notranslate"><span class="pre">types</span></code> argument of <code class="docutils literal notranslate"><span class="pre">audeer.load_configuration()</span></code>,
+use an empty section <code class="docutils literal notranslate"><span class="pre">{}</span></code> as default value instead</p></li>
+<li><p>Removed: support for Python 3.10</p></li>
+</ul>
+</section>
 <section id="version-2-6-0-2026-09-03">
 <h2>Version 2.6.0 (2026-09-03)<a class="headerlink" href="#version-2-6-0-2026-09-03" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -923,7 +957,7 @@ and remove obsolete <code class="docutils literal notranslate"><span class="pre"
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/09/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/10/13 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

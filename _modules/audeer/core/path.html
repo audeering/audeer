@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                v2.6.0
+                v2.7.0
               </div>
             
           
@@ -148,6 +148,7 @@
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">,</span>
     <span class="o">*</span><span class="n">paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">],</span>
     <span class="n">follow_symlink</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">expand_vars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Expand and normalize to absolute path.</span>
 
@@ -160,6 +161,9 @@
 <span class="sd">    If ``follow_symlink`` is ``False``,</span>
 <span class="sd">    the faster :func:`os.path.abspath` is used</span>
 <span class="sd">    instead of :func:`os.path.realpath`.</span>
+<span class="sd">    If ``expand_vars`` is ``True``,</span>
+<span class="sd">    environment variables are expanded</span>
+<span class="sd">    by :func:`os.path.expandvars`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to file, directory</span>
@@ -170,6 +174,12 @@
 <span class="sd">            symlinks are followed</span>
 <span class="sd">            and the path of the original file</span>
 <span class="sd">            is returned</span>
+<span class="sd">        expand_vars: if ``True``</span>
+<span class="sd">            environment variables</span>
+<span class="sd">            of the form ``$name`` or ``${name}``</span>
+<span class="sd">            (and ``%name%`` under Windows)</span>
+<span class="sd">            are expanded.</span>
+<span class="sd">            Undefined variables are left unchanged</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (joined and) expanded path</span>
@@ -191,6 +201,11 @@
 <span class="sd">        'link.txt'</span>
 <span class="sd">        &gt;&gt;&gt; os.path.basename(audeer.path(link, follow_symlink=True))</span>
 <span class="sd">        'file.txt'</span>
+<span class="sd">        &gt;&gt;&gt; os.environ["DATA_ROOT"] = "~/data"</span>
+<span class="sd">        &gt;&gt;&gt; file = audeer.path("$DATA_ROOT/a.wav", expand_vars=True)</span>
+<span class="sd">        &gt;&gt;&gt; file[len(home) + 1 :]</span>
+<span class="sd">        'data/a.wav'</span>
+<span class="sd">        &gt;&gt;&gt; del os.environ["DATA_ROOT"]</span>
 
 <span class="sd">        .. skip: end</span>
 
@@ -198,6 +213,8 @@
     <span class="k">if</span> <span class="n">paths</span><span class="p">:</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="n">paths</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">expand_vars</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">follow_symlink</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
@@ -289,7 +306,7 @@
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/09/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/10/13 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>

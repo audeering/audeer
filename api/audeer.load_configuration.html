@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                v2.6.0
+                v2.7.0
               </div>
             
           
@@ -190,7 +190,7 @@
 <h1>load_configuration()<a class="headerlink" href="#load-configuration" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="audeer.load_configuration">
-<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">load_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_config_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_configs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/config.html#load_configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.load_configuration" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">audeer.</span></span><span class="sig-name descname"><span class="pre">load_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_config_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_configs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracking</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/audeer/core/config.html#load_configuration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#audeer.load_configuration" title="Link to this definition">¶</a></dt>
 <dd><p>Load configuration from files and environment variables.</p>
 <p>Configuration values are collected from,
 in order of increasing precedence:</p>
@@ -209,7 +209,9 @@ so a section in a user file
 only overrides the keys it defines
 and keeps the remaining keys from the default.
 Any non-mapping value (including a list)
-replaces the previous value as a whole.</p>
+replaces the previous value as a whole.
+An integer is converted to a float
+where the default value is a float.</p>
 <p>Environment variables are matched
 against the upper-cased configuration keys,
 prefixed with <code class="docutils literal notranslate"><span class="pre">env_prefix</span></code> and an underscore,
@@ -219,18 +221,13 @@ Keys inside nested mappings are addressed
 by joining the levels with <code class="docutils literal notranslate"><span class="pre">__</span></code>,
 e.g. <code class="docutils literal notranslate"><span class="pre">model.device</span></code>
 is overridden by <code class="docutils literal notranslate"><span class="pre">&lt;env_prefix&gt;_MODEL__DEVICE</span></code>.
-A whole nested mapping can instead be replaced
+Several keys of a nested mapping can instead be set
 by a single variable holding a JSON object,
 e.g. <code class="docutils literal notranslate"><span class="pre">&lt;env_prefix&gt;_MODEL='{&quot;device&quot;:</span> <span class="pre">&quot;cpu&quot;}'</span></code>;
-the object replaces the mapping as a whole
-(keys it omits are dropped)
+the object is deep-merged into the mapping
+like a user configuration file
+(keys it omits keep their values)
 and may introduce keys not present in the files.
-Each value of the object must match the type
-of the default value it replaces
-(an integer is accepted for a float default),
-otherwise a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> is raised;
-introduced keys and keys whose default is <code class="docutils literal notranslate"><span class="pre">None</span></code>
-keep their JSON type.
 Nested variables are applied afterwards
 and therefore take precedence,
 e.g. <code class="docutils literal notranslate"><span class="pre">&lt;env_prefix&gt;_MODEL__DEVICE</span></code>
@@ -239,7 +236,7 @@ The value of an environment variable is converted
 to the type of the corresponding default value:
 <code class="docutils literal notranslate"><span class="pre">str</span></code> values are used as they are,
 <code class="docutils literal notranslate"><span class="pre">int</span></code>/<code class="docutils literal notranslate"><span class="pre">float</span></code> values are cast,
-and <code class="docutils literal notranslate"><span class="pre">list</span></code>/<code class="docutils literal notranslate"><span class="pre">dict</span></code> values are parsed as JSON.
+and <code class="docutils literal notranslate"><span class="pre">list</span></code> values are parsed as JSON.
 A <code class="docutils literal notranslate"><span class="pre">bool</span></code> value is <code class="docutils literal notranslate"><span class="pre">True</span></code>
 for <code class="docutils literal notranslate"><span class="pre">&quot;1&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;true&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;yes&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;on&quot;</span></code>
 (case insensitive)
@@ -269,32 +266,42 @@ raises a <code class="docutils literal notranslate"><span class="pre">ValueError
 <p>Missing or empty configuration files are skipped.</p>
 <p>Reading configuration files requires <code class="docutils literal notranslate"><span class="pre">pyyaml</span></code>,
 which is installed when depending on <code class="docutils literal notranslate"><span class="pre">audeer[yaml]</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">load_configuration()</span></code> is experimental
+and might have breaking changes in a future release.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>default_config_file</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – path to default configuration file.
+<li><p><strong>default_config_file</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – path to default configuration file.
 The file does not have to exist</p></li>
-<li><p><strong>user_configs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – path(s) to user configuration file(s),
+<li><p><strong>user_configs</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – path(s) to user configuration file(s),
 or already parsed mapping(s),
 applied in the given order.
 Files do not have to exist,
 and a given mapping is not modified</p></li>
-<li><p><strong>env_prefix</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – prefix of environment variables
+<li><p><strong>env_prefix</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – prefix of environment variables
 used to override configuration values.
 If <code class="docutils literal notranslate"><span class="pre">None</span></code>, environment variables are ignored</p></li>
-<li><p><strong>types</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – mapping that declares the type
+<li><p><strong>strict</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+every user configuration,
+and every environment variable holding a JSON object for a section,
+may only contain keys of <code class="docutils literal notranslate"><span class="pre">default_config_file</span></code>,
+with values of the same type as their default values</p></li>
+<li><p><strong>types</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – mapping that declares the type
 of configuration values,
 mirroring the (possibly nested) configuration structure.
 Used to cast environment variable overrides
 for keys whose default value is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 or to override the type inferred from the default value.
 Supported types are
-<code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code></p></li>
-<li><p><strong>validate</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – callable that receives the merged configuration
+<code class="docutils literal notranslate"><span class="pre">bool</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">list</span></code></p></li>
+<li><p><strong>validate</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>], <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – callable that receives the merged configuration
 dictionary and raises an error if it is invalid.
 It is applied once,
 after files and environment variables are merged</p></li>
-<li><p><strong>tracking</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – mutable mapping that records,
+<li><p><strong>tracking</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – mutable mapping that records,
 for each configuration key,
 which layer set its effective value:
 <code class="docutils literal notranslate"><span class="pre">f&quot;file:{path}&quot;</span></code> for <code class="docutils literal notranslate"><span class="pre">default_config_file</span></code>
@@ -306,7 +313,7 @@ file or mapping alike),
 or <code class="docutils literal notranslate"><span class="pre">f&quot;env:{name}&quot;</span></code> naming the exact environment variable
 (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;env:PKG_MODEL__DEVICE&quot;</span></code>)
 for an environment variable override.
-A whole-section JSON environment variable
+A section JSON environment variable
 labels every key it sets;
 a more specific nested variable re-labels
 only the key it overrides.
@@ -318,30 +325,39 @@ no tracking is performed</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>merged configuration dictionary</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><strong>ImportError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> is not installed,
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ImportError" title="(in Python v3.15)"><strong>ImportError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">pyyaml</span></code> is not installed,
     and a configuration file exists</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if a configuration file
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – if a user configuration,
+    or an environment variable holding a JSON object for a section,
+    sets a section of <code class="docutils literal notranslate"><span class="pre">default_config_file</span></code> to a value,
+    or a value to a section</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – if a configuration file
     does not contain a mapping of key-value pairs</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if an environment variable
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">strict</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>
+    and a user configuration,
+    or an environment variable holding a JSON object for a section,
+    contains a key that is not in <code class="docutils literal notranslate"><span class="pre">default_config_file</span></code>,
+    or a value whose type does not match its default value</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – if an environment variable
     cannot be converted to the type
     of the corresponding default value,
     or that type is not supported</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if a type declared in <code class="docutils literal notranslate"><span class="pre">types</span></code>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – if a type declared in <code class="docutils literal notranslate"><span class="pre">types</span></code>
     is not a class,
     or not one of the supported types</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">types</span></code>,
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">types</span></code>,
     or a <code class="docutils literal notranslate"><span class="pre">types</span></code> entry for a nested section,
     is not a mapping</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if a <code class="docutils literal notranslate"><span class="pre">types</span></code> entry
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – if a <code class="docutils literal notranslate"><span class="pre">types</span></code> entry
     does not match any configuration key</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">tracking</span></code> is not a mutable mapping</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.15)"><strong>ValueError</strong></a> – if <code class="docutils literal notranslate"><span class="pre">tracking</span></code> is not a mutable mapping</p></li>
 </ul>
 </dd>
 </dl>
@@ -417,7 +433,7 @@ so declare it in <code class="docutils literal notranslate"><span class="pre">ty
         
         
         
-          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/09/03 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
+          Built with <a href="https://www.sphinx-doc.org">Sphinx</a> on 2026/10/13 using the <a href="https://github.com/audeering/sphinx-audeering-theme/">audEERING theme</a>
         
     </p>
   </div>
