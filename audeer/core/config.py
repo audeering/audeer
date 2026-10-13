@@ -100,7 +100,7 @@ def load_configuration(
     .. warning::
 
         ``load_configuration()`` is experimental
-        and might have breaking changes in a next release.
+        and might have breaking changes in a future release.
 
     Args:
         default_config_file: path to default configuration file.
