@@ -92,7 +92,6 @@ def load_configuration(
     an entry that does not match a configuration key
     raises a ``ValueError``.
 
-
     Missing or empty configuration files are skipped.
 
     Reading configuration files requires ``pyyaml``,
@@ -468,7 +467,6 @@ def _validate_types(
         types: declared types mirroring ``cfg``
         require_keys: if ``True``,
             every ``types`` entry must have a matching ``cfg`` key
-            e.g. for keys a user configuration adds later
 
     Raises:
         ValueError: if a declared section type is not a mapping
