@@ -6,6 +6,7 @@ def path(
     path: str | bytes,
     *paths: Sequence[str | bytes],
     follow_symlink: bool = False,
+    expand_vars: bool = False,
 ) -> str:
     """Expand and normalize to absolute path.
 
@@ -18,6 +19,9 @@ def path(
     If ``follow_symlink`` is ``False``,
     the faster :func:`os.path.abspath` is used
     instead of :func:`os.path.realpath`.
+    If ``expand_vars`` is ``True``,
+    environment variables are expanded
+    by :func:`os.path.expandvars`.
 
     Args:
         path: path to file, directory
@@ -28,6 +32,12 @@ def path(
             symlinks are followed
             and the path of the original file
             is returned
+        expand_vars: if ``True``
+            environment variables
+            of the form ``$name`` or ``${name}``
+            (and ``%name%`` under Windows)
+            are expanded.
+            Undefined variables are left unchanged
 
     Returns:
         (joined and) expanded path
@@ -49,6 +59,11 @@ def path(
         'link.txt'
         >>> os.path.basename(audeer.path(link, follow_symlink=True))
         'file.txt'
+        >>> os.environ["DATA_ROOT"] = "~/data"
+        >>> file = audeer.path("$DATA_ROOT/a.wav", expand_vars=True)
+        >>> file[len(home) + 1 :]
+        'data/a.wav'
+        >>> del os.environ["DATA_ROOT"]
 
         .. skip: end
 
@@ -56,6 +71,8 @@ def path(
     if paths:
         path = os.path.join(path, *paths)
     if path:
+        if expand_vars:
+            path = os.path.expandvars(path)
         path = os.path.expanduser(path)
         if follow_symlink:
             path = os.path.realpath(path)
