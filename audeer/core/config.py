@@ -265,7 +265,7 @@ def load_configuration(
             else:
                 update = _load_configuration_file(user_config)
                 source = f"configuration file '{user_config}'"
-            _validate_user_config(update, defaults, types or {}, source, strict=strict)
+            _validate_user_config(update, defaults, types or {}, source, strict)
             if owner is None:
                 _deep_merge(cfg, update)
             else:
@@ -563,9 +563,8 @@ def _validate_user_config(
     defaults: Mapping,
     types: Mapping,
     source: str,
+    strict: bool,
     path: str = "",
-    *,
-    strict: bool = True,
 ) -> None:
     r"""Validate a user configuration against the default configuration.
 
@@ -586,9 +585,9 @@ def _validate_user_config(
         types: declared types mirroring ``defaults``
         source: description of the user configuration
             used in error messages
-        path: dotted key path accumulated so far
         strict: if ``True``,
             unknown keys and the types of values are checked as well
+        path: dotted key path accumulated so far
 
     Raises:
         ValueError: if a section is set to a value,
@@ -621,8 +620,8 @@ def _validate_user_config(
                 default_value,
                 declared if isinstance(declared, Mapping) else {},
                 source,
+                strict,
                 f"{key_path}.",
-                strict=strict,
             )
             continue
         if default_value is not None and isinstance(value, Mapping):
@@ -736,8 +735,8 @@ def _override_with_environment(
                         section_defaults,
                         key_type or {},
                         f"environment variable '{name}'",
+                        strict,
                         f"{path}{key}.",
-                        strict=strict,
                     )
                 _deep_merge(
                     cfg[key],
