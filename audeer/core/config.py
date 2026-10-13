@@ -36,10 +36,6 @@ def load_configuration(
     and keeps the remaining keys from the default.
     Any non-mapping value (including a list)
     replaces the previous value as a whole.
-    The default file fixes the structure:
-    a user configuration cannot set a section to a value,
-    or a value to a section,
-    unless the default value is ``None``.
     An integer is converted to a float
     where the default value is a float.
 
@@ -59,10 +55,6 @@ def load_configuration(
     like a user configuration file
     (keys it omits keep their values)
     and may introduce keys not present in the files.
-    Like for a user configuration file,
-    the default file fixes its structure,
-    and its keys and types are checked
-    when ``strict`` is ``True``.
     Nested variables are applied afterwards
     and therefore take precedence,
     e.g. ``<env_prefix>_MODEL__DEVICE``
@@ -100,11 +92,6 @@ def load_configuration(
     an entry that does not match a configuration key
     raises a ``ValueError``.
 
-    Set ``strict`` to ``True``
-    and ``default_config_file`` restricts allowed keys and types.
-    Additional keys or non matching types raise a ``ValueError``,
-    whereby an integer is accepted as float,
-    and values whose default has no type are not checked.
 
     Missing or empty configuration files are skipped.
 
@@ -479,8 +466,8 @@ def _validate_types(
     Args:
         cfg: configuration dictionary
         types: declared types mirroring ``cfg``
-        require_keys: if ``False``,
-            entries without a matching configuration key are skipped,
+        require_keys: if ``True``,
+            every ``types`` entry must have a matching ``cfg`` key
             e.g. for keys a user configuration adds later
 
     Raises:
@@ -647,8 +634,7 @@ def _validate_user_config(
             )
         target = _target_type(declared, default_value)
         if not strict:
-            # Like an environment variable, an integer becomes a float
-            # where the default is a float, in both modes
+            # Convert integer to float where the default is a float
             if (
                 target is float
                 and isinstance(value, int)
