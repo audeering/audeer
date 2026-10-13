@@ -1,6 +1,7 @@
 import collections
 from collections import UserDict
 import pathlib
+import re
 from types import MappingProxyType
 
 import pytest
@@ -119,8 +120,16 @@ def test_load_configuration_deep_merge_scalar_replaces_section(tmpdir):
         audeer.path(tmpdir, "user.yaml"),
         "model: none\n",
     )
-    # A scalar in the user file replaces a whole default section
-    assert audeer.load_configuration(default_file, user_file) == {"model": "none"}
+    # The default file fixes the structure, also without ``strict``:
+    # a value in the user file cannot replace a default section
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"The configuration file '{user_file}' sets 'model' "
+            "to a value of type 'str', but the default value is a mapping."
+        ),
+    ):
+        audeer.load_configuration(default_file, user_file)
 
 
 def test_load_configuration_deep_merge_section_replaces_scalar(tmpdir):
@@ -132,10 +141,16 @@ def test_load_configuration_deep_merge_section_replaces_scalar(tmpdir):
         audeer.path(tmpdir, "user.yaml"),
         "model:\n  device: cuda\n",
     )
-    # A mapping in the user file replaces a scalar default as a whole
-    assert audeer.load_configuration(default_file, user_file) == {
-        "model": {"device": "cuda"},
-    }
+    # The default file fixes the structure, also without ``strict``:
+    # a section in the user file cannot replace a default value
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            f"The configuration file '{user_file}' sets 'model' "
+            "to a mapping, but the default value is not a mapping."
+        ),
+    ):
+        audeer.load_configuration(default_file, user_file)
 
 
 def test_load_configuration_deep_merge_list_replaced(tmpdir):
@@ -395,13 +410,13 @@ def test_load_configuration_user_mapping_environment_json(tmpdir, monkeypatch):
     user_config = {"model": {"device": "cpu"}}
     # A section introduced by the mapping
     # can be overridden by a JSON environment variable,
-    # and the values of the mapping provide the types for it
+    # which is not type-checked without ``strict``, like a user file
     monkeypatch.setenv("PKG_MODEL", '{"device": "cuda"}')
     config = audeer.load_configuration(default_file, user_config, env_prefix="PKG")
     assert config == {"name": "default", "model": {"device": "cuda"}}
     monkeypatch.setenv("PKG_MODEL", '{"device": 5}')
-    with pytest.raises(ValueError, match="has type 'str'"):
-        audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+    config = audeer.load_configuration(default_file, user_config, env_prefix="PKG")
+    assert config == {"name": "default", "model": {"device": 5}}
 
 
 def test_load_configuration_environment_json_section_keeps_user_value(
@@ -502,6 +517,225 @@ def test_load_configuration_user_mapping_shared_file(tmpdir, monkeypatch):
         "lib-a": {"cache_root": "~/shared-a"},
         "lib-b": {"cache_root": "~/shared-b"},
     }
+
+
+def test_load_configuration_strict(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        (
+            "cache_root: ~/cache\n"
+            "timeout: 1.5\n"
+            "hosts: []\n"
+            "token: null\n"
+            "model:\n"
+            "  device: cpu\n"
+            "  lora: false\n"
+            "  sub:\n"
+            "    a: 1\n"
+        ),
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        (
+            "timeout: 2\n"
+            "hosts: [a]\n"
+            "token: 123\n"
+            "model:\n"
+            "  lora: true\n"
+            "  sub:\n"
+            "    a: 2\n"
+        ),
+    )
+    # Known keys with matching types are accepted,
+    # an integer is promoted for a float default,
+    # and a value with a None default is not checked
+    tracking = {}
+    config = audeer.load_configuration(
+        default_file,
+        [user_file, {"model": {"device": "cuda"}}],
+        strict=True,
+        tracking=tracking,
+    )
+    assert config == {
+        "cache_root": "~/cache",
+        "timeout": 2.0,
+        "hosts": ["a"],
+        "token": 123,
+        "model": {"device": "cuda", "lora": True, "sub": {"a": 2}},
+    }
+    assert isinstance(config["timeout"], float)
+    assert tracking["timeout"] == f"file:{user_file}"
+    assert tracking["model"]["device"] == "mapping[1]"
+
+
+def test_load_configuration_strict_default_off(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  lora: false\n",
+    )
+    user_file = write_config(
+        audeer.path(tmpdir, "user.yaml"),
+        "model:\n  lroa: 1\n  lora: 'no'\n",
+    )
+    # Without strict, unknown keys are merged
+    # and values keep their type
+    config = audeer.load_configuration(default_file, user_file)
+    assert config == {"model": {"lora": "no", "lroa": 1}}
+
+
+@pytest.mark.parametrize(
+    "content, match",
+    [
+        (  # unknown top-level key
+            "cache_rot: ~/user\n",
+            "contains the key 'cache_rot', which is not in the default",
+        ),
+        (  # unknown nested key
+            "model:\n  devices: cuda\n",
+            "contains the key 'model.devices', which is not in the default",
+        ),
+        (  # unknown key in a deeper nesting level
+            "model:\n  sub:\n    b: 1\n",
+            "contains the key 'model.sub.b', which is not in the default",
+        ),
+        (  # str value where the default is bool
+            "model:\n  lora: 'false'\n",
+            "sets 'model.lora' to a value of type 'str', "
+            "but the default value has type 'bool'",
+        ),
+        (  # str value where the default is int
+            "model:\n  sub:\n    a: '1'\n",
+            "sets 'model.sub.a' to a value of type 'str', "
+            "but the default value has type 'int'",
+        ),
+        (  # bool value where the default is int
+            "model:\n  sub:\n    a: true\n",
+            "has type 'int'",
+        ),
+        (  # int value where the default is bool
+            "model:\n  lora: 1\n",
+            "has type 'bool'",
+        ),
+        (  # str value where the default is float
+            "timeout: fast\n",
+            "has type 'float'",
+        ),
+        (  # scalar where the default is a section
+            "model: cpu\n",
+            "sets 'model' to a value of type 'str', but the default value is a mapping",
+        ),
+        (  # section where the default is a scalar
+            "timeout:\n  value: 1\n",
+            "sets 'timeout' to a mapping, but the default value is not a mapping",
+        ),
+    ],
+)
+def test_load_configuration_strict_invalid(tmpdir, content, match):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        (
+            "cache_root: ~/cache\n"
+            "timeout: 1.5\n"
+            "model:\n"
+            "  device: cpu\n"
+            "  lora: false\n"
+            "  sub:\n"
+            "    a: 1\n"
+        ),
+    )
+    user_file = write_config(audeer.path(tmpdir, "user.yaml"), content)
+    with pytest.raises(
+        ValueError,
+        match=re.escape(f"The configuration file '{user_file}' ") + ".*" + match,
+    ):
+        audeer.load_configuration(default_file, user_file, strict=True)
+
+
+def test_load_configuration_strict_mapping(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "cache_root: ~/cache\n",
+    )
+    # An already parsed mapping is checked as well,
+    # and named by its index in the error message
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "The user configuration at index 1 contains the key 'cache_rot'"
+        ),
+    ):
+        audeer.load_configuration(
+            default_file,
+            [{"cache_root": "~/a"}, {"cache_rot": "~/b"}],
+            strict=True,
+        )
+
+
+def test_load_configuration_strict_defaults_only(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "token: null\n",
+    )
+    first_file = write_config(audeer.path(tmpdir, "first.yaml"), "token: 1\n")
+    # Every user configuration is checked against the default file,
+    # not against the result of the earlier ones:
+    # the None default leaves ``token`` unchecked,
+    # although the first user file has set it to an integer
+    config = audeer.load_configuration(
+        default_file,
+        [first_file, {"token": "abc"}],
+        strict=True,
+    )
+    assert config == {"token": "abc"}
+
+
+def test_load_configuration_strict_types_not_mapping(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "timeout: 1.5\n",
+    )
+    # ``types`` is checked before the user configurations,
+    # so strict mode raises the same error as the default mode
+    with pytest.raises(ValueError, match="'types' must be a mapping, but is 'list'"):
+        audeer.load_configuration(
+            default_file,
+            {"timeout": 2},
+            strict=True,
+            types=["timeout"],
+        )
+
+
+def test_load_configuration_strict_types(tmpdir):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "token: null\ncount: 1\nmodel:\n  timeout: null\n",
+    )
+    # A declared type is used for a None default,
+    # in nested sections as well,
+    # and takes precedence over the type of the default value
+    config = audeer.load_configuration(
+        default_file,
+        {"token": "abc", "count": "1", "model": {"timeout": 2}},
+        strict=True,
+        types={"token": str, "count": str, "model": {"timeout": float}},
+    )
+    assert config == {"token": "abc", "count": "1", "model": {"timeout": 2.0}}
+    with pytest.raises(ValueError, match="sets 'token' to a value of type 'int'"):
+        audeer.load_configuration(
+            default_file,
+            {"token": 1},
+            strict=True,
+            types={"token": str},
+        )
+    with pytest.raises(
+        ValueError, match="sets 'model.timeout' to a value of type 'str'"
+    ):
+        audeer.load_configuration(
+            default_file,
+            {"model": {"timeout": "fast"}},
+            strict=True,
+            types={"model": {"timeout": float}},
+        )
 
 
 def test_load_configuration_environment(tmpdir, monkeypatch):
@@ -621,6 +855,40 @@ def test_load_configuration_environment_json_section_preserves_type(
     assert isinstance(config["model"]["count"], int)
 
 
+@pytest.mark.parametrize("strict", [False, True])
+@pytest.mark.parametrize(
+    "value, match",
+    [
+        (  # a nested section set to a value
+            '{"b": 5}',
+            "sets 'model.b' to a value of type 'int', "
+            "but the default value is a mapping.",
+        ),
+        (  # a value set to a section
+            '{"d": {"e": 1}}',
+            "sets 'model.d' to a mapping, but the default value is not a mapping.",
+        ),
+    ],
+)
+def test_load_configuration_environment_json_section_structure(
+    tmpdir, monkeypatch, value, match, strict
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  b:\n    c: 1\n  d: 2\n",
+    )
+    # Like a user file, a section variable cannot change the structure
+    # of the default file, also without ``strict``,
+    # so a nested variable such as PKG_MODEL__B__C is never ignored
+    monkeypatch.setenv("PKG_MODEL", value)
+    monkeypatch.setenv("PKG_MODEL__B__C", "5")
+    with pytest.raises(
+        ValueError,
+        match=re.escape(f"The environment variable 'PKG_MODEL' {match}"),
+    ):
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=strict)
+
+
 @pytest.mark.parametrize(
     "content, value, match",
     [
@@ -633,11 +901,6 @@ def test_load_configuration_environment_json_section_preserves_type(
             "model:\n  b:\n    c: 1\n",
             '{"b": {"c": "bad"}}',
             "has type 'int'",
-        ),
-        (  # a nested section replaced by a scalar
-            "model:\n  b:\n    c: 1\n",
-            '{"b": 5}',
-            "is a mapping",
         ),
         (  # int value where the default is bool
             "model:\n  lora: false\n",
@@ -655,10 +918,14 @@ def test_load_configuration_environment_json_section_wrong_value_type(
     tmpdir, monkeypatch, content, value, match
 ):
     config_file = write_config(audeer.path(tmpdir, "default.yaml"), content)
-    # A JSON object must match the types of the default values it overrides
+    # Like a user file, a JSON object is only checked with ``strict``
     monkeypatch.setenv("PKG_MODEL", value)
-    with pytest.raises(ValueError, match=match):
-        audeer.load_configuration(config_file, env_prefix="PKG")
+    audeer.load_configuration(config_file, env_prefix="PKG")
+    with pytest.raises(
+        ValueError,
+        match=re.escape("The environment variable 'PKG_MODEL' sets") + ".*" + match,
+    ):
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
 
 
 def test_load_configuration_environment_json_section_nested_preserves_type(
@@ -684,11 +951,61 @@ def test_load_configuration_environment_json_section_float_promotion(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  ratio: 1.5\n",
     )
-    # A JSON int is accepted for a float default and promoted
+    # A JSON int is accepted for a float default and promoted,
+    # with and without ``strict``
     monkeypatch.setenv("PKG_MODEL", '{"ratio": 2}')
-    config = audeer.load_configuration(config_file, env_prefix="PKG")
-    assert config == {"model": {"ratio": 2.0}}
-    assert isinstance(config["model"]["ratio"], float)
+    for strict in [False, True]:
+        config = audeer.load_configuration(config_file, env_prefix="PKG", strict=strict)
+        assert config == {"model": {"ratio": 2.0}}
+        assert isinstance(config["model"]["ratio"], float)
+
+
+@pytest.mark.parametrize("strict", [False, True])
+@pytest.mark.parametrize(
+    "source", ["user_file", "mapping", "section_variable", "variable"]
+)
+def test_load_configuration_float_promotion_every_layer(
+    tmpdir, monkeypatch, source, strict
+):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  lr: 0.1\n",
+    )
+    # An integer for a float default becomes a float,
+    # independent of the layer that sets it and of ``strict``
+    user_configs = None
+    if source == "user_file":
+        user_configs = write_config(
+            audeer.path(tmpdir, "user.yaml"), "model:\n  lr: 1\n"
+        )
+    elif source == "mapping":
+        user_configs = {"model": {"lr": 1}}
+    elif source == "section_variable":
+        monkeypatch.setenv("PKG_MODEL", '{"lr": 1}')
+    else:
+        monkeypatch.setenv("PKG_MODEL__LR", "1")
+    config = audeer.load_configuration(
+        default_file, user_configs, env_prefix="PKG", strict=strict
+    )
+    assert config == {"model": {"lr": 1.0}}
+    assert isinstance(config["model"]["lr"], float)
+
+
+@pytest.mark.parametrize("strict", [False, True])
+def test_load_configuration_types_checked_first(tmpdir, strict):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  lr: 0.1\n",
+    )
+    # An invalid ``types`` entry is reported as such,
+    # before a user configuration is checked against it
+    with pytest.raises(ValueError, match="is not a supported type: 'dict'"):
+        audeer.load_configuration(
+            default_file,
+            {"model": {"lr": 0.5}},
+            types={"model": {"lr": dict}},
+            strict=strict,
+        )
 
 
 def test_load_configuration_environment_json_section_none_default(tmpdir, monkeypatch):
@@ -709,10 +1026,13 @@ def test_load_configuration_environment_json_section_null_for_typed_default(
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  device: cpu\n",
     )
-    # JSON null does not match the str type of the default
+    # With ``strict``, JSON null does not match the str type of the default,
+    # without it the value is merged
     monkeypatch.setenv("PKG_MODEL", '{"device": null}')
     with pytest.raises(ValueError, match="has type 'str'"):
-        audeer.load_configuration(config_file, env_prefix="PKG")
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config == {"model": {"device": None}}
 
 
 def test_load_configuration_environment_json_section_null_for_none_default(
@@ -733,14 +1053,97 @@ def test_load_configuration_environment_json_section_declared_type(tmpdir, monke
         audeer.path(tmpdir, "default.yaml"),
         "model:\n  count: null\n",
     )
-    # A ``types`` declaration is also enforced inside a JSON object
+    # With ``strict``, a ``types`` declaration
+    # is also enforced inside a JSON object
     monkeypatch.setenv("PKG_MODEL", '{"count": "5"}')
     with pytest.raises(ValueError, match="has type 'int'"):
         audeer.load_configuration(
             config_file,
             env_prefix="PKG",
+            strict=True,
             types={"model": {"count": int}},
         )
+    config = audeer.load_configuration(
+        config_file,
+        env_prefix="PKG",
+        types={"model": {"count": int}},
+    )
+    assert config == {"model": {"count": "5"}}
+
+
+@pytest.mark.parametrize("strict", [False, True])
+@pytest.mark.parametrize("source", ["user_file", "section_variable"])
+def test_load_configuration_environment_type_from_default(
+    tmpdir, monkeypatch, source, strict
+):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  lr: 0.1\n",
+    )
+    user_file = write_config(audeer.path(tmpdir, "user.yaml"), "model:\n  lr: 1\n")
+    # A variable for a single value is converted to the type
+    # of the default file, not to the type of a value
+    # that a user file or a section variable set before
+    if source == "section_variable":
+        monkeypatch.setenv("PKG_MODEL", '{"lr": 1}')
+        user_configs = None
+    else:
+        user_configs = user_file
+    monkeypatch.setenv("PKG_MODEL__LR", "0.5")
+    config = audeer.load_configuration(
+        default_file,
+        user_configs,
+        env_prefix="PKG",
+        strict=strict,
+    )
+    assert config == {"model": {"lr": 0.5}}
+
+
+def test_load_configuration_environment_json_section_strict_unknown_key(
+    tmpdir, monkeypatch
+):
+    config_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model:\n  device: cpu\n  sub:\n    a: 1\n",
+    )
+    # With ``strict``, a key of a JSON object that is not in the default file
+    # raises, also for a nested section variable,
+    # without it the key is added like from a user file
+    monkeypatch.setenv("PKG_MODEL", '{"batch": 8}')
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "The environment variable 'PKG_MODEL' contains the key 'model.batch', "
+            "which is not in the default configuration."
+        ),
+    ):
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
+    config = audeer.load_configuration(config_file, env_prefix="PKG")
+    assert config["model"]["batch"] == 8
+    monkeypatch.delenv("PKG_MODEL")
+    monkeypatch.setenv("PKG_MODEL__SUB", '{"b": 2}')
+    with pytest.raises(ValueError, match="contains the key 'model.sub.b'"):
+        audeer.load_configuration(config_file, env_prefix="PKG", strict=True)
+
+
+def test_load_configuration_environment_json_section_strict_none_default(
+    tmpdir, monkeypatch
+):
+    default_file = write_config(
+        audeer.path(tmpdir, "default.yaml"),
+        "model: null\n",
+    )
+    # A section that a user configuration sets for a None default
+    # has no defaults to check a JSON object against,
+    # like any value with a None default
+    monkeypatch.setenv("PKG_MODEL", '{"device": 5}')
+    config = audeer.load_configuration(
+        default_file,
+        {"model": {"device": "cpu"}},
+        env_prefix="PKG",
+        strict=True,
+    )
+    assert config == {"model": {"device": 5}}
 
 
 def test_load_configuration_environment_json_section_merge(tmpdir, monkeypatch):
@@ -1705,20 +2108,21 @@ def test_load_configuration_tracking_merge_into_freshly_introduced_section(tmpdi
 def test_load_configuration_tracking_section_collapsed_to_scalar(tmpdir):
     default_file = write_config(
         audeer.path(tmpdir, "default.yaml"),
-        "model:\n  device: cuda\n  lora: false\n",
+        "model: null\n",
     )
     tracking = {}
     config = audeer.load_configuration(
         default_file,
-        {"model": "none"},
+        [{"model": {"device": "cuda", "lora": False}}, {"model": "none"}],
         tracking=tracking,
     )
-    # A scalar in a later layer replaces a whole default section wholesale:
-    # the previously nested per-leaf attribution ("device", "lora") must
+    # A value with a None default is not checked,
+    # so a later layer may replace the section an earlier layer set:
+    # the nested per-leaf attribution ("device", "lora") must
     # collapse into a single flat label for "model", not leave stale
     # nested entries behind
     assert config == {"model": "none"}
-    assert tracking == {"model": "mapping[0]"}
+    assert tracking == {"model": "mapping[1]"}
 
 
 def test_load_configuration_tracking_three_levels_deep(tmpdir, monkeypatch):
