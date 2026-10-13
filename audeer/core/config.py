@@ -97,6 +97,11 @@ def load_configuration(
     Reading configuration files requires ``pyyaml``,
     which is installed when depending on ``audeer[yaml]``.
 
+    .. warning::
+
+        ``load_configuration()`` is experimental
+        and might have breaking changes in a future release.
+
     Args:
         default_config_file: path to default configuration file.
             The file does not have to exist
